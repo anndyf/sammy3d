@@ -14,10 +14,13 @@ export default function StockPage() {
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
 
   const [name, setName] = useState("");
+  const [type, setType] = useState("FILAMENT");
   const [color, setColor] = useState("");
   const [costPerUnit, setCostPerUnit] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
-  const [unitType, setUnitType] = useState("kg");
+  const [unitType, setUnitType] = useState("g");
+  const [recordExpense, setRecordExpense] = useState(false);
+  const [amountPaid, setAmountPaid] = useState("");
 
   const fetchData = async () => {
     try {
@@ -32,6 +35,7 @@ export default function StockPage() {
   const handleEdit = (m: Material) => {
     setEditingMaterial(m);
     setName(m.name);
+    setType(m.type);
     setColor(m.color || "");
     setCostPerUnit(m.costPerUnit.toString());
     setTotalAmount(m.totalAmount.toString());
@@ -50,17 +54,24 @@ export default function StockPage() {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          name, color, 
+          name, type, color, 
           costPerUnit: parseFloat(costPerUnit), 
           totalAmount: parseFloat(totalAmount),
           unitType,
+          recordExpense,
+          amountPaid: parseFloat(amountPaid || costPerUnit),
           remainingAmount: editingMaterial ? editingMaterial.remainingAmount : parseFloat(totalAmount)
         })
       });
       if (res.ok) {
         setIsAddingModo(false); setEditingMaterial(null);
-        setName(""); setColor(""); setCostPerUnit(""); setTotalAmount("");
+        setName(""); setType("FILAMENT"); setColor(""); setCostPerUnit(""); setTotalAmount(""); setUnitType("g");
+        setRecordExpense(false); setAmountPaid("");
         fetchData();
+      } else {
+        const err = await res.json();
+        console.error("Erro ao salvar:", err);
+        alert("Erro ao cadastrar. Verifique os campos e tente novamente.");
       }
     } catch (e) { console.error(e); }
   };
@@ -113,25 +124,69 @@ export default function StockPage() {
                 <div className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase border border-blue-100">{editingMaterial ? 'Edição' : 'Entrada'}</div>
              </div>
              
-             <form onSubmit={handleSave} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <form onSubmit={handleSave} className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                   {/* TIPO */}
                    <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Nome/Marca</label>
-                      <input type="text" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none focus:bg-white focus:border-black transition-all" required value={name} onChange={e=>setName(e.target.value)} />
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Tipo de Insumo</label>
+                      <select className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none focus:bg-white focus:border-black transition-all cursor-pointer" required value={type} onChange={e=>setType(e.target.value)}>
+                        <option value="FILAMENT">🧵 Filamento</option>
+                        <option value="RESIN">🧪 Resina</option>
+                        <option value="ACCESSORY">🔩 Acessório</option>
+                      </select>
                    </div>
+                   {/* NOME */}
+                   <div className="space-y-1.5 flex flex-col">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Nome / Marca</label>
+                      <input type="text" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none focus:bg-white focus:border-black transition-all" required value={name} onChange={e=>setName(e.target.value)} placeholder="ex: Polymaker PLA+" />
+                   </div>
+                   {/* COR */}
                    <div className="space-y-1.5 flex flex-col">
                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Cor</label>
-                      <input type="text" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none" value={color} onChange={e=>setColor(e.target.value)} />
+                      <input type="text" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none focus:bg-white focus:border-black transition-all" value={color} onChange={e=>setColor(e.target.value)} placeholder="ex: Preto, Branco..." />
                    </div>
+                   {/* CUSTO TOTAL */}
                    <div className="space-y-1.5 flex flex-col">
                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Custo Total (R$)</label>
-                      <input type="number" step="0.01" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none" required value={costPerUnit} onChange={e=>setCostPerUnit(e.target.value)} />
+                      <input type="number" step="0.01" min="0" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none focus:bg-white focus:border-black transition-all" required value={costPerUnit} onChange={e=>setCostPerUnit(e.target.value)} placeholder="ex: 89.90" />
                    </div>
+                   {/* TAMANHO LOTE */}
                    <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Tamanho Lote (g/kg)</label>
-                      <input type="number" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none" required value={totalAmount} onChange={e=>setTotalAmount(e.target.value)} />
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Quantidade no Lote</label>
+                      <input type="number" min="0" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none focus:bg-white focus:border-black transition-all" required value={totalAmount} onChange={e=>setTotalAmount(e.target.value)} placeholder="ex: 1000" />
+                   </div>
+                   {/* UNIDADE */}
+                   <div className="space-y-1.5 flex flex-col">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Unidade de Medida</label>
+                      <select className="w-full bg-[#FAFAFA] border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none focus:bg-white focus:border-black transition-all cursor-pointer" value={unitType} onChange={e=>setUnitType(e.target.value)}>
+                        <option value="g">g (gramas)</option>
+                        <option value="kg">kg (quilos)</option>
+                        <option value="ml">ml (mililitros)</option>
+                        <option value="un">un (unidades)</option>
+                      </select>
                    </div>
                 </div>
+
+                <div className="flex flex-col gap-6 pt-4 border-t border-slate-50">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                       <input type="checkbox" className="w-5 h-5 rounded border-slate-200 text-black focus:ring-black transition-all" checked={recordExpense} onChange={e=>setRecordExpense(e.target.checked)} />
+                       <div>
+                          <p className="text-[12px] font-bold text-black uppercase tracking-tight group-hover:text-blue-600 transition-colors">Registrar no Livro Caixa</p>
+                          <p className="text-[10px] text-slate-400 font-medium">Lançar automaticamente como despesa de produção</p>
+                       </div>
+                    </label>
+
+                    {recordExpense && (
+                       <div className="bg-slate-50 border border-slate-100 rounded-xl p-6 space-y-4 animate-in fade-in zoom-in duration-300">
+                          <div className="space-y-1.5 flex flex-col max-w-xs">
+                             <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Valor Efetivamente Pago (R$)</label>
+                             <input type="number" step="0.01" className="w-full bg-white border border-slate-100 rounded-lg px-4 py-3 text-[14px] outline-none shadow-sm focus:border-black transition-all" value={amountPaid} onChange={e=>setAmountPaid(e.target.value)} placeholder={costPerUnit || "0.00"} />
+                             <p className="text-[9px] text-slate-400 pt-1 italic">Deixe em branco para usar o custo total informado acima.</p>
+                          </div>
+                       </div>
+                    )}
+                 </div>
+
                 <div className="flex justify-end pt-4 gap-4">
                    <button type="button" onClick={()=>{setIsAddingModo(false); setEditingMaterial(null);}} className="px-10 h-10 bg-slate-50 text-slate-400 rounded-lg text-[12px] font-bold uppercase transition-all">Cancelar</button>
                    <button type="submit" className="bg-black text-white px-10 h-10 rounded-lg text-[13px] font-black uppercase shadow-md hover:bg-slate-800 transition-all">{editingMaterial ? 'Salvar Alteração' : 'Cadastrar Lote'}</button>
