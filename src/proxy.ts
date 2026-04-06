@@ -3,21 +3,23 @@ import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
-  // Public routes (Store, Home, Login API, and the Login page itself)
-  const isPublicRoute = 
-    pathname.startsWith('/store') || 
-    pathname.startsWith('/api/auth') || 
+
+  // Rotas sempre públicas — sem autenticação necessária
+  const isPublicRoute =
+    pathname.startsWith('/store') ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/quote-requests') ||
+    pathname === '/calculator' ||
     pathname === '/login';
 
   const authToken = request.cookies.get('sammy_session')?.value;
 
-  // Protect all (admin) routes (everything not in /store or /login)
+  // 1. Rota protegida sem sessão → vai para login
   if (!isPublicRoute && !authToken) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Redirect to dashboard if logged in and trying to access /login
+  // 2. Já está logado e tenta acessar /login → vai para o catálogo (dashboard)
   if (pathname === '/login' && authToken) {
     return NextResponse.redirect(new URL('/catalog', request.url));
   }
@@ -27,14 +29,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - logo.png (logo)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico|logo.png|box-dimensions.png).*)',
   ],
 };
