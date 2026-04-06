@@ -1,33 +1,25 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET: Listagem completa do Catálogo de Peças 3D (Bypass Prisma Filter)
+// GET: Listagem completa do Catálogo de Peças 3D (Com relacionamento Material)
 export async function GET() {
   try {
-    const products = await prisma.$queryRawUnsafe(`
-      SELECT p.*, m.name as materialName, m.color as materialColor, m.costPerUnit, m.totalAmount, m.unitType 
-      FROM "Product" p 
-      LEFT JOIN "Material" m ON p.materialId = m.id 
-      ORDER BY p.createdAt DESC
-    `);
-    
-    // Formata o objeto para manter compatibilidade com o front que espera { material: { ... } }
-    const formatted = (products as any[]).map(p => ({
-      ...p,
-      material: {
-        id: p.materialId,
-        name: p.materialName,
-        color: p.materialColor,
-        costPerUnit: p.costPerUnit,
-        totalAmount: p.totalAmount,
-        unitType: p.unitType
+    const products = await prisma.product.findMany({
+      include: {
+        material: true
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
-    }));
-
-    return NextResponse.json(formatted);
-  } catch (error) {
+    });
+    
+    return NextResponse.json(products);
+  } catch (error: any) {
     console.error("CATALOG GET FAIL:", error);
-    return NextResponse.json({ error: 'Erro ao buscar catálogo via SQL' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Erro ao buscar catálogo', 
+      details: error.message 
+    }, { status: 500 });
   }
 }
 

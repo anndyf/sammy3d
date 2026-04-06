@@ -16,6 +16,7 @@ export default function CatalogPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<{type: 'success' | 'error' | 'loading' | '', message: string}>({type: '', message: ''});
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -135,7 +136,15 @@ export default function CatalogPage() {
     const method = editingProduct ? "PUT" : "POST";
     const url = editingProduct ? `/api/products/${editingProduct.id}` : "/api/products";
     const totalTimeMinutes = (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0);
+    // Função auxiliar para resetar status
+    const showStatus = (type: 'success' | 'error', message: string) => {
+      setStatus({ type, message });
+      setTimeout(() => setStatus({ type: '', message: '' }), 4000);
+    };
+
     setSaving(true);
+    setStatus({ type: 'loading', message: '📡 Transmitindo dados para a nuvem...' });
+    
     try {
       const res = await fetch(url, {
         method,
@@ -146,7 +155,7 @@ export default function CatalogPage() {
           stockQuantity: parseInt(stockQuantity),
           weightGrams: parseFloat(weightGrams),
           materialId,
-          productionTime: totalTimeMinutes,
+          productionTime: (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0),
           shopeeUrl,
           imageUrl
         })
@@ -155,17 +164,17 @@ export default function CatalogPage() {
       const result = await res.json();
 
       if (res.ok) {
-        alert("Design salvo com sucesso! ✅");
+        showStatus('success', '✅ Matriz Industrial Autorizada com Sucesso!');
         setIsAddingMode(false); setEditingProduct(null);
         setName(""); setCategory(""); setSubcategory(""); setSku(""); setDescription(""); setSellingPrice(""); setStockQuantity("");
         setWeightGrams(""); setMaterialId(""); setHours(""); setMinutes(""); setShopeeUrl(""); setImageUrl("");
         fetchData();
       } else {
-        alert("Erro ao salvar: " + (result.error || "Erro desconhecido") + "\nDetalhes: " + (result.details || "Consulte o suporte"));
+        showStatus('error', `❌ Erro: ${result.error || 'Falha no servidor'}`);
       }
     } catch (e: any) { 
       console.error(e);
-      alert("Falha crítica na conexão: " + e.message);
+      showStatus('error', `❌ Falha de Conexão: ${e.message}`);
     } finally {
       setSaving(false);
     }
@@ -189,6 +198,21 @@ export default function CatalogPage() {
   return (
     <div className="bg-white min-h-screen text-slate-900 font-sans select-none animate-fade-in pb-40">
       
+      {/* STATUS NOTIFICATION BAR */}
+      {status.message && (
+        <div 
+          className={cn(
+            "fixed top-4 left-1/2 -translate-x-1/2 z-[1000] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500 border backdrop-blur-md",
+            status.type === 'success' ? "bg-emerald-500/90 text-white border-emerald-400" : 
+            status.type === 'error' ? "bg-red-500/90 text-white border-red-400" : 
+            "bg-blue-500/90 text-white border-blue-400"
+          )}
+        >
+           {status.type === 'loading' ? <Sparkles className="h-4 w-4 animate-spin" /> : <AlertCircle className="h-4 w-4" />}
+           <span className="text-[13px] font-bold tracking-tight">{status.message}</span>
+        </div>
+      )}
+
       {/* VERCEL HEADER AREA */}
       <div className="border-b border-slate-100 px-6 py-8">
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
