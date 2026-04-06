@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+}
+
+:root {
+  --vercel-bg: #FFFFFF;
+  --vercel-text-main: #000000;
+  --vercel-text-muted: #666666;
+  --vercel-border: #EAEAEA;
+  --vercel-accent: #0070F3;     /* Vercel Blue */
+  --vercel-accent-bg: #E1F4FF;
+  
+  --sammy-cyan: #0070F3;        /* Unified with Vercel Blue for clarity */
+}
+
+body {
+  background-color: var(--vercel-bg);
+  color: var(--vercel-text-main);
+  font-family: 'Inter', sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* VERCEL CORE COMPONENTS (UTILITIES) */
+.maglo-card {
+  background: white;
+  border-radius: 8px; /* Standard Vercel Radius */
+  border: 1px solid var(--vercel-border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.maglo-card:hover {
+  border-color: black;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08); /* Project Hover Shadow */
+}
+
+.maglo-btn-primary {
+  @apply bg-black text-white px-4 py-2 rounded-lg text-[13px] font-semibold transition-all flex items-center justify-center gap-2;
+}
+
+.maglo-btn-primary:hover {
+  @apply bg-slate-800 shadow-sm opacity-90;
+}
+
+.maglo-subtitle {
+  @apply text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1;
+}
+
+.maglo-title {
+  @apply text-3xl font-bold tracking-tight text-black mb-1;
+}
+
+/* CUSTOM SCROLLBAR (VERCEL STYLE) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #FAFAFA;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #EAEAEA;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #666666;
+}
+
+@media print {
+  body {
+    background-color: white !important;
+  }
+}
