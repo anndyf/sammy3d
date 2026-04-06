@@ -227,7 +227,9 @@ export default function StockPage() {
               filteredMaterials.map(mat => {
                 const percentage = (mat.remainingAmount / mat.totalAmount) * 100;
                 const isCritical = percentage <= 20;
-                const costPerGram = mat.costPerUnit / mat.totalAmount;
+                // Conversão de unidades para o cálculo de custo por grama
+                const divider = mat.unitType === 'kg' ? mat.totalAmount * 1000 : mat.totalAmount;
+                const costPerGram = mat.costPerUnit / divider;
 
                 return (
                   <div 
@@ -265,7 +267,7 @@ export default function StockPage() {
 
                      {/* COST PER UNIT */}
                      <div className="w-[120px] text-center">
-                        <p className="text-[14px] font-mono font-bold text-black">R$ {costPerGram.toFixed(3)}</p>
+                        <p className="text-[14px] font-mono font-bold text-black">R$ {costPerGram.toFixed(2)}</p>
                         <p className="text-[9px] text-slate-300 font-bold uppercase tracking-tighter">por grama</p>
                      </div>
 
