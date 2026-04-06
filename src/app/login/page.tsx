@@ -26,7 +26,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         // Redireciona para o dashboard principal (admin)
-        router.push("/");
+        router.push("/catalog");
         router.refresh();
       } else {
         setError("Usuário ou senha inválidos. Tente novamente.");
