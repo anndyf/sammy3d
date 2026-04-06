@@ -143,9 +143,9 @@ export default function CatalogPage() {
 
   const selectedMaterial = materials.find(m => m.id === materialId);
   const costPerGram = selectedMaterial ? 
-    (selectedMaterial.unitType.toLowerCase() === 'kg' ? 
-      selectedMaterial.costPerUnit / 1000 : 
-      selectedMaterial.costPerUnit / selectedMaterial.totalAmount) 
+    (selectedMaterial.unitType?.toLowerCase() === 'kg' ? 
+      selectedMaterial.costPerUnit / (selectedMaterial.totalAmount * 1000) : 
+      selectedMaterial.costPerUnit / (selectedMaterial.totalAmount || 1)) 
     : 0;
   
   const estimatedProdCost = (parseFloat(weightGrams) || 0) * costPerGram;
@@ -519,7 +519,7 @@ export default function CatalogPage() {
                                 viewingProduct.calculatedCost || 
                                 (viewingProduct.weightGrams * (
                                   (viewingProduct.material?.costPerUnit || 0) / 
-                                  ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? 1000 : viewingProduct.material?.totalAmount) || 1)
+                                  ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? viewingProduct.material?.totalAmount * 1000 : viewingProduct.material?.totalAmount) || 1)
                                 ))
                               ).toFixed(2)}
                            </span>
@@ -536,7 +536,7 @@ export default function CatalogPage() {
                                   viewingProduct.calculatedCost || 
                                   (viewingProduct.weightGrams * (
                                     (viewingProduct.material?.costPerUnit || 0) / 
-                                    ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? 1000 : viewingProduct.material?.totalAmount) || 1)
+                                    ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? viewingProduct.material?.totalAmount * 1000 : viewingProduct.material?.totalAmount) || 1)
                                   ))
                                 )
                               ).toFixed(2)}
