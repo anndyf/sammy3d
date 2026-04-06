@@ -45,8 +45,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(newMaterial, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("MATERIAL POST FAIL:", error);
-    return NextResponse.json({ error: 'Erro ao cadastrar material' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Erro ao cadastrar material', 
+      details: error?.message || 'Erro desconhecido'
+    }, { status: 500 });
   }
 }

@@ -71,9 +71,12 @@ export default function StockPage() {
       } else {
         const err = await res.json();
         console.error("Erro ao salvar:", err);
-        alert("Erro ao cadastrar. Verifique os campos e tente novamente.");
+        alert(`Erro ao cadastrar: ${err.details || 'Verifique os campos e tente novamente.'}`);
       }
-    } catch (e) { console.error(e); }
+    } catch (e: any) { 
+      console.error(e); 
+      alert("Falha crítica na rede ou no servidor. Tente novamente mais tarde.");
+    }
   };
 
   const totalStockValue = materials.reduce((acc, m) => acc + m.costPerUnit, 0);
