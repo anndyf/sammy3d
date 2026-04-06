@@ -8,7 +8,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     const { status } = await req.json();
     
     await prisma.$executeRawUnsafe(
-      `UPDATE Quote SET status = ? WHERE id = ?`,
+      `UPDATE "Quote" SET status = $1 WHERE id = $2`,
       status, id
     );
     
@@ -25,7 +25,7 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     const { id } = await context.params;
     
     await prisma.$executeRawUnsafe(
-      `DELETE FROM Quote WHERE id = ?`,
+      `DELETE FROM "Quote" WHERE id = $1`,
       id
     );
     

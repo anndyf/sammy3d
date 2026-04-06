@@ -121,11 +121,11 @@ export async function PUT(request: Request, context: any) {
     
     await prisma.$executeRawUnsafe(
       `UPDATE "Product" 
-       SET name = ?, description = ?, productionTime = ?, weightGrams = ?, 
-           additionalCost = ?, materialId = ?, calculatedCost = ?, 
-           sellingPrice = ?, stockQuantity = ?, category = ?, subcategory = ?, shopeeUrl = ?, 
-           updatedAt = ? ${imageUrl ? ', imageUrl = ?' : ''}
-       WHERE id = ?`,
+       SET name = $1, description = $2, "productionTime" = $3, "weightGrams" = $4, 
+           "additionalCost" = $5, "materialId" = $6, "calculatedCost" = $7, 
+           "sellingPrice" = $8, "stockQuantity" = $9, category = $10, subcategory = $11, "shopeeUrl" = $12, 
+           "updatedAt" = $13 ${imageUrl ? ', "imageUrl" = $14' : ''}
+       WHERE id = ${imageUrl ? '$15' : '$14'}`,
       name, description || null, Number(productionTime), Number(weightGrams),
       Number(additionalCost || 0), materialId, Number(calculatedCost), 
       Number(sellingPrice), newQty, category || "Chaveiros", subcategory || null, shopeeUrl || null,
