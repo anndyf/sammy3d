@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // PATCH: Atualizar status de uma solicitação (Marcar como respondida)
-export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = await context.params;
-    const { status } = await req.json();
+    const { id } = await params;
+    const { status } = await request.json();
     
     await prisma.$executeRawUnsafe(
       `UPDATE "Quote" SET status = $1 WHERE id = $2`,
@@ -20,9 +23,12 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
 }
 
 // DELETE: Excluir uma solicitação permanentemente
-export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
     
     await prisma.$executeRawUnsafe(
       `DELETE FROM "Quote" WHERE id = $1`,
