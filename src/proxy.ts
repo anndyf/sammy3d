@@ -4,8 +4,9 @@ import type { NextRequest } from 'next/server';
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Public routes (Store, Login API, and the Login page itself)
+  // Public routes (Store, Home, Login API, and the Login page itself)
   const isPublicRoute = 
+    pathname === '/' ||
     pathname.startsWith('/store') || 
     pathname.startsWith('/api/auth') || 
     pathname === '/login';
