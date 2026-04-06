@@ -28,6 +28,7 @@ export default function CatalogPage() {
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
   const [shopeeUrl, setShopeeUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
   const defaultTaxonomy = ["ARTICULADOS", "SENSORIAIS", "CHAVEIROS", "FIDGETS", "PLACAS", "FLEXIVEIS", "MULTICOLOR", "PINTADO", "INDUSTRIAL"];
   const [availableCategories, setAvailableCategories] = useState(defaultTaxonomy);
@@ -102,6 +103,7 @@ export default function CatalogPage() {
     setHours(Math.floor(totalMinutes / 60).toString());
     setMinutes((totalMinutes % 60).toString());
     setShopeeUrl(p.shopeeUrl || "");
+    setImageUrl(p.imageUrl || "");
 
     // Garantir que a categoria do produto editado esteja no select, se for customizada
     if (p.category && !availableCategories.includes(p.category)) {
@@ -129,13 +131,14 @@ export default function CatalogPage() {
           weightGrams: parseFloat(weightGrams),
           materialId,
           productionTime: totalTimeMinutes,
-          shopeeUrl
+          shopeeUrl,
+          imageUrl
         })
       });
       if (res.ok) {
         setIsAddingMode(false); setEditingProduct(null);
         setName(""); setCategory(""); setSubcategory(""); setSku(""); setDescription(""); setSellingPrice(""); setStockQuantity("");
-        setWeightGrams(""); setMaterialId(""); setHours(""); setMinutes(""); setShopeeUrl("");
+        setWeightGrams(""); setMaterialId(""); setHours(""); setMinutes(""); setShopeeUrl(""); setImageUrl("");
         fetchData();
       }
     } catch (e) { console.error(e); }
@@ -430,7 +433,7 @@ export default function CatalogPage() {
                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                    <div className="space-y-2">
                       <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest pl-1">Qtd Estoque (UN)</label>
                       <input type="number" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-xl px-4 py-4 text-[14px] outline-none" value={stockQuantity} onChange={e=>setStockQuantity(e.target.value)} />
@@ -440,6 +443,13 @@ export default function CatalogPage() {
                       <div className="relative group">
                          <ShoppingCart className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-orange-400 opacity-30 group-focus-within:opacity-100 transition-opacity" />
                          <input type="url" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-xl pl-11 pr-4 py-4 text-[14px] outline-none focus:bg-white focus:border-orange-500/30 transition-all font-mono" value={shopeeUrl} onChange={e=>setShopeeUrl(e.target.value)} placeholder="https://shopee.com.br/..." />
+                      </div>
+                   </div>
+                   <div className="space-y-2">
+                      <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest pl-1">URL da Imagem do Produto</label>
+                      <div className="relative group">
+                         <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400 opacity-30 group-focus-within:opacity-100 transition-opacity" />
+                         <input type="url" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-xl pl-11 pr-4 py-4 text-[14px] outline-none focus:bg-white focus:border-blue-500/30 transition-all font-mono" value={imageUrl} onChange={e=>setImageUrl(e.target.value)} placeholder="https://imgur.com/..." />
                       </div>
                    </div>
                 </div>
