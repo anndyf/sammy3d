@@ -15,6 +15,7 @@ export default function CatalogPage() {
   const [isAddingMode, setIsAddingMode] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -134,7 +135,7 @@ export default function CatalogPage() {
     const method = editingProduct ? "PUT" : "POST";
     const url = editingProduct ? `/api/products/${editingProduct.id}` : "/api/products";
     const totalTimeMinutes = (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0);
-    
+    setSaving(true);
     try {
       const res = await fetch(url, {
         method,
@@ -150,13 +151,24 @@ export default function CatalogPage() {
           imageUrl
         })
       });
+      
+      const result = await res.json();
+
       if (res.ok) {
+        alert("Design salvo com sucesso! ✅");
         setIsAddingMode(false); setEditingProduct(null);
         setName(""); setCategory(""); setSubcategory(""); setSku(""); setDescription(""); setSellingPrice(""); setStockQuantity("");
         setWeightGrams(""); setMaterialId(""); setHours(""); setMinutes(""); setShopeeUrl(""); setImageUrl("");
         fetchData();
+      } else {
+        alert("Erro ao salvar: " + (result.error || "Erro desconhecido") + "\nDetalhes: " + (result.details || "Consulte o suporte"));
       }
-    } catch (e) { console.error(e); }
+    } catch (e: any) { 
+      console.error(e);
+      alert("Falha crítica na conexão: " + e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const selectedMaterial = materials.find(m => m.id === materialId);
@@ -487,8 +499,9 @@ export default function CatalogPage() {
                    >
                      Cancelar
                    </button>
-                   <button type="submit" className="bg-black text-white px-12 h-14 rounded-xl text-[14px] font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95 flex items-center gap-3">
-                      {editingProduct ? 'Atualizar Ativo' : 'Autorizar Ativo'}
+                   <button type="submit" disabled={saving} className={cn("bg-black text-white px-12 h-14 rounded-xl text-[14px] font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95 flex items-center gap-3", saving && "opacity-50 cursor-not-allowed")}>
+                      {saving ? <Sparkles className="h-4 w-4 animate-spin" /> : null}
+                      {saving ? 'Processando Matriz...' : (editingProduct ? 'Atualizar Ativo' : 'Autorizar Ativo')}
                    </button>
                 </div>
              </form>

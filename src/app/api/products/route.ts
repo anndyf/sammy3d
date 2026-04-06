@@ -71,32 +71,39 @@ export async function POST(request: Request) {
     const sku = `${categoryPrefix}-${namePart}-${randomPart}`;
 
     // 3. Calcula o custo base real (Material + custos extras)
-    let costPerGram = material.costPerUnit / material.totalAmount;
-    if (material.unitType === 'kg' || material.unitType === 'l') {
-      costPerGram = costPerGram / 1000;
-    }
+    const divider = material.unitType === 'kg' ? material.totalAmount * 1000 : material.totalAmount;
+    const costPerGram = material.costPerUnit / divider;
     const calculatedCost = (Number(weightGrams) * costPerGram) + (Number(additionalCost) || 0);
 
-    // 4. Persistência via SQL (Bypass Cache Prisma)
-    const id = `prod_${Date.now()}`;
-    const now = new Date().toISOString();
-    
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO "Product" (id, name, description, imageUrl, productionTime, weightGrams, additionalCost, materialId, category, subcategory, sku, shopeeUrl, calculatedCost, sellingPrice, stockQuantity, createdAt, updatedAt) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      id, name, description || null, imageUrl || null, Number(productionTime), Number(weightGrams), 
-      Number(additionalCost || 0), materialId, category || "Geral", subcategory || null, sku, shopeeUrl || null,
-      Number(calculatedCost), Number(sellingPrice), Number(stockQuantity || 0), now, now
-    );
+    // 4. Persistência via Prisma (Compatível com PostgreSQL)
+    const newProduct = await prisma.product.create({
+      data: {
+        name,
+        description: description || null,
+        imageUrl: imageUrl || null,
+        productionTime: Number(productionTime),
+        weightGrams: Number(weightGrams),
+        additionalCost: Number(additionalCost || 0),
+        materialId,
+        category: category || "Geral",
+        subcategory: subcategory || null,
+        sku: body.sku || sku, // Usa o SKU do front se houver, ou o gerado
+        shopeeUrl: shopeeUrl || null,
+        calculatedCost: Number(calculatedCost),
+        sellingPrice: Number(sellingPrice),
+        stockQuantity: Number(stockQuantity || 0)
+      }
+    });
 
-    const newProduct = { id, name, sku, category: category || "Geral" };
-
-    // 5. Baixa Automática de Material
+    // 5. Baixa Automática de Material (Se houver estoque inicial)
     const initialQty = Number(stockQuantity || 0);
     if (initialQty > 0) {
       let deduction = Number(weightGrams) * initialQty;
       if (material.unitType === 'kg' || material.unitType === 'l') deduction = deduction / 1000;
-      await prisma.material.update({ where: { id: materialId }, data: { remainingAmount: { decrement: deduction } } });
+      await prisma.material.update({ 
+        where: { id: materialId }, 
+        data: { remainingAmount: { decrement: deduction } } 
+      });
     }
 
     return NextResponse.json(newProduct, { status: 201 });
