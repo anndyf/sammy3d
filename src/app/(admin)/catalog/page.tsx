@@ -148,7 +148,8 @@ export default function CatalogPage() {
       selectedMaterial.costPerUnit / (selectedMaterial.totalAmount || 1)) 
     : 0;
   
-  const estimatedProdCost = (parseFloat(weightGrams) || 0) * costPerGram;
+  const timeCost = ((parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0)) / 60 * 0.40;
+  const estimatedProdCost = ((parseFloat(weightGrams) || 0) * costPerGram) + timeCost;
   const suggestedPrice = estimatedProdCost * 3.5;
   const grossProfit = parseFloat(sellingPrice || "0") - estimatedProdCost;
   const marginPercentage = parseFloat(sellingPrice) > 0 ? (grossProfit / parseFloat(sellingPrice)) * 100 : 0;
@@ -517,10 +518,10 @@ export default function CatalogPage() {
                            <span className="font-mono font-bold text-black">
                               R$ {(
                                 viewingProduct.calculatedCost || 
-                                (viewingProduct.weightGrams * (
+                                ((viewingProduct.weightGrams * (
                                   (viewingProduct.material?.costPerUnit || 0) / 
                                   ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? viewingProduct.material?.totalAmount * 1000 : viewingProduct.material?.totalAmount) || 1)
-                                ))
+                                )) + (viewingProduct.productionTime / 60 * 0.40))
                               ).toFixed(2)}
                            </span>
                         </div>
@@ -534,10 +535,10 @@ export default function CatalogPage() {
                               R$ {(
                                 viewingProduct.sellingPrice - (
                                   viewingProduct.calculatedCost || 
-                                  (viewingProduct.weightGrams * (
+                                  ((viewingProduct.weightGrams * (
                                     (viewingProduct.material?.costPerUnit || 0) / 
                                     ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? viewingProduct.material?.totalAmount * 1000 : viewingProduct.material?.totalAmount) || 1)
-                                  ))
+                                  )) + (viewingProduct.productionTime / 60 * 0.40))
                                 )
                               ).toFixed(2)}
                            </span>
