@@ -6,7 +6,6 @@ export function proxy(request: NextRequest) {
   
   // Public routes (Store, Home, Login API, and the Login page itself)
   const isPublicRoute = 
-    pathname === '/' ||
     pathname.startsWith('/store') || 
     pathname.startsWith('/api/auth') || 
     pathname === '/login';
@@ -20,7 +19,7 @@ export function proxy(request: NextRequest) {
 
   // Redirect to dashboard if logged in and trying to access /login
   if (pathname === '/login' && authToken) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/catalog', request.url));
   }
 
   return NextResponse.next();
