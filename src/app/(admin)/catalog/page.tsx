@@ -114,6 +114,21 @@ export default function CatalogPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("A imagem é muito pesada! Tente uma foto menor que 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const method = editingProduct ? "PUT" : "POST";
@@ -446,10 +461,16 @@ export default function CatalogPage() {
                       </div>
                    </div>
                    <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest pl-1">URL da Imagem do Produto</label>
-                      <div className="relative group">
-                         <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400 opacity-30 group-focus-within:opacity-100 transition-opacity" />
-                         <input type="url" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-xl pl-11 pr-4 py-4 text-[14px] outline-none focus:bg-white focus:border-blue-500/30 transition-all font-mono" value={imageUrl} onChange={e=>setImageUrl(e.target.value)} placeholder="https://imgur.com/..." />
+                      <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest pl-1">Foto do Produto</label>
+                      <div className="flex gap-2">
+                         <div className="relative flex-1 group">
+                            <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400 opacity-30 group-focus-within:opacity-100 transition-opacity" />
+                            <input type="text" className="w-full bg-[#FAFAFA] border border-slate-100 rounded-xl pl-11 pr-4 py-4 text-[14px] outline-none focus:bg-white focus:border-blue-500/30 transition-all font-mono" value={imageUrl.startsWith('data:') ? 'IMAGEM CARREGADA' : imageUrl} onChange={e=>setImageUrl(e.target.value)} placeholder="URL ou Upload..." />
+                         </div>
+                         <label className="p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-black hover:text-white transition-all cursor-pointer flex items-center justify-center">
+                            <Plus className="h-4 w-4" />
+                            <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                         </label>
                       </div>
                    </div>
                 </div>
