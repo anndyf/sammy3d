@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { Settings, Shield, Globe, ShoppingCart, MessageCircle, Save, Key, Bell, CreditCard, ExternalLink, Command, Smartphone, Zap, Info, ChevronRight, Lock, Eye, EyeOff } from "lucide-react";
+import { Settings, Shield, Globe, ShoppingCart, MessageCircle, Save, Key, Bell, CreditCard, ExternalLink, Command, Smartphone, Zap, Info, ChevronRight, Lock, Eye, EyeOff, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
