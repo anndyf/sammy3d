@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma';
 
 export class MaterialService {
+  /**
+   * Lista materiais com paginação.
+   */
   static async list(page: number = 1, limit: number = 100) {
     const skip = (Math.max(1, page) - 1) * limit;
 
@@ -10,17 +13,18 @@ export class MaterialService {
         take: limit,
         skip,
       }),
-      prisma.count('material') // Note: Prisma.count('material') is hypothetical, I'll use the specific model
+      prisma.material.count()
     ]);
-    // Correction:
-    const count = await prisma.material.count();
 
     return {
       data,
-      meta: { total: count, page, limit, totalPages: Math.ceil(count / limit) }
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) }
     };
   }
 
+  /**
+   * Cria um novo material e opcionalmente registra despesa.
+   */
   static async create(body: any) {
     const { name, type, color, costPerUnit, totalAmount, unitType, recordExpense, amountPaid } = body;
 
