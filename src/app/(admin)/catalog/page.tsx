@@ -128,20 +128,69 @@ export default function CatalogPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        alert("A imagem é muito pesada! Tente uma foto menor que 2MB.");
-        return;
-      }
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageUrl(reader.result as string);
+        const img = new Image();
+        img.onload = () => {
+          // Definir dimensão máxima (mantém proporção)
+          const MAX_SIZE = 800;
+          let { width, height } = img;
+
+          if (width > height) {
+            if (width > MAX_SIZE) { height = Math.round((height * MAX_SIZE) / width); width = MAX_SIZE; }
+          } else {
+            if (height > MAX_SIZE) { width = Math.round((width * MAX_SIZE) / height); height = MAX_SIZE; }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return reject(new Error('Canvas não suportado'));
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Exportar como JPEG com qualidade 80%
+          const compressed = canvas.toDataURL('image/jpeg', 0.80);
+          resolve(compressed);
+        };
+        img.onerror = reject;
+        img.src = reader.result as string;
       };
+      reader.onerror = reject;
       reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Limite generoso — a compressão vai reduzir bastante
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Imagem muito grande! Limite máximo: 10MB.");
+      return;
+    }
+
+    try {
+      setStatus({ type: 'loading', message: '🗜️ Comprimindo imagem...' });
+      const compressed = await compressImage(file);
+
+      // Mostrar comparativo no console para debug
+      const originalKB = Math.round(file.size / 1024);
+      const compressedKB = Math.round((compressed.length * 3) / 4 / 1024);
+      console.log(`📦 Imagem: ${originalKB}KB → ${compressedKB}KB (${Math.round((1 - compressedKB / originalKB) * 100)}% menor)`);
+
+      setImageUrl(compressed);
+      setStatus({ type: '', message: '' });
+    } catch (err) {
+      console.error('Erro ao comprimir imagem:', err);
+      setStatus({ type: 'error', message: '❌ Erro ao processar imagem.' });
     }
   };
+
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
