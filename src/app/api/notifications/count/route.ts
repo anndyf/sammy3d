@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { apiError } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    // Uso de SQL direto compatível com PostgreSQL (Supabase)
-    const result: any[] = await prisma.$queryRawUnsafe(`SELECT COUNT(*)::int as count FROM "Quote" WHERE status = 'PENDING'`);
-    const count = result[0]?.count || 0;
+    const count = await prisma.quote.count({
+      where: { status: 'PENDING' },
+    });
 
     return NextResponse.json({ count });
   } catch (error: any) {
-    console.error("DEBUG NOTIFICATION ERROR:", error);
-    return NextResponse.json({ count: 0, error: error.message }, { status: 500 });
+    console.error("Notifications Count Error:", error);
+    return apiError('Erro ao buscar notificações.', 500, error.message);
   }
 }

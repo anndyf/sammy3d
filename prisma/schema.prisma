@@ -1,6 +1,3 @@
-// Prisma Schema 
-// Convertido para SQLite para funcionamento 100% autônomo.
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,99 +7,91 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 0. Orçamentos (Público)
 model Quote {
-  id            String   @id @default(cuid())
-  clientName    String
-  clientContact String
-  projectName   String
-  purpose       String?
-  dimensions    String?
+  id             String   @id @default(cuid())
+  clientName     String
+  clientContact  String
+  projectName    String
+  purpose        String?
+  dimensions     String?
   preferredColor String?
-  description   String?
-  fileUrl       String?
-  externalLink  String?
-  status        String   @default("PENDING")
-  createdAt     DateTime @default(now())
+  description    String?
+  fileUrl        String?
+  externalLink   String?
+  status         String   @default("PENDING")
+  createdAt      DateTime @default(now())
 }
 
-// 1. Materiais de Produção (Filamento, Resina, etc)
 model Material {
-  id              String      @id @default(cuid())
-  name            String      
-  type            String      // FILAMENT, RESIN, ACCESSORY
-  color           String?
-  costPerUnit     Float       
-  totalAmount     Float       
-  remainingAmount Float       
-  unitType        String      // g, ml, un
-  syncTest        String?     @default("ok")
-  products        Product[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-}
-
-// 2. Catálogo de Peças / Modelos 3D
-model Product {
-  id              String      @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
-  description     String?
-  imageUrl        String?
-  productionTime  Int         
-  weightGrams     Float       
-  additionalCost  Float       @default(0) 
-  materialId      String
-  material        Material    @relation(fields: [materialId], references: [id])
-  category        String      @default("Geral")
-  subcategory     String?
-  sku             String?     @unique
-  shopeeUrl       String?
-  calculatedCost  Float       
-  sellingPrice    Float       
-  stockQuantity   Int         @default(0)
-  orderItems      OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  type            String
+  color           String?
+  costPerUnit     Float
+  totalAmount     Float
+  remainingAmount Float
+  unitType        String
+  syncTest        String?   @default("ok")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  products        Product[]
 }
 
-// 3. Gestão de Pedidos e Orçamentos
+model Product {
+  id             String      @id @default(cuid())
+  name           String
+  description    String?
+  imageUrl       String?
+  productionTime Int
+  weightGrams    Float
+  additionalCost Float       @default(0)
+  materialId     String
+  category       String      @default("Geral")
+  subcategory    String?
+  sku            String?     @unique
+  shopeeUrl      String?
+  calculatedCost Float
+  sellingPrice   Float
+  stockQuantity  Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  orderItems     OrderItem[]
+  material       Material    @relation(fields: [materialId], references: [id])
+}
+
 model Order {
   id              String      @id @default(cuid())
   customerName    String
   customerContact String?
-  status          String      @default("PENDING") // PENDING, PRODUCING, FINISHED, DELIVERED, CANCELLED
-  type            String      @default("ORDER") // ORDER ou QUOTE
-  items           OrderItem[]
+  status          String      @default("PENDING")
+  type            String      @default("ORDER")
   totalAmount     Float
   discountAmount  Float       @default(0)
   deadline        DateTime?
-
-  notes           String?     // Notas técnicas de produção
-  weightGrams     Float?      // Peso real para baixa de estoque (Especial)
-  materialId      String?     // Material usado para baixa de estoque (Especial)
-  paymentStatus   String      @default("UNPAID") // PAID, UNPAID, PARTIAL
-
+  notes           String?
+  weightGrams     Float?
+  materialId      String?
+  paymentStatus   String      @default("UNPAID")
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
 }
-
 
 model OrderItem {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
-  price     Float    
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
 }
 
-// 4. Financeiro (Fluxo de Caixa)
 model Transaction {
-  id          String      @id @default(cuid())
-  type        String      // INCOME, EXPENSE
-  category    String      
+  id          String   @id @default(cuid())
+  type        String
+  category    String
   amount      Float
   description String?
-  date        DateTime    @default(now())
+  date        DateTime @default(now())
 }

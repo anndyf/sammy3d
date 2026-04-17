@@ -1,49 +1,61 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { apiError, requireFields } from "@/lib/api";
 
-// GET: Lista todas as solicitações (Admin) - BYPASSING ORM
-export async function GET() {
-  const prisma = new PrismaClient();
+// GET: Lista todas as solicitações (Admin) com paginação
+export async function GET(request: Request) {
   try {
-    const requests = await prisma.$queryRawUnsafe(`SELECT * FROM "Quote" ORDER BY "createdAt" DESC`);
-    return NextResponse.json(requests);
+    const { searchParams } = new URL(request.url);
+    const page  = parseInt(searchParams.get('page')  || '1',  10);
+    const limit = parseInt(searchParams.get('limit') || '50', 10);
+    const skip  = (Math.max(1, page) - 1) * limit;
+
+    const [quotes, total] = await Promise.all([
+      prisma.quote.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip,
+      }),
+      prisma.quote.count(),
+    ]);
+
+    return NextResponse.json({
+      data: quotes,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    });
   } catch (error: any) {
     console.error("GET Quotes Error:", error);
-    return NextResponse.json({ error: "Erro ao buscar solicitações.", details: error.message }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
+    return apiError("Erro ao buscar solicitações.", 500, error.message);
   }
 }
 
-// POST: Cliente envia uma solicitação pública - BYPASSING ORM
+// POST: Cliente envia uma solicitação pública
 export async function POST(req: Request) {
-  const prisma = new PrismaClient();
   try {
     const body = await req.json();
     const { clientName, clientContact, projectName, description, fileUrl, purpose, dimensions, preferredColor, externalLink } = body;
 
-    if (!clientName || !clientContact || !projectName) {
-      return NextResponse.json({ error: "Preencha os campos obrigatórios." }, { status: 400 });
-    }
+    const validationError = requireFields({ clientName, clientContact, projectName });
+    if (validationError) return validationError;
 
-    const id = `req_${Date.now()}`;
-    const now = new Date().toISOString();
+    const quote = await prisma.quote.create({
+      data: {
+        clientName:     String(clientName),
+        clientContact:  String(clientContact),
+        projectName:    String(projectName),
+        purpose:        purpose        ? String(purpose)         : null,
+        dimensions:     dimensions     ? String(dimensions)      : null,
+        preferredColor: preferredColor ? String(preferredColor)  : null,
+        description:    description    ? String(description)     : null,
+        fileUrl:        fileUrl        ? String(fileUrl)         : null,
+        externalLink:   externalLink   ? String(externalLink)    : null,
+        status:         'PENDING',
+      },
+    });
 
-    // Bypass Prisma Model Cache: SQL DIRETO (POSTGRES SYNTAX)
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO "Quote" (id, "clientName", "clientContact", "projectName", purpose, dimensions, "preferredColor", description, "fileUrl", "externalLink", status, "createdAt") 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'PENDING', $11)`,
-      id, clientName, clientContact, projectName, purpose || '', dimensions || '', preferredColor || '', description || '', fileUrl || '', externalLink || '', now
-    );
-
-    return NextResponse.json({ success: true, id }, { status: 201 });
+    return NextResponse.json({ success: true, id: quote.id }, { status: 201 });
   } catch (error: any) {
-    console.error("SQL FALLBACK FAIL:", error);
-    return NextResponse.json({ 
-      error: "Erro de Persistência Direta.", 
-      details: error.message
-    }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
+    console.error("POST Quote Error:", error);
+    return apiError("Erro ao criar solicitação.", 500, error.message);
   }
 }

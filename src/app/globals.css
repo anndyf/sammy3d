@@ -6,71 +6,79 @@
 }
 
 :root {
-  --vercel-bg: #FFFFFF;
-  --vercel-text-main: #000000;
-  --vercel-text-muted: #666666;
-  --vercel-border: #EAEAEA;
-  --vercel-accent: #0070F3;     /* Vercel Blue */
-  --vercel-accent-bg: #E1F4FF;
+  --vercel-bg: #000000;
+  --vercel-text-main: #EDEDED;
+  --vercel-text-muted: #888888;
+  --vercel-border: #333333;
+  --vercel-accent: #0070F3;     /* Vercel Blue - pops beautifully on dark */
+  --vercel-accent-bg: rgba(0, 112, 243, 0.1);
   
-  --sammy-cyan: #0070F3;        /* Unified with Vercel Blue for clarity */
+  --sammy-cyan: #0070F3;
 }
 
 body {
   background-color: var(--vercel-bg);
+  background-image: 
+    radial-gradient(circle at 50% -20%, rgba(0, 112, 243, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(0, 112, 243, 0.05) 0%, transparent 30%);
+  background-attachment: fixed;
   color: var(--vercel-text-main);
   font-family: 'Inter', sans-serif;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
-/* VERCEL CORE COMPONENTS (UTILITIES) */
+/* VERCEL DARK CORE COMPONENTS */
 .maglo-card {
-  background: white;
-  border-radius: 8px; /* Standard Vercel Radius */
+  background: rgba(17, 17, 17, 0.8);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
   border: 1px solid var(--vercel-border);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .maglo-card:hover {
-  border-color: black;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08); /* Project Hover Shadow */
+  border-color: var(--vercel-accent);
+  box-shadow: 0 0 20px rgba(0, 112, 243, 0.1);
+  transform: translateY(-2px);
 }
 
 .maglo-btn-primary {
-  @apply bg-black text-white px-4 py-2 rounded-lg text-[13px] font-semibold transition-all flex items-center justify-center gap-2;
+  @apply bg-white text-black px-4 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-2;
 }
 
 .maglo-btn-primary:hover {
-  @apply bg-slate-800 shadow-sm opacity-90;
+  @apply bg-slate-200 scale-[1.02] shadow-[0_0_15px_rgba(255,255,255,0.3)];
 }
 
 .maglo-subtitle {
-  @apply text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1;
+  @apply text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1;
 }
 
 .maglo-title {
-  @apply text-3xl font-bold tracking-tight text-black mb-1;
+  @apply text-3xl font-bold tracking-tight text-white mb-1;
 }
 
-/* CUSTOM SCROLLBAR (VERCEL STYLE) */
+/* CUSTOM SCROLLBAR (DARK STYLE) */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #FAFAFA;
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #EAEAEA;
+  background: #333333;
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #666666;
+  background: #444444;
 }
 
 @media print {
   body {
-    background-color: white !important;
+    background: white !important;
+    color: black !important;
   }
 }

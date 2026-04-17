@@ -88,7 +88,7 @@ export async function PUT(
     const body = await request.json();
     const { 
       name, description, productionTime, weightGrams, additionalCost, 
-      materialId, sellingPrice, stockQuantity, category, subcategory, shopeeUrl, imageUrl 
+      materialId, sellingPrice, stockQuantity, category, subcategory, sku, shopeeUrl, imageUrl 
     } = body;
 
     // 1. Busca produto e material para auditoria de estoque
@@ -120,25 +120,30 @@ export async function PUT(
     }
     const calculatedCost = (Number(weightGrams) * costPerGram) + Number(additionalCost || 0);
 
-    // 4. Atualiza o banco via SQL Direto para evitar erro 'Unknown argument subcategory/shopeeUrl' do Prisma Cache
-    const now = new Date().toISOString();
-    
-    await prisma.$executeRawUnsafe(
-      `UPDATE "Product" 
-       SET name = $1, description = $2, "productionTime" = $3, "weightGrams" = $4, 
-           "additionalCost" = $5, "materialId" = $6, "calculatedCost" = $7, 
-           "sellingPrice" = $8, "stockQuantity" = $9, category = $10, subcategory = $11, "shopeeUrl" = $12, 
-           "updatedAt" = $13 ${imageUrl ? ', "imageUrl" = $14' : ''}
-       WHERE id = ${imageUrl ? '$15' : '$14'}`,
-      name, description || null, Number(productionTime), Number(weightGrams),
-      Number(additionalCost || 0), materialId, Number(calculatedCost), 
-      Number(sellingPrice), newQty, category || "Chaveiros", subcategory || null, shopeeUrl || null,
-      now, ...(imageUrl ? [imageUrl, id] : [id])
-    );
+    // 4. Atualiza o banco
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data: {
+        name,
+        description: description || null,
+        productionTime: Number(productionTime),
+        weightGrams: Number(weightGrams),
+        additionalCost: Number(additionalCost || 0),
+        materialId,
+        calculatedCost: Number(calculatedCost),
+        sellingPrice: Number(sellingPrice),
+        stockQuantity: newQty,
+        category: category || "Chaveiros",
+        subcategory: subcategory || null,
+        sku: sku || undefined,
+        shopeeUrl: shopeeUrl || null,
+        ...(imageUrl !== undefined && { imageUrl: imageUrl || null })
+      }
+    });
 
-    return NextResponse.json({ id, name, status: 'updated' }, { status: 200 });
+    return NextResponse.json(updatedProduct, { status: 200 });
   } catch (error: any) {
-    console.error("PRODUCT PUT SQL FAIL:", error);
-    return NextResponse.json({ error: 'Erro ao editar produto via SQL', details: error.message }, { status: 500 });
+    console.error("PRODUCT PUT ERRO:", error);
+    return NextResponse.json({ error: 'Erro ao editar produto', details: error.message }, { status: 500 });
   }
 }

@@ -1,62 +1,57 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { apiError } from '@/lib/api';
 
 export async function GET() {
   try {
-    const materialsCount = await prisma.material.count();
-    const productsCount = await prisma.product.count();
-    
-    // Balance and metrics
-    const transactions = await prisma.transaction.findMany();
-    
-    // Novo Cálculo: Total em Estoque Pronta Entrega
-    const products = await prisma.product.findMany();
-    const stockQuantityTotal = products.reduce((acc, curr) => acc + curr.stockQuantity, 0);
+    // Consultas paralelas para máxima performance
+    const [
+      materialsCount,
+      productsCount,
+      products,
+      orderItems,
+      transactions,
+      recentActivity,
+    ] = await Promise.all([
+      prisma.material.count(),
+      prisma.product.count(),
+      prisma.product.findMany({ select: { stockQuantity: true } }),
+      prisma.orderItem.findMany({ include: { product: { select: { name: true } } } }),
+      prisma.transaction.findMany({ select: { type: true, amount: true } }),
+      prisma.transaction.findMany({ take: 7, orderBy: { date: 'desc' } }),
+    ]);
 
-    // Novo Algoritmo: Peça Mais Vendida (Análise Real de Itens de Pedido)
-    const orderItems = await prisma.orderItem.findMany({
-      include: { product: true }
-    });
+    // Total em estoque
+    const stockQuantityTotal = products.reduce((acc, p) => acc + p.stockQuantity, 0);
 
+    // Peça mais vendida
     const salesStats: Record<string, number> = {};
-    orderItems.forEach(item => {
+    orderItems.forEach((item) => {
       const pName = item.product?.name || "Desconhecido";
       salesStats[pName] = (salesStats[pName] || 0) + item.quantity;
     });
+    const topSeller = Object.entries(salesStats)
+      .sort(([, a], [, b]) => b - a)[0]?.[0] || "Nenhuma Venda";
 
-    let topSeller = "Nenhuma Venda";
-    let maxQty = 0;
-    Object.entries(salesStats).forEach(([name, qty]) => {
-      if (qty > maxQty) {
-        maxQty = qty;
-        topSeller = name;
-      }
-    });
-
-    const totalIncome = transactions.filter(t => t.type === 'INCOME').reduce((acc, curr) => acc + curr.amount, 0);
-    const totalExpense = transactions.filter(t => t.type === 'EXPENSE').reduce((acc, curr) => acc + curr.amount, 0);
-    const balance = totalIncome - totalExpense;
-
-    // Recent Activity (Finance)
-    const recentActivity = await prisma.transaction.findMany({
-      take: 7,
-      orderBy: { date: 'desc' }
-    });
+    // Balanço financeiro
+    const totalIncome  = transactions.filter(t => t.type === 'INCOME') .reduce((a, t) => a + t.amount, 0);
+    const totalExpense = transactions.filter(t => t.type === 'EXPENSE').reduce((a, t) => a + t.amount, 0);
+    const balance      = totalIncome - totalExpense;
 
     return NextResponse.json({
       metrics: {
-        materialsTotal: materialsCount,
-        productsTotal: productsCount,
-        totalStock: stockQuantityTotal,
+        materialsTotal:    materialsCount,
+        productsTotal:     productsCount,
+        totalStock:        stockQuantityTotal,
         topSellingProduct: topSeller,
-        // Mantendo originais caso volte a precisar
-        balance: balance,
-        totalIncome: totalIncome,
-        totalExpense: totalExpense
+        balance,
+        totalIncome,
+        totalExpense,
       },
-      recentActivity
+      recentActivity,
     });
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro ao carregar o dashboard' }, { status: 500 });
+  } catch (error: any) {
+    console.error("Dashboard GET Error:", error);
+    return apiError('Erro ao carregar o dashboard.', 500, error.message);
   }
 }

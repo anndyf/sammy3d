@@ -1,121 +1,154 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const orders = await prisma.order.findMany({
-      include: {
-        items: {
-          include: {
-            product: true
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '50', 10);
+    const skip = (Math.max(1, page) - 1) * limit;
+
+    const [orders, totalOrders] = await Promise.all([
+      prisma.order.findMany({
+        include: {
+          items: {
+            include: {
+              product: true
+            }
           }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: skip
+      }),
+      prisma.order.count()
+    ]);
+
+    return NextResponse.json({
+      data: orders,
+      meta: {
+        total: totalOrders,
+        page,
+        limit,
+        totalPages: Math.ceil(totalOrders / limit)
+      }
     });
-    return NextResponse.json(orders);
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao buscar pedidos' }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { customerName, customerContact, status, type, totalAmount, discountAmount, deadline, notes, weightGrams, materialId, paymentStatus, items } = body;
-
-    const id = `ord_${Date.now()}`;
-    const now = new Date().toISOString();
-    const deadlineDate = deadline ? new Date(deadline).toISOString() : null;
-
-    // LÓGICA DE ESTOQUE INTELIGENTE
-    let finalStatus = status || 'PENDING';
     
-    // Se for venda de catálogo (tem itens predefinidos)
-    if (type === 'CATALOG' && items && items.length > 0) {
-      let allInStock = true;
+    // Validação Manual (Para evitar dependência de Zod e quebra com NaN)
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Payload inválido' }, { status: 400 });
+    }
+
+    const { 
+      customerName, customerContact, status, type, totalAmount, 
+      discountAmount, deadline, notes, weightGrams, materialId, 
+      paymentStatus, items, saleChannel 
+    } = body;
+
+    if (!customerName || !totalAmount) {
+      return NextResponse.json({ error: 'Dados obrigatórios ausentes: customerName, totalAmount' }, { status: 400 });
+    }
+
+    const deadlineDate = deadline ? new Date(deadline) : null;
+
+    let finalStatus = status || 'PENDING';
+    let allInStock = true;
+
+    // Se for venda de catálogo, checamos estoque primeiro (Read Phase)
+    if (type === 'CATALOG' && Array.isArray(items) && items.length > 0) {
       for (const item of items) {
         const product = await prisma.product.findUnique({ 
           where: { id: item.productId } 
         });
         
-        // Se um item não tiver estoque suficiente, o pedido INTEIRO vai para produção
-        if (!product || product.stockQuantity < item.quantity) {
+        if (!product || product.stockQuantity < Number(item.quantity)) {
           allInStock = false;
         }
-        
-        // SEMPRE baixamos o estoque da peça pronta (pode ficar negativo indicando que falta produzir)
-        await prisma.product.update({
-          where: { id: item.productId },
-          data: { stockQuantity: { decrement: Number(item.quantity) } }
-        });
       }
-      
-      // Se tiver tudo em estoque, já marca como Pronta Entrega automaticamente
-      if (allInStock) {
-        finalStatus = 'PICKING';
-      } else {
-        finalStatus = 'PENDING';
-      }
+      finalStatus = allInStock ? 'PICKING' : 'PENDING';
     } else if (type === 'CUSTOM') {
-       // Projetos especiais sempre entram como PENDING na fila de produção
-       finalStatus = 'PENDING';
+      finalStatus = 'PENDING';
     }
 
-    // BYPASS PRISMA CACHE: SQL Direto para criação de ordens
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO "Order" (id, customerName, customerContact, status, type, totalAmount, discountAmount, deadline, notes, weightGrams, materialId, paymentStatus, createdAt, updatedAt) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      id, customerName, customerContact || null, finalStatus, type || 'CATALOG', Number(totalAmount), Number(discountAmount || 0), deadlineDate, notes || null, Number(weightGrams) || null, materialId || null, paymentStatus || 'UNPAID', now, now
-    );
+    // Usando Transações Atômicas ($transaction) para garantir integridade.
+    // Se ocorrer erro em qualquer passo, todo o lote é cancelado automaticamente.
+    const result = await prisma.$transaction(async (tx) => {
+      
+      // 1. Criar o Pedido
+      const order = await tx.order.create({
+        data: {
+          customerName: String(customerName),
+          customerContact: customerContact ? String(customerContact) : null,
+          status: finalStatus,
+          type: String(type || 'CATALOG'),
+          totalAmount: Number(totalAmount) || 0,
+          discountAmount: Number(discountAmount) || 0,
+          deadline: deadlineDate,
+          notes: notes ? String(notes) : null,
+          weightGrams: weightGrams ? Number(weightGrams) : null,
+          materialId: materialId ? String(materialId) : null,
+          paymentStatus: String(paymentStatus || 'UNPAID'),
+        }
+      });
 
-    // Salva os itens vinculados
-    if (items && items.length > 0) {
-      for (const item of items) {
-        await prisma.orderItem.create({
-          data: {
-            orderId: id,
-            productId: item.productId,
-            quantity: Number(item.quantity),
-            price: Number(item.price)
+      // 2. Criar os Itens do Pedido e Baixar Estoque
+      if (Array.isArray(items) && items.length > 0) {
+        for (const item of items) {
+          // Criar o OrderItem
+          await tx.orderItem.create({
+            data: {
+              orderId: order.id,
+              productId: String(item.productId),
+              quantity: Number(item.quantity) || 1,
+              price: Number(item.price) || 0
+            }
+          });
+
+          // Baixar o Estoque se for catálogo
+          if (type === 'CATALOG') {
+            await tx.product.update({
+              where: { id: String(item.productId) },
+              data: { stockQuantity: { decrement: Number(item.quantity) || 1 } }
+            });
           }
-        });
+        }
       }
-    }
 
-     // SINCRONIZAÇÃO FINANCEIRA: Se pago, gera transação de receita
-     if (paymentStatus === 'PAID') {
-        const { saleChannel } = body;
-        let netAmount = Number(totalAmount);
+      // 3. Sincronização Financeira: Registrar receita se PAGO
+      if (paymentStatus === 'PAID') {
+        let netAmount = Number(totalAmount) || 0;
         
-        // Aplica taxas de marketplace se necessário
         if (saleChannel === 'SHOPEE') {
            netAmount = netAmount * 0.86 - 5;
         } else if (saleChannel === 'ML') {
            netAmount = netAmount * 0.88 - (netAmount < 79 ? 6 : 0);
         }
 
-        // Verifica se já não existe (prevenção de duplicidade)
-        const existing = await prisma.transaction.findFirst({
-          where: { description: { contains: `[ID: ${id}]` } }
+        await tx.transaction.create({
+          data: {
+            type: 'INCOME',
+            category: 'VENDA_DIRETA',
+            amount: Number(netAmount.toFixed(2)),
+            description: `[AUTOMAÇÃO] Venda (${saleChannel || 'DIRETA'}): ${customerName} [ID: ${order.id}]`,
+            date: new Date()
+          }
         });
- 
-        if (!existing) {
-          await prisma.transaction.create({
-            data: {
-              type: 'INCOME',
-              category: 'VENDA_DIRETA',
-              amount: Number(netAmount.toFixed(2)),
-              description: `[AUTOMAÇÃO] Venda (${saleChannel || 'DIRETA'}): ${customerName} [ID: ${id}]`,
-              date: new Date()
-            }
-          });
-        }
-     }
+      }
 
-    return NextResponse.json({ success: true, id, status: finalStatus }, { status: 201 });
+      return order;
+    });
+
+    return NextResponse.json({ success: true, id: result.id, status: result.status }, { status: 201 });
   } catch (error: any) {
-    console.error("ORDER POST SQL FAIL:", error);
-    return NextResponse.json({ error: 'Erro ao criar pedido via SQL', details: error.message }, { status: 500 });
+    console.error("ORDER POST TRANSACTION FAIL:", error);
+    return NextResponse.json({ error: 'Erro ao processar pedido', details: error.message }, { status: 500 });
   }
 }

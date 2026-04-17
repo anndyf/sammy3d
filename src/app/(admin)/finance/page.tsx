@@ -30,8 +30,9 @@ export default function FinancePage() {
       
       const prodData = await resProd.json();
       const matData = await resMat.json();
-      if (Array.isArray(prodData)) setProducts(prodData);
-      if (Array.isArray(matData)) setMaterials(matData);
+      // Suporte ao novo formato paginado { data: [], meta: {} }
+      setProducts(Array.isArray(prodData) ? prodData : (prodData?.data ?? []));
+      setMaterials(Array.isArray(matData) ? matData : (matData?.data ?? []));
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
@@ -103,13 +104,13 @@ export default function FinancePage() {
     : ["Compra de Filamento", "Manutenção (Peças)", "Conta de Luz (Proporcional)", "Embalagens", "Fretes", "Ferramentas", "Outros"];
 
   return (
-    <div className="animate-fade-in space-y-10 pb-40">
+    <div className="bg-transparent min-h-screen text-white font-sans select-none animate-fade-in pb-40 space-y-12">
       
       {/* MAGLO HEADER */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 pt-4">
-        <div className="maglo-title-container mb-0">
-           <span className="maglo-subtitle">Saúde Financeira & Fluxo de Caixa</span>
-           <h1 className="maglo-title">Gestão Financeira</h1>
+        <div className="flex flex-col gap-1">
+           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.4em] pl-1">Saúde Financeira & Fluxo de Caixa</span>
+           <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Gestão Financeira</h1>
         </div>
         
         <button 
@@ -118,100 +119,102 @@ export default function FinancePage() {
             setEditingTransaction(null);
             if (isAdding) setFormData({ type: "INCOME", category: "", amount: "", description: "", productId: "", materialId: "", addStockAmount: "", customerName: "" });
           }}
-          className="h-12 px-8 bg-black text-white text-[10px] font-medium uppercase tracking-[0.2em] rounded-full shadow-lg hover:bg-slate-800 transition-all active:scale-95"
+          className="h-12 px-10 bg-white text-black text-[11px] font-black uppercase tracking-[0.2em] rounded-lg shadow-2xl hover:bg-slate-200 transition-all active:scale-95"
         >
-          {isAdding ? "Cancelar Operação" : "Novo Movimento"}
+          {isAdding ? "Cancelar Operação" : "Novo Movimento +"}
         </button>
       </header>
 
-      {/* METRIC CAPSULES (MAGLO-STYLE) */}
+      {/* METRIC CAPSULES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-         <div className="maglo-card p-8 group border-b-4 border-b-emerald-400">
-            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-4">Receitas Totais</p>
+         <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl group border-l-4 border-l-emerald-500 shadow-2xl transition-all hover:bg-white/10">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2"><ArrowUpCircle className="w-4 h-4 text-emerald-500" /> Receitas Totais</p>
             <div className="flex items-end gap-2">
-               <span className="text-xl font-light text-emerald-500 mb-1">R$</span>
-               <h3 className="text-4xl font-light text-slate-800 tracking-tighter truncate">{summary.totalIncome.toFixed(2)}</h3>
+               <span className="text-xl font-bold text-emerald-500 mb-1">R$</span>
+               <h3 className="text-4xl font-black text-white tracking-tighter truncate">{summary.totalIncome.toFixed(2)}</h3>
             </div>
-            <div className="mt-6 flex items-center gap-2 text-[9px] text-emerald-500 font-medium uppercase tracking-widest bg-emerald-50 w-fit px-3 py-1 rounded-full">
+            <div className="mt-6 flex items-center gap-2 text-[9px] text-emerald-500 font-black uppercase tracking-widest bg-emerald-500/10 w-fit px-4 py-1.5 rounded-full border border-emerald-500/20">
                <TrendingUp className="w-3 h-3" /> Saldo Positivo
             </div>
          </div>
 
-         <div className="maglo-card p-8 group border-b-4 border-b-orange-400">
-            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-4">Despesas Totais</p>
+         <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl group border-l-4 border-l-orange-500 shadow-2xl transition-all hover:bg-white/10">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2"><ArrowDownCircle className="w-4 h-4 text-orange-500" /> Despesas Totais</p>
             <div className="flex items-end gap-2">
-               <span className="text-xl font-light text-orange-400 mb-1">R$</span>
-               <h3 className="text-4xl font-light text-slate-800 tracking-tighter truncate">{summary.totalExpense.toFixed(2)}</h3>
+               <span className="text-xl font-bold text-orange-500 mb-1">R$</span>
+               <h3 className="text-4xl font-black text-white tracking-tighter truncate">{summary.totalExpense.toFixed(2)}</h3>
             </div>
-            <div className="mt-6 flex items-center gap-2 text-[9px] text-orange-400 font-medium uppercase tracking-widest bg-orange-50 w-fit px-3 py-1 rounded-full">
+            <div className="mt-6 flex items-center gap-2 text-[9px] text-orange-500 font-black uppercase tracking-widest bg-orange-500/10 w-fit px-4 py-1.5 rounded-full border border-orange-500/20">
                <TrendingDown className="w-3 h-3" /> Saídas de Caixa
             </div>
          </div>
 
-         <div className="maglo-card p-8 group border-b-4 border-b-black">
-            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-4">Saldo Disponível</p>
+         <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl group border-l-4 border-l-blue-500 shadow-2xl transition-all hover:bg-white/10">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2"><Wallet className="w-4 h-4 text-blue-500" /> Saldo em Carteira</p>
             <div className="flex items-end gap-2">
-               <span className="text-xl font-light text-slate-400 mb-1">R$</span>
-               <h3 className="text-4xl font-light text-slate-800 tracking-tighter truncate">{summary.balance.toFixed(2)}</h3>
+               <span className="text-xl font-bold text-blue-500 mb-1">R$</span>
+               <h3 className="text-4xl font-black text-white tracking-tighter truncate">{summary.balance.toFixed(2)}</h3>
             </div>
-            <div className="mt-6 flex items-center gap-2 text-[9px] text-slate-400 font-medium uppercase tracking-widest bg-slate-50 w-fit px-3 py-1 rounded-full">
-               <Wallet className="w-3 h-3" /> Livro Caixa Atual
+            <div className="mt-6 flex items-center gap-2 text-[9px] text-blue-500 font-black uppercase tracking-widest bg-blue-500/10 w-fit px-4 py-1.5 rounded-full border border-blue-500/20">
+                Operacional
             </div>
          </div>
       </div>
 
       {isAdding && (
-         <section className="maglo-card p-10 animate-in slide-in-from-top-4 duration-500 space-y-10">
-            <div className="flex items-center justify-between">
-               <h4 className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.3em]">
+         <section className="bg-white/5 backdrop-blur-2xl border border-white/10 p-10 rounded-3xl animate-in slide-in-from-top-4 duration-500 space-y-10 shadow-2xl shadow-black/40">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+               <h4 className="text-[11px] font-black text-white uppercase tracking-[0.4em]">
                   {editingTransaction ? 'Auditando Registro' : 'Registro de Transação'}
                </h4>
-               <div className="flex bg-slate-50 rounded-full p-1 border border-slate-100">
-                  <button onClick={()=>setFormData({...formData, type:'INCOME'})} className={cn("px-6 py-2 rounded-full text-[10px] font-bold tracking-widest transition-all", formData.type==='INCOME' ? "bg-white text-emerald-500 shadow-sm" : "text-slate-400")}>ENTRADA</button>
-                  <button onClick={()=>setFormData({...formData, type:'EXPENSE'})} className={cn("px-6 py-2 rounded-full text-[10px] font-bold tracking-widest transition-all", formData.type==='EXPENSE' ? "bg-white text-orange-500 shadow-sm" : "text-slate-400")}>SAÍDA</button>
+               <div className="flex bg-black/40 rounded-xl p-1.5 border border-white/10 shadow-inner">
+                  <button onClick={()=>setFormData({...formData, type:'INCOME'})} className={cn("px-8 py-2.5 rounded-lg text-[10px] font-black tracking-widest transition-all uppercase", formData.type==='INCOME' ? "bg-emerald-600 text-white shadow-lg" : "text-slate-500 hover:text-white")}>ENTRADA</button>
+                  <button onClick={()=>setFormData({...formData, type:'EXPENSE'})} className={cn("px-8 py-2.5 rounded-lg text-[10px] font-black tracking-widest transition-all uppercase", formData.type==='EXPENSE' ? "bg-orange-600 text-white shadow-lg" : "text-slate-500 hover:text-white")}>SAÍDA</button>
                </div>
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                <div className="space-y-3">
-                  <label className="text-[9px] font-medium text-slate-400 ml-1 uppercase">Categoria</label>
-                  <select className="w-full px-6 py-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[20px] outline-none text-sm" value={formData.category} onChange={e=>setFormData({...formData, category:e.target.value})}>
-                     <option value="">Selecionar...</option>
-                     {categories.map(c=><option key={c} value={c}>{c}</option>)}
+                  <label className="text-[9px] font-black text-slate-500 ml-1 uppercase tracking-widest">Categoria</label>
+                  <select className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl outline-none text-[13px] font-bold text-white focus:bg-white/10 focus:border-white transition-all appearance-none" value={formData.category} onChange={e=>setFormData({...formData, category:e.target.value})}>
+                     <option value="" className="bg-black">Selecionar...</option>
+                     {categories.map(c=><option key={c} value={c} className="bg-black">{c}</option>)}
                   </select>
                </div>
                <div className="space-y-3">
-                  <label className="text-[9px] font-medium text-slate-400 ml-1 uppercase">Nome do Cliente (Opcional)</label>
-                  <input type="text" placeholder="Ex: Maria Souza" className="w-full px-8 py-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[24px] outline-none text-sm" value={formData.customerName} onChange={e=>setFormData({...formData, customerName:e.target.value})} />
+                  <label className="text-[9px] font-black text-slate-500 ml-1 uppercase tracking-widest">Nome do Cliente</label>
+                  <input type="text" placeholder="Ex: Maria Souza" className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl outline-none text-[13px] font-bold text-white focus:bg-white/10 focus:border-white transition-all placeholder:text-slate-700" value={formData.customerName} onChange={e=>setFormData({...formData, customerName:e.target.value})} />
                </div>
                <div className="space-y-3 lg:col-span-1">
-                  <label className="text-[9px] font-medium text-slate-400 ml-1 uppercase">Descrição Interna</label>
-                  <input type="text" placeholder="Notas sobre o movimento" className="w-full px-8 py-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[24px] outline-none text-sm" value={formData.description} onChange={e=>setFormData({...formData, description:e.target.value})} />
+                  <label className="text-[9px] font-black text-slate-500 ml-1 uppercase tracking-widest">Descrição Interna</label>
+                  <input type="text" placeholder="Notas sobre o movimento" className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl outline-none text-[13px] font-bold text-white focus:bg-white/10 focus:border-white transition-all placeholder:text-slate-700" value={formData.description} onChange={e=>setFormData({...formData, description:e.target.value})} />
                </div>
                <div className="space-y-3">
-                  <label className="text-[9px] font-medium text-slate-400 ml-1 uppercase">Valor (R$)</label>
-                  <input type="number" step="0.01" className="w-full px-8 py-4 bg-white border-2 border-slate-100 rounded-[24px] outline-none text-xl font-light tracking-tighter focus:border-black transition-all" value={formData.amount} onChange={e=>setFormData({...formData, amount:e.target.value})} />
+                  <label className="text-[9px] font-black text-slate-500 ml-1 uppercase tracking-widest">Valor Auditado (R$)</label>
+                  <input type="number" step="0.01" className="w-full h-14 px-6 bg-white/5 border-2 border-white/10 rounded-xl outline-none text-xl font-black text-white focus:bg-white/10 focus:border-blue-500 transition-all text-center tracking-tighter" value={formData.amount} onChange={e=>setFormData({...formData, amount:e.target.value})} />
                </div>
-               <div className="lg:col-span-4 pt-4 flex gap-4">
-                  <button type="submit" className="h-16 px-12 bg-black text-white rounded-full text-[11px] font-medium uppercase tracking-[0.3em] hover:bg-slate-800 transition-all active:scale-95">
+               <div className="lg:col-span-4 pt-4 flex flex-col md:flex-row gap-4">
+                  <button type="submit" className="h-16 px-12 bg-blue-600 text-white rounded-xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-blue-500 transition-all active:scale-95 shadow-2xl flex-1 md:flex-none">
                      {editingTransaction ? 'Atualizar Auditoria' : 'Efetivar no Fluxo de Caixa'}
                   </button>
                   {editingTransaction && (
-                     <button type="button" onClick={()=>{setIsAdding(false); setEditingTransaction(null);}} className="h-16 px-10 bg-slate-50 text-slate-400 rounded-full text-[11px] font-medium uppercase tracking-[0.3em] hover:bg-slate-100 transition-all">Descartar Edição</button>
+                     <button type="button" onClick={()=>{setIsAdding(false); setEditingTransaction(null);}} className="h-16 px-10 bg-white/5 text-slate-500 border border-white/10 rounded-xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all">Descartar Edição</button>
                   )}
                </div>
             </form>
          </section>
       )}
 
-      {/* TRANSACTION TABLE: MAGLO STYLE */}
-      <div className="maglo-card p-0 overflow-hidden">
-         <div className="p-8 border-b border-slate-50 flex items-center justify-between">
-            <h5 className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.2em]">Extrato Auditado</h5>
-            <div className="flex items-center gap-4">
-               <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
-                  <input type="text" placeholder="Filtrar..." className="pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-full text-xs outline-none focus:border-slate-300" />
+      {/* TRANSACTION TABLE */}
+      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+         <div className="p-8 border-b border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+            <h5 className="text-[11px] font-black text-white uppercase tracking-[0.4em] flex items-center gap-3">
+              <Filter className="w-4 h-4 text-blue-500" /> Extrato Auditado
+            </h5>
+            <div className="flex items-center gap-4 w-full md:w-auto">
+               <div className="relative flex-1 md:flex-none">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                  <input type="text" placeholder="Filtrar histórico..." className="w-full md:w-72 pl-12 pr-6 py-3 bg-black/40 border border-white/5 rounded-xl text-xs font-bold text-white outline-none focus:border-white/20 transition-all" />
                </div>
             </div>
          </div>
@@ -219,57 +222,57 @@ export default function FinancePage() {
          <div className="overflow-x-auto">
             <table className="w-full text-left">
                <thead>
-                  <tr className="bg-slate-50/50">
-                     <th className="py-5 px-8 text-[9px] font-medium text-slate-400 uppercase tracking-[0.2em]">Data</th>
-                     <th className="py-5 px-8 text-[9px] font-medium text-slate-400 uppercase tracking-[0.2em]">Natureza</th>
-                     <th className="py-5 px-8 text-[9px] font-medium text-slate-400 uppercase tracking-[0.2em]">Histórico</th>
-                     <th className="py-5 px-8 text-[9px] font-medium text-slate-400 uppercase tracking-[0.2em] text-right">Valor Auditado</th>
-                     <th className="py-5 px-8 text-[9px] font-medium text-slate-400 uppercase tracking-[0.2em] text-center w-32">Ações</th>
+                  <tr className="bg-black/20">
+                     <th className="py-5 px-8 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5">Data</th>
+                     <th className="py-5 px-8 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5">Natureza</th>
+                     <th className="py-5 px-8 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5">Histórico Comercial</th>
+                     <th className="py-5 px-8 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5 text-right">Valor Auditado</th>
+                     <th className="py-5 px-8 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5 text-center w-32">Ações</th>
                   </tr>
                </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-white/5">
                   {loading ? (
-                    <tr><td colSpan={5} className="py-20 text-center text-slate-200 uppercase text-[9px] tracking-widest">Sincronizando Banco...</td></tr>
+                    <tr><td colSpan={5} className="py-32 text-center text-slate-700 uppercase text-[10px] font-black tracking-[0.5em] animate-pulse">Sincronizando Banco de Dados...</td></tr>
                   ) : transactions.map(t => (
-                    <tr key={t.id} className="group hover:bg-slate-50/30 transition-colors">
+                    <tr key={t.id} className="group hover:bg-white/5 transition-all">
                        <td className="py-6 px-8 flex flex-col">
-                          <span className="text-[11px] font-mono text-slate-400">{new Date(t.date).toLocaleDateString('pt-BR')}</span>
-                          <span className="text-[9px] font-mono text-slate-300">{new Date(t.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h</span>
+                          <span className="text-[12px] font-black text-white group-hover:text-blue-400 transition-colors uppercase tracking-widest">{new Date(t.date).toLocaleDateString('pt-BR')}</span>
+                          <span className="text-[10px] font-mono text-slate-600 uppercase tracking-tighter">{new Date(t.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}h</span>
                        </td>
                        <td className="py-6 px-8">
                           <span className={cn(
-                            "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-tight",
-                            t.type === 'INCOME' ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-500"
+                            "px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest border",
+                            t.type === 'INCOME' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-orange-500/10 text-orange-500 border-orange-500/20"
                           )}>
                              {t.category.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
                           </span>
                        </td>
                        <td className="py-6 px-8">
-                          <div className="flex flex-col">
-                             <span className="text-sm font-medium text-slate-700 tracking-tight">
+                          <div className="flex flex-col gap-1">
+                             <span className="text-sm font-bold text-white tracking-tight group-hover:text-blue-500 transition-colors">
                                 {t.description?.split('[')[0]?.split(':')[1]?.trim() || t.description?.split('[')[0]?.trim() || "Movimentação Comercial"}
                              </span>
-                             <span className="text-[10px] text-slate-400 font-light italic">
-                                {t.description?.includes('Liquidação') ? 'Venda realizada com sucesso' : (t.description?.includes('Compra') ? 'Aquisição de suprimentos' : 'Registro de caixa')}
+                             <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tighter italic">
+                                {t.description?.includes('Liquidação') ? 'Venda realizada' : (t.description?.includes('Compra') ? 'Logística/Suprimentos' : 'Operacional')}
                              </span>
                           </div>
                        </td>
-                       <td className={cn("py-6 px-8 text-right font-light text-lg tracking-tighter", t.type === 'INCOME' ? "text-emerald-500" : "text-orange-400")}>
+                       <td className={cn("py-6 px-8 text-right font-black text-xl tracking-tighter", t.type === 'INCOME' ? "text-emerald-500 drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "text-orange-500 opacity-80")}>
                           {t.type === 'INCOME' ? "+" : "-"} R$ {t.amount.toFixed(2)}
                        </td>
                        <td className="py-6 px-8">
-                          <div className="flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                          <div className="flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all translate-x-3 group-hover:translate-x-0">
                              <button 
                                onClick={() => handleEdit(t)}
-                               className="p-2 bg-white border border-slate-100 rounded-lg shadow-sm hover:bg-black hover:text-white transition-all"
+                               className="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white hover:text-black transition-all shadow-xl"
                              >
-                                <Plus className="w-3.5 h-3.5 rotate-45" /> {/* Use + rotated for edit if it looks tech, or use Lucide Edit */}
+                                <Plus className="w-4 h-4 rotate-45" /> 
                              </button>
                              <button 
                                onClick={() => handleDelete(t.id)}
-                               className="p-2 bg-white border border-slate-100 rounded-lg shadow-sm hover:bg-red-500 hover:text-white hover:border-red-500 transition-all"
+                               className="p-3 bg-white/5 border border-white/10 rounded-xl text-slate-500 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-xl"
                              >
-                                <X className="w-3.5 h-3.5" />
+                                <X className="w-4 h-4" />
                              </button>
                           </div>
                        </td>
@@ -278,6 +281,12 @@ export default function FinancePage() {
                </tbody>
             </table>
          </div>
+         {transactions.length === 0 && !loading && (
+           <div className="py-24 text-center">
+             <Wallet className="w-12 h-12 text-slate-800 mx-auto mb-4 opacity-20" />
+             <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.4em]">Nenhum movimento registrado este mês</p>
+           </div>
+         )}
       </div>
     </div>
   );

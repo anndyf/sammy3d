@@ -43,8 +43,9 @@ export default function OrdersListPage() {
       const [resO, resP] = await Promise.all([fetch('/api/orders'), fetch('/api/products')]);
       const oData = await resO.json();
       const pData = await resP.json();
-      if (Array.isArray(oData)) setOrders(oData);
-      if (Array.isArray(pData)) setProducts(pData);
+      // Suporte ao novo formato paginado { data: [], meta: {} }
+      setOrders(Array.isArray(oData) ? oData : (oData?.data ?? []));
+      setProducts(Array.isArray(pData) ? pData : (pData?.data ?? []));
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
