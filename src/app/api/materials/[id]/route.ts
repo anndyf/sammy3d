@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { MaterialService } from '@/services/MaterialService';
+import { apiError, apiOk } from '@/lib/api';
 
 export async function PUT(
   request: Request,
@@ -7,30 +8,14 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-
-    if (!id) {
-      return NextResponse.json({ error: 'ID is missing' }, { status: 400 });
-    }
+    if (!id) return apiError('ID is missing', 400);
 
     const body = await request.json();
-    const { name, type, color, costPerUnit, totalAmount, remainingAmount, unitType } = body;
+    const updatedMaterial = await MaterialService.update(id, body);
 
-    const updatedMaterial = await prisma.material.update({
-      where: { id },
-      data: {
-        name,
-        type,
-        color,
-        costPerUnit: Number(costPerUnit),
-        totalAmount: Number(totalAmount),
-        remainingAmount: Number(remainingAmount),
-        unitType,
-      },
-    });
-
-    return NextResponse.json(updatedMaterial, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Erro ao editar insumo' }, { status: 500 });
+    return apiOk(updatedMaterial);
+  } catch (error: any) {
+    console.error("PUT Material Error:", error);
+    return apiError('Erro ao editar insumo.', 500, error.message);
   }
 }

@@ -62,4 +62,24 @@ export class MaterialService {
       return material;
     });
   }
+
+  /**
+   * Atualiza um material existente.
+   */
+  static async update(id: string, body: any) {
+    const { name, type, color, costPerUnit, totalAmount, remainingAmount, unitType } = body;
+
+    return await prisma.material.update({
+      where: { id },
+      data: {
+        name,
+        type,
+        color,
+        costPerUnit:     Number(costPerUnit),
+        totalAmount:     Number(totalAmount),
+        remainingAmount: Number(remainingAmount),
+        unitType,
+      },
+    });
+  }
 }

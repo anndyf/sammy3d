@@ -25,7 +25,9 @@ export default function StockPage() {
   const fetchData = async () => {
     try {
       const res = await fetch('/api/materials');
-      const data = await res.json();
+      const json = await res.json();
+      // A API retorna { data: Material[], meta: ... } ou o array diretamente dependendo da implementação
+      const data = json.data || json; 
       if (Array.isArray(data)) setMaterials(data);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };

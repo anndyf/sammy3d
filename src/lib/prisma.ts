@@ -9,8 +9,5 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient()
 
-// Forçando recarregamento temporário se já existia (truque para desenvolvimento)
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = new PrismaClient()
-}
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
