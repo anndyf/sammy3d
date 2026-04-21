@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, Upload, FileText, User, Phone, Package, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
@@ -21,6 +21,21 @@ export default function PublicQuoteRequestPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [materials, setMaterials] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        const res = await fetch('/api/materials');
+        const json = await res.json();
+        const data = json.data || json;
+        if (Array.isArray(data)) setMaterials(data);
+      } catch (e) {
+        console.error("Failed to load materials", e);
+      }
+    };
+    fetchMaterials();
+  }, []);
 
   const formatPhone = (v: string) => {
     v = v.replace(/\D/g, ""); 
@@ -220,15 +235,22 @@ export default function PublicQuoteRequestPage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                   Cor de Preferência
+                   Material / Cor de Preferência
                 </label>
-                <input 
-                  type="text" 
-                  placeholder="Ex: Branco, Preto, Bronze..."
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 outline-none transition-all text-sm"
+                <select 
+                  required
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 outline-none transition-all text-sm cursor-pointer"
                   value={formData.preferredColor}
                   onChange={e => setFormData({...formData, preferredColor: e.target.value})}
-                />
+                >
+                  <option value="">Selecione um material disponível...</option>
+                  {materials.map(m => (
+                    <option key={m.id} value={`${m.name} (${m.color || 'Industrial'})`}>
+                      {m.type === 'FILAMENT' ? '🧵' : m.type === 'RESIN' ? '🧪' : '📦'} {m.name} - {m.color || 'Padrão'}
+                    </option>
+                  ))}
+                  <option value="Outro (Especificar na descrição)">Outro (Especificar na descrição abaixo)</option>
+                </select>
               </div>
             </div>
 

@@ -15,9 +15,12 @@ export default function OrdersPage() {
   const [isAdding, setIsAdding] = useState(false);
 
   const [customerName, setCustomerName] = useState("");
-  const [cart, setCart] = useState<{productId: string; quantity: number; price: number}[]>([]);
+  const [cart, setCart] = useState<{productId?: string; customName?: string; quantity: number; price: number}[]>([]);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState("1");
+  const [isCustom, setIsCustom] = useState(false);
+  const [customName, setCustomName] = useState("");
+  const [customPrice, setCustomPrice] = useState("");
 
   const fetchData = async () => {
     try {
@@ -33,8 +36,20 @@ export default function OrdersPage() {
   useEffect(() => { fetchData(); }, []);
 
   const handleAddToCart = () => {
-    const p = products.find(prod => prod.id === selectedProduct);
-    if (p) { setCart([...cart, { productId: p.id, quantity: Number(selectedQuantity), price: p.sellingPrice }]); setSelectedProduct(""); setSelectedQuantity("1"); }
+    if (isCustom) {
+      if (!customName || !customPrice) return alert("Preencha o nome e valor.");
+      setCart([...cart, { customName, quantity: Number(selectedQuantity), price: Number(customPrice) }]);
+      setCustomName("");
+      setCustomPrice("");
+      setSelectedQuantity("1");
+    } else {
+      const p = products.find(prod => prod.id === selectedProduct);
+      if (p) {
+        setCart([...cart, { productId: p.id, quantity: Number(selectedQuantity), price: p.sellingPrice }]);
+        setSelectedProduct("");
+        setSelectedQuantity("1");
+      }
+    }
   };
 
   const handleCreateOrder = async (e: React.FormEvent) => {
@@ -42,7 +57,17 @@ export default function OrdersPage() {
     if (cart.length === 0) return alert("Vazio.");
     const total = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
     try {
-      const res = await fetch('/api/orders', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ customerName: customerName || "Anônimo", status: "PENDING", type: "CATALOG", totalAmount: total, items: cart }) });
+      const res = await fetch('/api/orders', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerName: customerName || "Anônimo",
+          status: "PENDING",
+          type: cart.some(c => c.customName) ? "ORDER" : "CATALOG",
+          totalAmount: total,
+          items: cart
+        })
+      });
       if (res.ok) { setIsAdding(false); setCustomerName(""); setCart([]); fetchData(); }
     } catch (e) { console.error(e); }
   };
@@ -93,19 +118,38 @@ export default function OrdersPage() {
              <div className="space-y-6">
                 <div className="space-y-1.5"><label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest pl-1">Cliente</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-[14px] text-white outline-none focus:bg-white/10 focus:border-white transition-all" value={customerName} onChange={e=>setCustomerName(e.target.value)} /></div>
                 <div className="bg-white/5 p-6 rounded-xl border border-white/10 space-y-4">
-                   <div className="flex gap-4">
-                      <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-[13px] font-bold text-white outline-none" value={selectedProduct} onChange={e=>setSelectedProduct(e.target.value)}>
-                        <option value="" className="bg-black text-white">Peça do Catálogo...</option>
-                        {products.map(p=><option key={p.id} value={p.id} className="bg-black text-white">{p.name}</option>)}
-                      </select>
-                      <button onClick={handleAddToCart} className="w-12 h-12 bg-white text-black rounded-lg flex items-center justify-center shadow-2xl font-black text-xl hover:bg-slate-200 transition-all">+</button>
-                   </div>
-                </div>
+                    <div className="flex items-center justify-between pb-2">
+                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Origem do Item</span>
+                       <button onClick={() => setIsCustom(!isCustom)} className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all", isCustom ? "bg-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.3)]" : "bg-white/10 text-white")}>
+                          {isCustom ? 'Personalizado' : 'Catálogo'}
+                       </button>
+                    </div>
+                    
+                    <div className="flex gap-4">
+                       {isCustom ? (
+                          <div className="flex-1 flex gap-2">
+                             <input type="text" placeholder="Nome do Item..." className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-[13px] text-white outline-none focus:border-amber-500 transition-all font-bold" value={customName} onChange={e=>setCustomName(e.target.value)} />
+                             <input type="number" placeholder="Preço" className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-[13px] text-white outline-none focus:border-amber-500 transition-all font-mono" value={customPrice} onChange={e=>setCustomPrice(e.target.value)} />
+                          </div>
+                       ) : (
+                          <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-[13px] font-bold text-white outline-none" value={selectedProduct} onChange={e=>setSelectedProduct(e.target.value)}>
+                            <option value="" className="bg-black text-white">Selecionar do Catálogo...</option>
+                            {products.map(p=><option key={p.id} value={p.id} className="bg-black text-white">{p.name}</option>)}
+                          </select>
+                       )}
+                       <button onClick={handleAddToCart} className={cn("w-12 h-12 rounded-lg flex items-center justify-center shadow-2xl font-black text-xl transition-all", isCustom ? "bg-amber-500 text-black" : "bg-white text-black hover:bg-slate-200")}>+</button>
+                    </div>
+                 </div>
              </div>
              <div className="flex flex-col gap-6">
                 <div className="flex-1 bg-white/5 border border-white/10 rounded-xl p-6 min-h-[140px] space-y-3 shadow-inner">
                    {cart.length === 0 && <div className="h-full flex items-center justify-center text-[10px] text-slate-600 uppercase tracking-widest font-bold">Carrinho Vazio</div>}
-                   {cart.map((c, i) => <div key={i} className="flex justify-between items-center text-[13px] font-bold text-slate-300"><span>{c.quantity}x {products.find(p=>p.id===c.productId)?.name}</span><span>R$ {(c.price*c.quantity).toFixed(2)}</span></div>)}
+                   {cart.map((c, i) => (
+                      <div key={i} className="flex justify-between items-center text-[13px] font-bold text-slate-300">
+                        <span>{c.quantity}x {c.customName || products.find(p=>p.id===c.productId)?.name}</span>
+                        <span>R$ {(c.price*c.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
                 </div>
                 <button onClick={handleCreateOrder} className="w-full h-14 bg-blue-600 text-white rounded-lg text-[14px] font-black uppercase tracking-widest shadow-2xl hover:bg-blue-500 transition-all">Lançar OS na Fila &rarr;</button>
              </div>
@@ -135,8 +179,8 @@ export default function OrdersPage() {
                           <p className="text-[15px] font-bold text-white truncate tracking-tight">{order.customerName}</p>
                           <div className="flex flex-wrap gap-1">
                              {order.items.map(item => (
-                                <span key={item.id} className="text-[9px] font-black text-slate-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/5 uppercase tracking-tighter">
-                                   {item.quantity}x {item.product.name}
+                                <span key={item.id} className={cn("text-[9px] font-black px-2 py-0.5 rounded-md border uppercase tracking-tighter", item.customName ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : "text-slate-400 border-white/5 bg-white/5")}>
+                                   {item.quantity}x {item.customName || item.product?.name || "Sem Nome"}
                                 </span>
                              ))}
                           </div>
@@ -168,11 +212,11 @@ export default function OrdersPage() {
                        <div className="space-y-2">
                           <p className="text-[15px] font-bold text-white tracking-tight leading-tight">{order.customerName}</p>
                           <div className="flex flex-wrap gap-1">
-                             {order.items.map(item => (
-                                <span key={item.id} className="text-[9px] font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20 uppercase">
-                                   {item.quantity}x {item.product.name}
-                                </span>
-                             ))}
+                              {order.items.map(item => (
+                                 <span key={item.id} className={cn("text-[9px] font-black px-2 py-0.5 rounded-md border uppercase", item.customName ? "text-amber-400 border-amber-500/20 bg-amber-500/10" : "text-blue-400 bg-blue-500/10 border-blue-500/20")}>
+                                    {item.quantity}x {item.customName || item.product?.name || "Sem Nome"}
+                                 </span>
+                              ))}
                           </div>
                        </div>
                        <button onClick={()=>handleChangeStatus(order.id, 'FINISHED')} className="w-full py-4 bg-blue-500 text-white text-[11px] font-black uppercase tracking-widest rounded-xl shadow-2xl hover:brightness-110 transition-all">Finalizar Lote &crarr;</button>
@@ -201,11 +245,11 @@ export default function OrdersPage() {
                        <div className="space-y-2">
                           <p className="text-[15px] font-bold text-white tracking-tight">{order.customerName}</p>
                           <div className="flex flex-wrap gap-1">
-                             {order.items.map(item => (
-                                <span key={item.id} className="text-[9px] font-medium text-slate-500 bg-white/5 px-2 py-0.5 rounded-md uppercase">
-                                   {item.quantity}x {item.product.name}
-                                </span>
-                             ))}
+                              {order.items.map(item => (
+                                 <span key={item.id} className={cn("text-[9px] font-medium px-2 py-0.5 rounded-md uppercase", item.customName ? "text-amber-500 bg-amber-500/5 border border-amber-500/10" : "text-slate-500 bg-white/5")}>
+                                    {item.quantity}x {item.customName || item.product?.name || "Sem Nome"}
+                                 </span>
+                              ))}
                           </div>
                        </div>
                        <button onClick={()=>handleChangeStatus(order.id, 'SHIPPED')} className="w-full py-3.5 bg-white text-black text-[11px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-200 transition-all shadow-2xl">Despachar Pedido</button>

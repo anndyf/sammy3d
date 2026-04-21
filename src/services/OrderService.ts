@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { calcNetMarketplace } from '@/lib/api';
+import { ConfigService } from './ConfigService';
 
 export class OrderService {
   /**
@@ -80,13 +81,14 @@ export class OrderService {
           await tx.orderItem.create({
             data: {
               orderId: order.id,
-              productId: String(item.productId),
+              productId: item.productId || null,
+              customName: item.customName || null,
               quantity: Number(item.quantity) || 1,
               price: Number(item.price) || 0
             }
           });
 
-          if (type === 'CATALOG') {
+          if (type === 'CATALOG' && item.productId) {
             await tx.product.update({
               where: { id: String(item.productId) },
               data: { stockQuantity: { decrement: Number(item.quantity) || 1 } }
@@ -97,7 +99,8 @@ export class OrderService {
 
       // 3. Financeiro
       if (paymentStatus === 'PAID') {
-        const netAmount = calcNetMarketplace(Number(totalAmount), saleChannel || '');
+        const configs = await ConfigService.list();
+        const netAmount = calcNetMarketplace(Number(totalAmount), saleChannel || '', configs);
         await tx.transaction.create({
           data: {
             type: 'INCOME',
@@ -132,7 +135,8 @@ export class OrderService {
 
       // Lógica de transição financeira
       if (paymentStatus === 'PAID' && oldOrder.paymentStatus !== 'PAID') {
-        const netAmount = calcNetMarketplace(updatedOrder.totalAmount, saleChannel || '');
+        const configs = await ConfigService.list();
+        const netAmount = calcNetMarketplace(updatedOrder.totalAmount, saleChannel || '', configs);
         await tx.transaction.create({
           data: {
             type: 'INCOME',

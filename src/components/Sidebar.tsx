@@ -24,7 +24,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const menuItemsMain = [
-  { label: "Visão Geral", icon: LayoutDashboard, href: "/" },
   { label: "Orçamentos", icon: FileText, href: "/quotes" },
   { label: "Catálogo", icon: Package, href: "/catalog" },
   { label: "Almoxarifado", icon: Box, href: "/stock" },

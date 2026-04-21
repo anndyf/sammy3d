@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { MaterialService } from './MaterialService';
 
 export class ProductService {
   /**
@@ -81,13 +82,7 @@ export class ProductService {
 
       const initialQty = Number(stockQuantity || 0);
       if (initialQty > 0) {
-        let deduction = Number(weightGrams) * initialQty;
-        if (material.unitType === 'kg' || material.unitType === 'l') deduction /= 1000;
-        
-        await tx.material.update({
-          where: { id: materialId },
-          data: { remainingAmount: { decrement: deduction } },
-        });
+        await MaterialService.deduct(tx, materialId, Number(weightGrams), initialQty);
       }
 
       return product;

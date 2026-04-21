@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Settings, Shield, Globe, ShoppingCart, MessageCircle, Save, Key, Bell, CreditCard, ExternalLink, Command, Smartphone, Zap, Info, ChevronRight, Lock, Eye, EyeOff, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,18 +19,68 @@ export default function SettingsPage() {
   const [mlFee, setMlFee] = useState("12");
   const [mlFreeShippingThreshold, setMlFreeShippingThreshold] = useState("79.00");
 
+  // Production Costs
+  const [energyCost, setEnergyCost] = useState("0.50");
+  const [machineWear, setMachineWear] = useState("1.20");
+  const [failRate, setFailRate] = useState("5");
+
   const [newPassword, setNewPassword] = useState("");
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      if (res.ok) {
+        if (data.business_name) setBusinessName(data.business_name);
+        if (data.business_whatsapp) setWhatsapp(data.business_whatsapp);
+        if (data.marketplaces_shopee_fee) setShopeeFee(data.marketplaces_shopee_fee);
+        if (data.marketplaces_shopee_fixed) setShopeeFixed(data.marketplaces_shopee_fixed);
+        if (data.marketplaces_ml_fee) setMlFee(data.marketplaces_ml_fee);
+        if (data.marketplaces_ml_threshold) setMlFreeShippingThreshold(data.marketplaces_ml_threshold);
+        if (data.production_energy_cost) setEnergyCost(data.production_energy_cost);
+        if (data.production_machine_wear) setMachineWear(data.production_machine_wear);
+        if (data.production_fail_rate) setFailRate(data.production_fail_rate);
+      }
+    } catch (e) { console.error("Error fetching settings:", e); }
+  };
+
+  useEffect(() => { fetchSettings(); }, []);
 
   const handleSave = async () => {
     setLoading(true);
-    setTimeout(() => {
-       alert("Configurações sincronizadas com sucesso no núcleo de dados.");
-       setLoading(false);
-    }, 1200);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          business_name: businessName,
+          business_whatsapp: whatsapp,
+          marketplaces_shopee_fee: shopeeFee,
+          marketplaces_shopee_fixed: shopeeFixed,
+          marketplaces_ml_fee: mlFee,
+          marketplaces_ml_threshold: mlFreeShippingThreshold,
+          production_energy_cost: energyCost,
+          production_machine_wear: machineWear,
+          production_fail_rate: failRate
+        })
+      });
+
+      if (res.ok) {
+        alert("Configurações sincronizadas com sucesso no núcleo de dados.");
+      } else {
+        alert("Erro ao sincronizar configurações.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Falha crítica na rede.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const tabs = [
     { id: 'business', label: 'Identidade', icon: Globe, desc: 'Naming e Branding' },
+    { id: 'calculations', label: 'Cálculos', icon: Zap, desc: 'Engenharia de Custos' },
     { id: 'marketplaces', label: 'Marketplaces', icon: ShoppingCart, desc: 'Taxas e Logística' },
     { id: 'public_store', label: 'Página Pública', icon: ExternalLink, desc: 'Interface do Cliente' },
     { id: 'security', label: 'Segurança', icon: Shield, desc: 'Acesso e Terminais' },
@@ -142,7 +192,51 @@ export default function SettingsPage() {
               </section>
            )}
 
-           {activeTab === 'marketplaces' && (
+            {activeTab === 'calculations' && (
+              <section className="space-y-10">
+                 <div className="space-y-2 border-l-2 border-blue-500 pl-6 py-2">
+                    <h3 className="text-2xl font-black tracking-tight text-white uppercase italic">Engenharia de Custos</h3>
+                    <p className="text-[12px] text-slate-500 font-bold uppercase tracking-widest">Configure os parâmetros base para cálculo de orçamentos e custos de produção.</p>
+                 </div>
+                 
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="bg-white/5 backdrop-blur-2xl border border-white/10 p-10 rounded-3xl shadow-2xl space-y-8">
+                       <div className="flex items-center gap-3">
+                          <Zap className="h-5 w-5 text-yellow-500" />
+                          <span className="text-[11px] font-black text-white uppercase tracking-widest">Produção por Hora</span>
+                       </div>
+                       <div className="space-y-6">
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest pl-1">Energia Elétrica (R$/h)</label>
+                             <input type="text" className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-[18px] font-black text-white outline-none focus:border-yellow-500 transition-all shadow-inner" value={energyCost} onChange={e=>setEnergyCost(e.target.value)} />
+                          </div>
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest pl-1">Depreciação Máquina (R$/h)</label>
+                             <input type="text" className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-[18px] font-black text-white outline-none focus:border-yellow-500 transition-all shadow-inner" value={machineWear} onChange={e=>setMachineWear(e.target.value)} />
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="bg-white/5 backdrop-blur-2xl border border-white/10 p-10 rounded-3xl shadow-2xl space-y-8">
+                       <div className="flex items-center gap-3">
+                          <Info className="h-5 w-5 text-blue-500" />
+                          <span className="text-[11px] font-black text-white uppercase tracking-widest">Margem de Erro</span>
+                       </div>
+                       <div className="space-y-6">
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest pl-1">Taxa de Falha Estimada (%)</label>
+                             <input type="text" className="w-full bg-black/40 border border-white/10 rounded-xl px-6 py-4 text-[18px] font-black text-white outline-none focus:border-blue-500 transition-all shadow-inner" value={failRate} onChange={e=>setFailRate(e.target.value)} />
+                          </div>
+                          <div className="p-6 bg-blue-600/5 border border-blue-500/10 rounded-xl">
+                             <p className="text-[11px] text-slate-500 leading-tight italic">Este valor é adicionado ao custo de material para cobrir perdas e falhas de impressão.</p>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </section>
+            )}
+
+            {activeTab === 'marketplaces' && (
               <section className="space-y-10">
                  <div className="space-y-2 border-l-2 border-orange-500 pl-6 py-2">
                     <h3 className="text-2xl font-black tracking-tight text-white uppercase italic">Marketplaces & Taxas</h3>

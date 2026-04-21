@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { ConfigService } from './ConfigService';
 
 export class MaterialService {
   /**
@@ -81,5 +82,40 @@ export class MaterialService {
         unitType,
       },
     });
+  }
+
+  /**
+   * Realiza a baixa de material de forma inteligente, considerando a taxa de falha.
+   */
+  static async deduct(tx: any, materialId: string, weightGrams: number, itemsCount: number) {
+    const material = await tx.material.findUnique({ where: { id: materialId } });
+    if (!material) return;
+
+    const configs = await ConfigService.list();
+    const failPct = parseFloat(configs.production_fail_rate || "5") / 100;
+
+    let deduction = Number(weightGrams) * Number(itemsCount) * (1 + failPct);
+    
+    // Conversão de unidade se necessário
+    if (material.unitType === 'kg' || material.unitType === 'l') {
+      deduction = deduction / 1000;
+    }
+
+    return await tx.material.update({
+      where: { id: materialId },
+      data: { remainingAmount: { decrement: deduction } },
+    });
+  }
+
+  /**
+   * Exclui um material.
+   */
+  static async delete(id: string) {
+    // Verifica se existem produtos usando este material
+    const productsCount = await prisma.product.count({ where: { materialId: id } });
+    if (productsCount > 0) {
+      throw new Error('Não é possível excluir um material que possui produtos vinculados.');
+    }
+    return await prisma.material.delete({ where: { id } });
   }
 }

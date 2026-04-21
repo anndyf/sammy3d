@@ -81,6 +81,24 @@ export default function StockPage() {
     }
   };
 
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (!confirm("Tem certeza que deseja excluir este insumo? Isso não pode ser desfeito.")) return;
+    
+    try {
+      const res = await fetch(`/api/materials/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(`Erro ao excluir: ${err.message || err.details || 'Tente novamente.'}`);
+      }
+    } catch (e: any) {
+      console.error(e);
+      alert("Falha na rede.");
+    }
+  };
+
   const totalStockValue = materials.reduce((acc, m) => acc + m.costPerUnit, 0);
   const filteredMaterials = materials.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -279,9 +297,18 @@ export default function StockPage() {
                      </div>
 
                      {/* ACTIONS */}
-                     <div className="w-[60px] flex justify-end">
-                        <div className="p-2 border border-white/10 rounded-md group-hover:border-white group-hover:bg-white/10 transition-all">
+                     <div className="w-[60px] flex justify-end gap-2">
+                        <div 
+                          className="p-2 border border-white/10 rounded-md group-hover:border-white group-hover:bg-white/10 transition-all"
+                          onClick={(e) => { e.stopPropagation(); handleEdit(mat); }}
+                        >
                            <Edit3 className="h-4 w-4 text-slate-700 group-hover:text-white" />
+                        </div>
+                        <div 
+                          className="p-2 border border-white/10 rounded-md hover:border-red-500 hover:bg-red-500/10 transition-all"
+                          onClick={(e) => handleDelete(e, mat.id)}
+                        >
+                           <Trash2 className="h-4 w-4 text-slate-700 hover:text-red-500" />
                         </div>
                      </div>
                   </div>

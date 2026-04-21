@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { ConfigService } from '@/services/ConfigService';
+import { MaterialService } from '@/services/MaterialService';
 
 export async function PATCH(
   request: Request,
@@ -25,32 +27,20 @@ export async function PATCH(
     }
 
     if (action === "add") {
-      // 1. Atualizar o estoque do produto
-      const updatedProduct = await prisma.product.update({
-        where: { id },
-        data: {
-          stockQuantity: {
-            increment: amount
-          }
-        }
+      const result = await prisma.$transaction(async (tx) => {
+        // 1. Atualizar o estoque do produto
+        const updatedProduct = await tx.product.update({
+          where: { id },
+          data: { stockQuantity: { increment: amount } }
+        });
+
+        // 2. Dar baixa no material automaticamente
+        await MaterialService.deduct(tx, product.materialId, product.weightGrams, amount);
+
+        return updatedProduct;
       });
 
-      // 2. Dar baixa no material automaticamente
-      let deduction = product.weightGrams * amount;
-      if (product.material.unitType === 'kg' || product.material.unitType === 'l') {
-        deduction = deduction / 1000;
-      }
-
-      await prisma.material.update({
-        where: { id: product.materialId },
-        data: {
-          remainingAmount: {
-            decrement: deduction
-          }
-        }
-      });
-
-      return NextResponse.json(updatedProduct);
+      return NextResponse.json(result);
     } 
     
     if (action === "remove") {
@@ -101,47 +91,52 @@ export async function PUT(
     const oldQty = product.stockQuantity || 0;
     const newQty = Number(stockQuantity || 0);
 
-    if (newQty > oldQty) {
-      const diff = newQty - oldQty;
-      let deduction = Number(weightGrams) * diff;
+    const configs = await ConfigService.list();
+    const energyH = parseFloat(configs.production_energy_cost || "0.50");
+    const machineH = parseFloat(configs.production_machine_wear || "1.20");
+    const failPct = parseFloat(configs.production_fail_rate || "5") / 100;
+
+    const result = await prisma.$transaction(async (tx) => {
+      if (newQty > oldQty) {
+        const diff = newQty - oldQty;
+        await MaterialService.deduct(tx, materialId, Number(weightGrams), diff);
+      }
+
+      // 3. Recalcula o Custo Base dinâmico
+      let costPerGram = material.costPerUnit / material.totalAmount;
       if (material.unitType === 'kg' || material.unitType === 'l') {
-        deduction = deduction / 1000;
+        costPerGram = costPerGram / 1000;
       }
-      await prisma.material.update({
-        where: { id: materialId },
-        data: { remainingAmount: { decrement: deduction } }
+
+      const materialCost = (Number(weightGrams) * costPerGram) * (1 + failPct);
+      const timeH = Number(productionTime) / 60;
+      const productionCost = timeH * (energyH + machineH);
+      
+      const calculatedCost = materialCost + productionCost + Number(additionalCost || 0);
+
+      // 4. Atualiza o banco
+      return await tx.product.update({
+        where: { id },
+        data: {
+          name,
+          description: description || null,
+          productionTime: Number(productionTime),
+          weightGrams: Number(weightGrams),
+          additionalCost: Number(additionalCost || 0),
+          materialId,
+          calculatedCost: Number(calculatedCost),
+          sellingPrice: Number(sellingPrice),
+          stockQuantity: newQty,
+          category: category || "Chaveiros",
+          subcategory: subcategory || null,
+          sku: sku || undefined,
+          shopeeUrl: shopeeUrl || null,
+          ...(imageUrl !== undefined && { imageUrl: imageUrl || null })
+        }
       });
-    }
-
-    // 3. Recalcula o Custo Base
-    let costPerGram = material.costPerUnit / material.totalAmount;
-    if (material.unitType === 'kg' || material.unitType === 'l') {
-      costPerGram = costPerGram / 1000;
-    }
-    const calculatedCost = (Number(weightGrams) * costPerGram) + Number(additionalCost || 0);
-
-    // 4. Atualiza o banco
-    const updatedProduct = await prisma.product.update({
-      where: { id },
-      data: {
-        name,
-        description: description || null,
-        productionTime: Number(productionTime),
-        weightGrams: Number(weightGrams),
-        additionalCost: Number(additionalCost || 0),
-        materialId,
-        calculatedCost: Number(calculatedCost),
-        sellingPrice: Number(sellingPrice),
-        stockQuantity: newQty,
-        category: category || "Chaveiros",
-        subcategory: subcategory || null,
-        sku: sku || undefined,
-        shopeeUrl: shopeeUrl || null,
-        ...(imageUrl !== undefined && { imageUrl: imageUrl || null })
-      }
     });
 
-    return NextResponse.json(updatedProduct, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
   } catch (error: any) {
     console.error("PRODUCT PUT ERRO:", error);
     return NextResponse.json({ error: 'Erro ao editar produto', details: error.message }, { status: 500 });

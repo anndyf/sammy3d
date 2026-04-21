@@ -78,13 +78,14 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Float
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
+  id         String   @id @default(cuid())
+  orderId    String
+  productId  String?
+  quantity   Int
+  price      Float
+  customName String?
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product    Product? @relation(fields: [productId], references: [id])
 }
 
 model Transaction {
@@ -94,4 +95,9 @@ model Transaction {
   amount      Float
   description String?
   date        DateTime @default(now())
+}
+
+model Config {
+  key   String @id
+  value String
 }
