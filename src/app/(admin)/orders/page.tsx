@@ -5,7 +5,7 @@ import { Plus, ListTodo, Printer, CheckCircle2, Package, Search, Clock, Zap, Tar
 import { cn } from "@/lib/utils";
 
 interface Product { id: string; name: string; sellingPrice: number; imageUrl?: string; }
-interface OrderItem { id: string; productId: string; quantity: number; price: number; product: Product; }
+interface OrderItem { id: string; productId?: string; customName?: string; quantity: number; price: number; product?: Product; }
 interface Order { id: string; customerName: string; status: string; type: string; totalAmount: number; createdAt: string; deadline?: string; notes?: string; weightGrams?: number; materialId?: string; paymentStatus?: string; items: OrderItem[]; }
 
 export default function OrdersPage() {
