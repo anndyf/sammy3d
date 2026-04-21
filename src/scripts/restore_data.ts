@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PrismaClient as PrismaClientPostgres } from '@prisma/client';
 import initSqlite from 'better-sqlite3';
 import { join } from 'path';
