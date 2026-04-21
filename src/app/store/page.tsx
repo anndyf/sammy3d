@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Search, Heart, ShoppingCart, ChevronRight, Menu, Filter, Box, Truck, MessageCircle, ExternalLink, Sparkles, Zap } from "lucide-react";
+import { Search, Heart, ShoppingCart, ChevronRight, Menu, Filter, Box, Truck, MessageCircle, ExternalLink, Sparkles, Zap, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Product {
