@@ -35,12 +35,18 @@ export class ProductService {
     
     const [data, total] = await Promise.all([
       prisma.product.findMany({
-        include: { material: true },
+        where: { parentId: null },
+        include: { 
+          material: true,
+          variations: {
+            include: { material: true }
+          }
+        },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip,
       }),
-      prisma.product.count(),
+      prisma.product.count({ where: { parentId: null } }),
     ]);
 
     return { 
@@ -77,6 +83,7 @@ export class ProductService {
           stockQuantity: Number(stockQuantity || 0),
           calculatedCost: Number(calculatedCost.toFixed(4)),
           sku,
+          parentId: data.parentId || null,
         },
       });
 

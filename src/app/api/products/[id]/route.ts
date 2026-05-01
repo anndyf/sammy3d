@@ -78,7 +78,7 @@ export async function PUT(
     const body = await request.json();
     const { 
       name, description, productionTime, weightGrams, additionalCost, 
-      materialId, sellingPrice, stockQuantity, category, subcategory, sku, shopeeUrl, imageUrl 
+      materialId, sellingPrice, stockQuantity, category, subcategory, sku, shopeeUrl, imageUrl, parentId
     } = body;
 
     // 1. Busca produto e material para auditoria de estoque
@@ -131,6 +131,7 @@ export async function PUT(
           subcategory: subcategory || null,
           sku: sku || undefined,
           shopeeUrl: shopeeUrl || null,
+          parentId: parentId || null,
           ...(imageUrl !== undefined && { imageUrl: imageUrl || null })
         }
       });

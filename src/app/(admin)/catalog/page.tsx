@@ -5,7 +5,7 @@ import { Plus, Search, Tag, Box, DollarSign, Clock, Settings2, Trash2, Edit3, Ey
 import { cn } from "@/lib/utils";
 
 interface Material { id: string; name: string; color?: string; costPerUnit: number; totalAmount: number; unitType: string; }
-interface Product { id: string; name: string; description?: string; imageUrl?: string; productionTime: number; weightGrams: number; additionalCost: number; materialId: string; category: string; subcategory?: string; sku?: string; shopeeUrl?: string; calculatedCost: number; sellingPrice: number; stockQuantity: number; material: Material; }
+interface Product { id: string; name: string; description?: string; imageUrl?: string; productionTime: number; weightGrams: number; additionalCost: number; materialId: string; category: string; subcategory?: string; sku?: string; shopeeUrl?: string; calculatedCost: number; sellingPrice: number; stockQuantity: number; material: Material; parentId?: string | null; variations?: Product[]; }
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,6 +31,7 @@ export default function CatalogPage() {
   const [minutes, setMinutes] = useState("");
   const [shopeeUrl, setShopeeUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [parentId, setParentId] = useState<string | null>(null);
 
   const defaultTaxonomy = ["ARTICULADOS", "SENSORIAIS", "CHAVEIROS", "FIDGETS", "PLACAS", "FLEXIVEIS", "MULTICOLOR", "PINTADO", "INDUSTRIAL"];
   const [availableCategories, setAvailableCategories] = useState(defaultTaxonomy);
@@ -124,6 +125,31 @@ export default function CatalogPage() {
       setAvailableCategories(prev => [...prev, p.category]);
     }
     
+    setParentId(p.parentId || null);
+    setIsAddingMode(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAddVariation = (p: Product) => {
+    setViewingProduct(null);
+    setEditingProduct(null);
+    setName(p.name + " - Nova Variação");
+    setCategory(p.category || "");
+    setSubcategory(p.subcategory || "");
+    setSku(p.sku ? p.sku + "-VAR" : "");
+    setDescription(p.description || "");
+    setSellingPrice(p.sellingPrice.toString());
+    setStockQuantity("0");
+    setWeightGrams(p.weightGrams.toString());
+    setMaterialId("");
+    
+    const totalMinutes = p.productionTime || 0;
+    setHours(Math.floor(totalMinutes / 60).toString());
+    setMinutes((totalMinutes % 60).toString());
+    setShopeeUrl(p.shopeeUrl || "");
+    setImageUrl(p.imageUrl || "");
+    
+    setParentId(p.id); // Este é o link para o produto pai!
     setIsAddingMode(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -218,7 +244,8 @@ export default function CatalogPage() {
           materialId,
           productionTime: (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0),
           shopeeUrl,
-          imageUrl
+          imageUrl,
+          parentId
         })
       });
       
@@ -226,7 +253,7 @@ export default function CatalogPage() {
 
       if (res.ok) {
         showStatus('success', '✅ Matriz Industrial Autorizada com Sucesso!');
-        setIsAddingMode(false); setEditingProduct(null);
+        setIsAddingMode(false); setEditingProduct(null); setParentId(null);
         setName(""); setCategory(""); setSubcategory(""); setSku(""); setDescription(""); setSellingPrice(""); setStockQuantity("");
         setWeightGrams(""); setMaterialId(""); setHours(""); setMinutes(""); setShopeeUrl(""); setImageUrl("");
         fetchData();
@@ -408,7 +435,10 @@ export default function CatalogPage() {
         {isAddingMode && (
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-10 animate-in slide-in-from-top-4 duration-500 shadow-2xl">
              <div className="flex items-center justify-between mb-10 border-b border-white/5 pb-6">
-                <h3 className="text-[15px] font-bold text-white uppercase tracking-[0.2em] flex items-center gap-3"><Tag className="h-4.5 w-4.5 text-blue-500" /> {editingProduct ? 'Ajuste de Ativo Industrial' : 'Registro de Ativo Industrial'}</h3>
+                <h3 className="text-[15px] font-bold text-white uppercase tracking-[0.2em] flex items-center gap-3">
+                  <Tag className="h-4.5 w-4.5 text-blue-500" /> 
+                  {editingProduct ? 'Ajuste de Ativo Industrial' : (parentId ? 'Registro de Nova Variação' : 'Registro de Ativo Industrial')}
+                </h3>
                 <div className="px-3 py-1 bg-white/10 text-white text-[10px] font-bold rounded-lg border border-white/10 uppercase tracking-widest">{editingProduct ? 'Editando' : 'Novo Item'}</div>
              </div>
              
@@ -583,10 +613,10 @@ export default function CatalogPage() {
                    <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Breve Descritivo Técnico</label>
                    <textarea className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-[14px] text-white min-h-[160px] outline-none" value={description} onChange={e=>setDescription(e.target.value)} />
                 </div>
-                <div className="flex justify-end pt-4 gap-4">
+                 <div className="flex justify-end pt-4 gap-4">
                    <button 
                      type="button"
-                     onClick={() => { setIsAddingMode(false); setEditingProduct(null); }}
+                     onClick={() => { setIsAddingMode(false); setEditingProduct(null); setParentId(null); }}
                      className="px-10 h-14 bg-white/5 text-slate-500 rounded-xl text-[13px] font-bold uppercase transition-all hover:bg-white/10"
                    >
                      Cancelar
@@ -703,9 +733,38 @@ export default function CatalogPage() {
                      </div>
                   </div>
 
+                  {/* VARIATIONS */}
+                  {viewingProduct.variations && viewingProduct.variations.length > 0 && (
+                    <div className="space-y-4">
+                       <p className="text-[11px] font-black text-black uppercase tracking-widest flex items-center gap-2"><List className="h-3 w-3 text-purple-500" /> Variações Disponíveis</p>
+                       <div className="grid grid-cols-1 gap-3">
+                          {viewingProduct.variations.map(variation => (
+                             <div key={variation.id} className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex justify-between items-center group">
+                                <div>
+                                   <p className="text-[12px] font-bold text-black">{variation.name}</p>
+                                   <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mt-0.5">{variation.material?.name || 'S/ Material'} • R$ {variation.sellingPrice.toFixed(2)}</p>
+                                </div>
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); setViewingProduct(null); handleEdit(variation); }}
+                                  className="p-2 text-slate-400 hover:text-black hover:bg-slate-200 rounded-lg transition-all"
+                                >
+                                   <Edit3 className="h-4 w-4" />
+                                </button>
+                             </div>
+                          ))}
+                       </div>
+                    </div>
+                  )}
+
                </div>
 
                <div className="p-8 border-t border-slate-100 bg-[#FAFAFA] flex gap-4">
+                  <button 
+                    onClick={() => handleAddVariation(viewingProduct)}
+                    className="flex-1 bg-slate-200 text-slate-700 py-4 rounded-xl text-[13px] font-bold uppercase shadow-sm hover:bg-slate-300 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" /> Criar Variação
+                  </button>
                   <button 
                     onClick={() => { setViewingProduct(null); handleEdit(viewingProduct); }}
                     className="flex-1 bg-black text-white py-4 rounded-xl text-[13px] font-bold uppercase shadow-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2"

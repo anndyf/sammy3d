@@ -57,6 +57,10 @@ model Product {
   updatedAt      DateTime    @updatedAt
   orderItems     OrderItem[]
   material       Material    @relation(fields: [materialId], references: [id])
+  
+  parentId       String?
+  parent         Product?    @relation("ProductVariations", fields: [parentId], references: [id])
+  variations     Product[]   @relation("ProductVariations")
 }
 
 model Order {
