@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Search, Plus, Eye, ChevronDown, ChevronUp, Package, Clock, CheckCircle2, Truck, AlertCircle, DollarSign, X, ShoppingCart, Trash2, CreditCard, Banknote, Phone, MessageSquare, User, ArrowRight, MoreHorizontal, LayoutGrid, List, Monitor, Command, Info, Globe, Smartphone, Bell, Share2, Receipt, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Product { id: string; name: string; sellingPrice: number; imageUrl?: string; }
+interface Product { id: string; name: string; sellingPrice: number; imageUrl?: string; material?: { name: string; color: string; }; variations?: Product[]; }
 interface OrderItem { id: string; product: { name: string; imageUrl?: string; }; quantity: number; price: number; }
 interface Order { id: string; customerName: string; customerContact?: string; status: string; type: string; totalAmount: number; discountAmount: number; paymentStatus: string; notes?: string; deadline?: string; createdAt: string; items: OrderItem[]; }
 
@@ -52,7 +52,13 @@ export default function OrdersListPage() {
   useEffect(() => { fetchData(); }, []);
 
   const handleAddToCart = () => {
-    const p = products.find(prod => prod.id === selectedProduct);
+    let p = products.find(prod => prod.id === selectedProduct);
+    if (!p) {
+       for (const parent of products) {
+          const v = parent.variations?.find(vari => vari.id === selectedProduct);
+          if (v) { p = v; break; }
+       }
+    }
     if (p) {
       setCart([...cart, { productId: p.id, quantity: Number(selectedQuantity), price: p.sellingPrice }]);
       setSelectedProduct(""); setSelectedQuantity("1");
@@ -167,7 +173,17 @@ export default function OrdersListPage() {
                        </div>
                     </div>
 
-                    <select className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white focus:bg-black focus:border-[#00D1FF] outline-none" value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)}><option value="">Puxar do modelo 3D...</option>{products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>
+                    <select className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white focus:bg-black focus:border-[#00D1FF] outline-none" value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)}>
+                       <option value="">Puxar do modelo 3D...</option>
+                       {products.map(p => (
+                          <optgroup key={p.id} label={p.name} className="bg-slate-900 text-white font-bold">
+                             <option value={p.id} className="bg-black font-normal">Padrão - {p.material?.color || p.material?.name}</option>
+                             {(p.variations || []).map(v => (
+                                <option key={v.id} value={v.id} className="bg-black font-normal">Variação - {v.material?.color || v.material?.name}</option>
+                             ))}
+                          </optgroup>
+                       ))}
+                    </select>
                     <div className="flex gap-4">
                        <input type="number" min="1" className="w-20 bg-black/50 border border-white/10 rounded-xl px-2 py-3 text-center font-bold text-white focus:border-[#00D1FF] focus:bg-black outline-none" value={selectedQuantity} onChange={(e) => setSelectedQuantity(e.target.value)} />
                        <button onClick={handleAddToCart} className="flex-1 bg-white/10 border border-white/10 text-white rounded-xl text-[11px] uppercase tracking-widest font-black hover:bg-[#00D1FF] hover:text-black hover:border-[#00D1FF] transition-all">Lançar Item</button>
@@ -179,9 +195,16 @@ export default function OrdersListPage() {
                 <div className="flex-1 space-y-4">
                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Borderô Interno</p>
                    {cart.length === 0 ? <p className="text-xs text-slate-600 py-10 text-center uppercase tracking-widest font-black">Lista vazia.</p> : cart.map((item, i) => {
-                     const p = products.find(prod => prod.id === item.productId);
+                     let p = products.find(prod => prod.id === item.productId);
+                     let isVar = false;
+                     if (!p) {
+                        for (const parent of products) {
+                           const v = parent.variations?.find(vari => vari.id === item.productId);
+                           if (v) { p = v; isVar = true; break; }
+                        }
+                     }
                      return <div key={i} className="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-xl hover:border-white/20 transition-all text-sm font-semibold text-slate-200">
-                        <span className="flex items-center gap-3"><span className="w-6 h-6 bg-black border border-white/10 rounded flex items-center justify-center text-[10px] text-slate-400">{item.quantity}x</span> {p?.name}</span>
+                        <span className="flex items-center gap-3"><span className="w-6 h-6 bg-black border border-white/10 rounded flex items-center justify-center text-[10px] text-slate-400">{item.quantity}x</span> {p?.name} {isVar && p?.material ? `(${p.material.color})` : ''}</span>
                         <div className="flex items-center gap-4"><span className="font-mono text-[#00D1FF]">R$ {item.price.toFixed(2)}</span><Trash2 className="h-4 w-4 text-red-500 opacity-50 cursor-pointer hover:opacity-100" onClick={()=>setCart(cart.filter((_, idx)=>idx!==i))} /></div>
                      </div>
                    })}
