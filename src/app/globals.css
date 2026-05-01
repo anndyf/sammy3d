@@ -13,6 +13,9 @@
   --vercel-accent: #0070F3;     /* Vercel Blue - pops beautifully on dark */
   --vercel-accent-bg: rgba(0, 112, 243, 0.15);
   
+  --glow-opacity-top: 0.20;
+  --glow-opacity-bottom: 0.10;
+  
   --sammy-cyan: #0070F3;
 }
 
@@ -39,13 +42,16 @@
   --vercel-text-main: #0f172a;
   --vercel-text-muted: #475569; /* Slate 600 */
   --vercel-border: #e2e8f0;
+  
+  --glow-opacity-top: 0.03;
+  --glow-opacity-bottom: 0.01;
 }
 
 body {
   background-color: var(--vercel-bg);
   background-image: 
-    radial-gradient(circle at 50% -20%, rgba(0, 112, 243, 0.20) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(0, 112, 243, 0.10) 0%, transparent 40%);
+    radial-gradient(circle at 50% -20%, rgba(0, 112, 243, var(--glow-opacity-top)) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(0, 112, 243, var(--glow-opacity-bottom)) 0%, transparent 40%);
   background-attachment: fixed;
   color: var(--vercel-text-main);
   font-family: 'Inter', sans-serif;

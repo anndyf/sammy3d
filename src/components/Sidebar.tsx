@@ -46,8 +46,8 @@ export function Sidebar() {
         {/* LOGO & TITLE AREA */}
         <div className="px-6 py-10 flex flex-col items-center">
            <div className="flex items-center gap-3 w-full mb-2">
-              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-2xl flex items-center justify-center bg-white">
-                 <img src="/logo.png" alt="SAMMY3D" className="w-full h-full object-cover invert" />
+              <div style={{ backgroundColor: '#ffffff' }} className="w-10 h-10 rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
+                 <img src="/logo.png" alt="SAMMY3D" className="w-full h-full object-cover" style={{ filter: 'invert(1)' }} />
               </div>
               <h1 className="text-xl font-black tracking-tighter text-white uppercase">SAMMY3D</h1>
            </div>
