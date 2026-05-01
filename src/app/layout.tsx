@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="antialiased bg-[#f8f9fa] text-[#212529] min-h-screen font-sans">
+      <body className="antialiased min-h-screen font-sans custom-scrollbar">
         {children}
       </body>
     </html>
