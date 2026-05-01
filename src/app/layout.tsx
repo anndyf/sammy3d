@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-// Imports deletados pós-refatoração
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'SAMMY3D | Gestão Inteligente',
@@ -15,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="antialiased min-h-screen font-sans custom-scrollbar">
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

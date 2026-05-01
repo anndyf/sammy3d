@@ -1,13 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Bell, Monitor } from "lucide-react";
+import { Bell, Monitor, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 export function Topbar() {
   const [mounted, setMounted] = useState(false);
   const [quoteCount, setQuoteCount] = useState(0);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -46,6 +48,14 @@ export function Topbar() {
 
       {/* VERCEL ACTIONS */}
       <div className="flex items-center gap-4">
+        <button
+           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+           className="p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+           title="Alternar Tema"
+        >
+           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
+
         <Link href="/store" target="_blank" className="text-[13px] font-medium text-slate-400 hover:text-white transition-colors hidden lg:flex items-center gap-2 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/5 shadow-2xl">
            Ver Loja Pública
         </Link>
