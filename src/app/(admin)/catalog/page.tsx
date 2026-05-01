@@ -451,25 +451,41 @@ export default function CatalogPage() {
                    <div className="space-y-2">
                       <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Categoria Técnica</label>
                       <div className="flex gap-2">
-                         <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none" required value={category} onChange={e=>setCategory(e.target.value)}>
-                            <option value="" className="bg-black">Selecionar...</option>
-                            {availableCategories.map(cat => (
-                              <option key={cat} value={cat} className="bg-black">{cat}</option>
-                            ))}
-                         </select>
-                         <button type="button" onClick={()=>setIsAddingCat(!isAddingCat)} className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white hover:text-black transition-all"><Plus className="h-4 w-4" /></button>
+                         {isAddingCat ? (
+                            <input type="text" className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none focus:border-blue-500" value={newCatInput} onChange={e=>setNewCatInput(e.target.value)} placeholder="Nova Categoria..." autoFocus />
+                         ) : (
+                            <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none" required value={category} onChange={e=>setCategory(e.target.value)}>
+                               <option value="" className="bg-black dark:bg-black">Selecionar...</option>
+                               {availableCategories.map(cat => (
+                                 <option key={cat} value={cat} className="bg-black dark:bg-black">{cat}</option>
+                               ))}
+                            </select>
+                         )}
+                         {isAddingCat ? (
+                            <button type="button" onClick={addCategory} className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all font-bold">OK</button>
+                         ) : (
+                            <button type="button" onClick={()=>setIsAddingCat(true)} className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white hover:text-black transition-all"><Plus className="h-4 w-4" /></button>
+                         )}
                       </div>
                    </div>
                    <div className="space-y-2">
                       <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Subcategoria Técnica</label>
                       <div className="flex gap-2">
-                         <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none" value={subcategory} onChange={e=>setSubcategory(e.target.value)}>
-                            <option value="" className="bg-black">Selecionar...</option>
-                            {availableSubcategories.map(sub => (
-                              <option key={sub} value={sub} className="bg-black">{sub}</option>
-                            ))}
-                         </select>
-                         <button type="button" onClick={()=>setIsAddingSubcat(!isAddingSubcat)} className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white hover:text-black transition-all"><Plus className="h-4 w-4" /></button>
+                         {isAddingSubcat ? (
+                            <input type="text" className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none focus:border-blue-500" value={newSubcatInput} onChange={e=>setNewSubcatInput(e.target.value)} placeholder="Nova Subcategoria..." autoFocus />
+                         ) : (
+                            <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none" value={subcategory} onChange={e=>setSubcategory(e.target.value)}>
+                               <option value="" className="bg-black dark:bg-black">Selecionar...</option>
+                               {availableSubcategories.map(sub => (
+                                 <option key={sub} value={sub} className="bg-black dark:bg-black">{sub}</option>
+                               ))}
+                            </select>
+                         )}
+                         {isAddingSubcat ? (
+                            <button type="button" onClick={addSubcategory} className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all font-bold">OK</button>
+                         ) : (
+                            <button type="button" onClick={()=>setIsAddingSubcat(true)} className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white hover:text-black transition-all"><Plus className="h-4 w-4" /></button>
+                         )}
                       </div>
                    </div>
                    <div className="space-y-2 relative group">
