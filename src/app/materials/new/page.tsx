@@ -8,6 +8,44 @@ import { cn } from "@/lib/utils";
 export default function NewMaterialPage() {
   const router = useRouter();
   const [type, setType] = useState<"FILAMENT" | "RESIN">("FILAMENT");
+  const [name, setName] = useState("");
+  const [costPerUnit, setCostPerUnit] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+  const [colorHex, setColorHex] = useState("#FFFFFF");
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async () => {
+    if (!name || !costPerUnit || !totalAmount) {
+      alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/materials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          type,
+          color: colorHex,
+          costPerUnit: parseFloat(costPerUnit),
+          totalAmount: parseFloat(totalAmount),
+          unitType: type === "FILAMENT" ? "g" : "ml"
+        })
+      });
+
+      if (res.ok) {
+        router.push("/materials");
+      } else {
+        const err = await res.json();
+        alert(`Erro: ${err.error || err.details}`);
+      }
+    } catch (e) {
+      alert("Falha na conexão.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="animate-fade-in max-w-4xl mx-auto space-y-10 py-6">
@@ -68,6 +106,8 @@ export default function NewMaterialPage() {
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Nome / Marca</label>
                 <input 
                   type="text" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: PLA Plus Rock White - Creality" 
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                 />
@@ -77,6 +117,10 @@ export default function NewMaterialPage() {
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Custo Total (R$)</label>
                 <input 
                   type="number" 
+                  step="0.01"
+                  min="0"
+                  value={costPerUnit}
+                  onChange={(e) => setCostPerUnit(e.target.value)}
                   placeholder="0.00" 
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                 />
@@ -86,6 +130,9 @@ export default function NewMaterialPage() {
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Peso Total ({type === "FILAMENT" ? "g" : "ml"})</label>
                 <input 
                   type="number" 
+                  min="0"
+                  value={totalAmount}
+                  onChange={(e) => setTotalAmount(e.target.value)}
                   placeholder="1000" 
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                 />
@@ -96,10 +143,14 @@ export default function NewMaterialPage() {
                 <div className="flex gap-4">
                   <input 
                     type="color" 
+                    value={colorHex}
+                    onChange={(e) => setColorHex(e.target.value)}
                     className="h-12 w-12 bg-white/5 border border-white/10 rounded-xl p-1 cursor-pointer"
                   />
                   <input 
                     type="text" 
+                    value={colorHex}
+                    onChange={(e) => setColorHex(e.target.value)}
                     placeholder="#FFFFFF" 
                     className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                   />
@@ -107,9 +158,12 @@ export default function NewMaterialPage() {
              </div>
           </div>
 
-          <button className="w-full bg-purple-600 hover:bg-purple-500 text-white p-4 rounded-2xl flex items-center justify-center gap-3 text-base font-bold shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98] mt-4 group">
+          <button 
+            onClick={handleSave}
+            disabled={loading}
+            className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-2xl flex items-center justify-center gap-3 text-base font-bold shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98] mt-4 group">
             <Save className="h-5 w-5 group-hover:animate-pulse" />
-            Salvar Material no Estoque
+            {loading ? "Salvando..." : "Salvar Material no Estoque"}
           </button>
         </div>
 
