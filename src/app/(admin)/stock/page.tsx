@@ -73,7 +73,7 @@ export default function StockPage() {
       } else {
         const err = await res.json();
         console.error("Erro ao salvar:", err);
-        alert(`Erro ao cadastrar: ${err.details || 'Verifique os campos e tente novamente.'}`);
+        alert(`Erro ao cadastrar: ${err.error || err.details || 'Verifique os campos e tente novamente.'}`);
       }
     } catch (e: any) { 
       console.error(e); 
@@ -91,7 +91,7 @@ export default function StockPage() {
         fetchData();
       } else {
         const err = await res.json();
-        alert(`Erro ao excluir: ${err.message || err.details || 'Tente novamente.'}`);
+        alert(`Erro ao excluir: ${err.error || err.message || err.details || 'Tente novamente.'}`);
       }
     } catch (e: any) {
       console.error(e);
