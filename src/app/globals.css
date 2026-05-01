@@ -6,8 +6,8 @@
 }
 
 :root {
-  --vercel-bg: #000000; /* Will invert to pure white #FFFFFF */
-  --vercel-text-main: #FFFFFF; /* Will invert to black */
+  --vercel-bg: #111114; /* A noticeable dark graphite/slate */
+  --vercel-text-main: #FFFFFF;
   --vercel-text-muted: #A3A3A3;
   --vercel-border: #2A2A2A;
   --vercel-accent: #0070F3;     /* Vercel Blue - pops beautifully on dark */
@@ -28,14 +28,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  
-  /* LIGHT MODE INVERSION ENGINE */
-  filter: invert(1) hue-rotate(180deg);
-}
-
-/* Prevent images and videos from being inverted */
-img, video, .preserve-color {
-  filter: invert(1) hue-rotate(180deg);
 }
 
 /* VERCEL DARK CORE COMPONENTS */
