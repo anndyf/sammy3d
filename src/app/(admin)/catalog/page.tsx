@@ -555,13 +555,13 @@ export default function CatalogPage() {
                       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
                          <div className="flex items-center justify-between">
                             <span className="text-[11px] font-black text-orange-500 uppercase tracking-widest">Retorno Shopee</span>
-                            <div className="px-2 py-0.5 bg-orange-500/10 text-orange-400 text-[9px] font-black rounded uppercase">14% + R$ 5.00</div>
+                            <div className="px-2 py-0.5 bg-orange-500/10 text-orange-400 text-[9px] font-black rounded uppercase">20% + R$ 4,00</div>
                          </div>
                          <div className="flex items-baseline justify-between">
-                            <div className="text-[10px] text-slate-500 font-bold uppercase">Taxa Est: <span className="text-white font-mono">R$ {(parseFloat(sellingPrice || "0") * 0.14 + 5).toFixed(2)}</span></div>
+                            <div className="text-[10px] text-slate-500 font-bold uppercase">Taxa Est: <span className="text-white font-mono">R$ {(parseFloat(sellingPrice || "0") * 0.20 + 4).toFixed(2)}</span></div>
                             <div className="text-right">
                                <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Líquido a Receber</p>
-                               <p className="text-2xl font-black text-white font-mono">R$ {(parseFloat(sellingPrice || "0") - (parseFloat(sellingPrice || "0") * 0.14) - 5).toFixed(2)}</p>
+                               <p className="text-2xl font-black text-white font-mono">R$ {(parseFloat(sellingPrice || "0") - (parseFloat(sellingPrice || "0") * 0.20) - 4).toFixed(2)}</p>
                             </div>
                          </div>
                       </div>
@@ -569,13 +569,13 @@ export default function CatalogPage() {
                       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
                          <div className="flex items-center justify-between">
                             <span className="text-[11px] font-black text-yellow-500 uppercase tracking-widest">Retorno Mercado Livre</span>
-                            <div className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 text-[9px] font-black rounded uppercase">12% + Taxa Fixa</div>
+                            <div className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 text-[9px] font-black rounded uppercase">16.5% + Taxa Fixa/Frete</div>
                          </div>
                          <div className="flex items-baseline justify-between">
-                            <div className="text-[10px] text-slate-500 font-bold uppercase">Taxa Est: <span className="text-white font-mono">R$ {(parseFloat(sellingPrice || "0") * 0.12 + (parseFloat(sellingPrice || "0") < 79 ? 6 : 0)).toFixed(2)}</span></div>
+                            <div className="text-[10px] text-slate-500 font-bold uppercase">Taxa Est: <span className="text-white font-mono">R$ {(parseFloat(sellingPrice || "0") * 0.165 + (parseFloat(sellingPrice || "0") < 79 ? 6 : 28.30)).toFixed(2)}</span></div>
                             <div className="text-right">
                                <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Líquido a Receber</p>
-                               <p className="text-2xl font-black text-white font-mono">R$ {(parseFloat(sellingPrice || "0") - (parseFloat(sellingPrice || "0") * 0.12) - (parseFloat(sellingPrice || "0") < 79 ? 6 : 0)).toFixed(2)}</p>
+                               <p className="text-2xl font-black text-white font-mono">R$ {(parseFloat(sellingPrice || "0") - (parseFloat(sellingPrice || "0") * 0.165) - (parseFloat(sellingPrice || "0") < 79 ? 6 : 28.30)).toFixed(2)}</p>
                             </div>
                          </div>
                       </div>
@@ -719,16 +719,16 @@ export default function CatalogPage() {
                         <div className="bg-orange-50/30 border border-orange-100 rounded-2xl p-6 flex justify-between items-center">
                            <div>
                               <p className="text-[11px] font-black text-orange-600 uppercase tracking-widest">Recebimento Shopee</p>
-                              <p className="text-[9px] text-orange-400 font-bold uppercase mt-0.5">14% + R$ 5,00 Fee</p>
+                              <p className="text-[9px] text-orange-400 font-bold uppercase mt-0.5">20% + R$ 4,00 Fee</p>
                            </div>
-                           <p className="text-2xl font-black text-orange-700 font-mono">R$ {(viewingProduct.sellingPrice * 0.86 - 5).toFixed(2)}</p>
+                           <p className="text-2xl font-black text-orange-700 font-mono">R$ {(viewingProduct.sellingPrice - (viewingProduct.sellingPrice * 0.20) - 4).toFixed(2)}</p>
                         </div>
                         <div className="bg-yellow-50/30 border border-yellow-100 rounded-2xl p-6 flex justify-between items-center">
                            <div>
                               <p className="text-[11px] font-black text-yellow-700 uppercase tracking-widest">Recebimento M. Livre</p>
-                              <p className="text-[9px] text-yellow-600 font-bold uppercase mt-0.5">12% + Taxa Variável</p>
+                              <p className="text-[9px] text-yellow-600 font-bold uppercase mt-0.5">16.5% + Taxa Fixa/Frete</p>
                            </div>
-                           <p className="text-2xl font-black text-yellow-800 font-mono">R$ {(viewingProduct.sellingPrice * 0.88 - (viewingProduct.sellingPrice < 79 ? 6 : 0)).toFixed(2)}</p>
+                           <p className="text-2xl font-black text-yellow-800 font-mono">R$ {(viewingProduct.sellingPrice - (viewingProduct.sellingPrice * 0.165) - (viewingProduct.sellingPrice < 79 ? 6 : 28.30)).toFixed(2)}</p>
                         </div>
                      </div>
                   </div>
