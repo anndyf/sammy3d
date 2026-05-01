@@ -158,6 +158,7 @@ export class OrderService {
 
   static async delete(id: string) {
     return await prisma.$transaction([
+      prisma.transaction.deleteMany({ where: { description: { contains: `[ID: ${id}]` } } }),
       prisma.orderItem.deleteMany({ where: { orderId: id } }),
       prisma.order.delete({ where: { id } }),
     ]);

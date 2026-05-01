@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Plus, ListTodo, Printer, CheckCircle2, Package, Search, Clock, Zap, Target, Box, X, ChevronRight, Globe, MoreHorizontal, DollarSign, Truck } from "lucide-react";
+import { Plus, ListTodo, Printer, CheckCircle2, Package, Search, Clock, Zap, Target, Box, X, ChevronRight, Globe, MoreHorizontal, DollarSign, Truck, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Product { id: string; name: string; sellingPrice: number; imageUrl?: string; }
@@ -83,6 +83,14 @@ export default function OrdersPage() {
     const newStatus = order.paymentStatus === 'PAID' ? 'PENDING' : 'PAID';
     try {
       const res = await fetch(`/api/orders/${order.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paymentStatus: newStatus }) });
+      if (res.ok) fetchData();
+    } catch (e) { console.error(e); }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm("Tem certeza que deseja cancelar e excluir esta Ordem de Serviço? Isso não pode ser desfeito.")) return;
+    try {
+      const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
       if (res.ok) fetchData();
     } catch (e) { console.error(e); }
   };
@@ -171,9 +179,14 @@ export default function OrdersPage() {
                              <span className="text-[11px] font-mono font-bold text-slate-500 tracking-tighter group-hover:text-blue-400 transition-colors">#{order.id.slice(-6)}</span>
                              <span className="text-[9px] font-mono text-slate-600">{new Date(order.createdAt).toLocaleDateString('pt-BR')} {new Date(order.createdAt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</span>
                           </div>
-                          <button onClick={(e) => { e.stopPropagation(); handleTogglePayment(order); }} className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all shadow-2xl", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-white/5 text-slate-500 border-white/10 hover:border-white hover:text-white")}>
-                             {order.paymentStatus === 'PAID' ? 'Pago' : 'Pagar'}
-                          </button>
+                           <div className="flex gap-2">
+                              <button onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }} className="px-2 py-1 rounded-full text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all">
+                                 <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                              <button onClick={(e) => { e.stopPropagation(); handleTogglePayment(order); }} className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all shadow-2xl", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-white/5 text-slate-500 border-white/10 hover:border-white hover:text-white")}>
+                                 {order.paymentStatus === 'PAID' ? 'Pago' : 'Pagar'}
+                              </button>
+                           </div>
                        </div>
                        <div className="space-y-2">
                           <p className="text-[15px] font-bold text-white truncate tracking-tight">{order.customerName}</p>
@@ -205,9 +218,14 @@ export default function OrdersPage() {
                              <span className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em] animate-pulse">Em Manufatura</span>
                              <span className="text-[9px] font-mono text-slate-500">{new Date(order.createdAt).toLocaleDateString('pt-BR')}</span>
                           </div>
-                          <button onClick={() => handleTogglePayment(order)} className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-white/5 text-slate-500 border-white/10")}>
-                             {order.paymentStatus === 'PAID' ? 'Pago' : 'Pagar'}
-                          </button>
+                           <div className="flex gap-2">
+                              <button onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }} className="px-2 py-1 rounded-full text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all">
+                                 <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                              <button onClick={() => handleTogglePayment(order)} className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-white/5 text-slate-500 border-white/10")}>
+                                 {order.paymentStatus === 'PAID' ? 'Pago' : 'Pagar'}
+                              </button>
+                           </div>
                        </div>
                        <div className="space-y-2">
                           <p className="text-[15px] font-bold text-white tracking-tight leading-tight">{order.customerName}</p>
@@ -238,9 +256,14 @@ export default function OrdersPage() {
                              <span className="text-[10px] font-mono text-emerald-500 font-bold uppercase tracking-widest">Concluído</span>
                              <span className="text-[9px] font-mono text-slate-600">{new Date(order.createdAt).toLocaleDateString('pt-BR')}</span>
                           </div>
-                          <button onClick={() => handleTogglePayment(order)} className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-white/5 text-slate-500 border-white/10")}>
-                             {order.paymentStatus === 'PAID' ? 'Pago' : 'Pagar'}
-                          </button>
+                           <div className="flex gap-2">
+                              <button onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }} className="px-2 py-1 rounded-full text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all">
+                                 <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                              <button onClick={() => handleTogglePayment(order)} className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-white/5 text-slate-500 border-white/10")}>
+                                 {order.paymentStatus === 'PAID' ? 'Pago' : 'Pagar'}
+                              </button>
+                           </div>
                        </div>
                        <div className="space-y-2">
                           <p className="text-[15px] font-bold text-white tracking-tight">{order.customerName}</p>
@@ -266,10 +289,15 @@ export default function OrdersPage() {
               <div className="space-y-4">
                  {shipped.map(order => (
                     <div key={order.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 opacity-30 hover:opacity-100 transition-all flex flex-col gap-3 group grayscale hover:grayscale-0">
-                       <div className="flex justify-between items-center">
-                          <span className="text-[9px] font-mono text-slate-600 group-hover:text-white transition-colors">{new Date(order.createdAt).toLocaleDateString('pt-BR')}</span>
-                          <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest group-hover:text-blue-500 transition-colors">Enviado</span>
-                       </div>
+                        <div className="flex justify-between items-center">
+                           <span className="text-[9px] font-mono text-slate-600 group-hover:text-white transition-colors">{new Date(order.createdAt).toLocaleDateString('pt-BR')}</span>
+                           <div className="flex gap-2 items-center">
+                              <button onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }} className="px-2 py-1 text-slate-500 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100">
+                                 <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                              <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest group-hover:text-blue-500 transition-colors">Enviado</span>
+                           </div>
+                        </div>
                        <p className="text-[14px] font-bold text-slate-500 group-hover:text-white truncate transition-colors">{order.customerName}</p>
                     </div>
                  ))}
