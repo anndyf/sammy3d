@@ -7,14 +7,14 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen text-white select-none antialiased">
+    <div className="flex min-h-screen text-white select-none antialiased bg-[#12151c]">
       <Sidebar />
-      <div className="flex-1 flex flex-col md:ml-[240px] relative">
+      <div className="flex-1 flex flex-col md:ml-[260px] relative">
         <Topbar />
         
-        {/* VERCEL CONTENT AREA */}
-        <main className="flex-1 w-full flex flex-col min-h-[calc(100vh-56px)] px-6 md:px-12 lg:px-24 xl:px-32 py-12">
-           <div className="flex-1 max-w-[1200px] w-full mx-auto animate-in fade-in duration-500">
+        {/* MAIN CONTENT AREA */}
+        <main className="flex-1 w-full flex flex-col min-h-[calc(100vh-56px)] px-6 md:px-10 lg:px-12 py-8">
+           <div className="flex-1 w-full max-w-[1600px] mx-auto animate-in fade-in duration-500">
              {children}
            </div>
         </main>

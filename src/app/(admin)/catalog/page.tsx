@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Plus, Search, Tag, Box, DollarSign, Clock, Settings2, Trash2, Edit3, Eye, Image as ImageIcon, ChevronDown, ChevronUp, AlertCircle, ShoppingCart, ArrowRight, Share2, MoreHorizontal, LayoutGrid, List, X, ExternalLink, Globe, Monitor, Smartphone, MessageCircle, Calculator, Sparkles } from "lucide-react";
+import { Plus, Search, Tag, Box, DollarSign, Clock, Settings2, Trash2, Edit3, Eye, Image as ImageIcon, ChevronDown, ChevronUp, AlertCircle, ShoppingCart, ArrowRight, Share2, MoreHorizontal, LayoutGrid, List, X, ExternalLink, Globe, Monitor, Smartphone, MessageCircle, Calculator, Sparkles, Package, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Material { id: string; name: string; color?: string; costPerUnit: number; totalAmount: number; unitType: string; }
@@ -302,133 +302,128 @@ export default function CatalogPage() {
       )}
 
       {/* VERCEL HEADER AREA */}
-      <div className="border-b border-white/5 px-6 py-8">
-        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
-           <div className="flex flex-col gap-1">
-              <h1 className="text-3xl font-black tracking-tight text-white">Catálogo de Design</h1>
-              <p className="text-[14px] text-slate-400">Portfólio técnico de ativos e peças de alta precisão 3D.</p>
-           </div>
-           <button 
-             onClick={() => setIsAddingMode(!isAddingMode)}
-             className="bg-white text-black px-6 py-2 h-10 rounded-lg text-[13px] font-bold hover:bg-slate-200 transition-all flex items-center gap-2 shadow-2xl"
-           >
-             {isAddingMode ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-             {isAddingMode ? "Fechar Catálogo" : "Novo Design"}
-           </button>
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
+         <div className="flex items-center gap-4">
+            <div className="p-3 bg-transparent rounded-xl">
+               <Package className="h-6 w-6 text-cyan-400" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-white">Catálogo de Produtos</h1>
+         </div>
+         <button 
+           onClick={() => setIsAddingMode(!isAddingMode)}
+           className="bg-cyan-500 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg"
+         >
+           {isAddingMode ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+           {isAddingMode ? "Fechar Catálogo" : "Novo Produto"}
+         </button>
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-6 py-10">
+      <div>
         {!isAddingMode && (
-          <div className="space-y-12">
-             {/* SEARCH & FILTERS */}
-             <div className="flex items-center justify-between pb-8 border-b border-white/5">
-                <div className="relative w-full max-w-md">
-                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-500" />
-                   <input 
-                     type="text" 
-                     placeholder="Buscar no portfólio..." 
-                     className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[14px] text-white outline-none hover:border-white/20 focus:bg-white/10 focus:border-blue-500 transition-all shadow-2xl" 
-                     value={searchTerm} 
-                     onChange={e=>setSearchTerm(e.target.value)} 
-                   />
-                </div>
+          <div className="space-y-6">
+             {/* SEARCH */}
+             <div className="relative w-full">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                <input 
+                  type="text" 
+                  placeholder="Buscar produto..." 
+                  className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:bg-[#1a1d24] focus:border-cyan-500 transition-all shadow-sm" 
+                  value={searchTerm} 
+                  onChange={e=>setSearchTerm(e.target.value)} 
+                />
              </div>
 
-             {/* PRODUCT GRID: VERCEL PREMIUM CARD DESIGN */}
-             {products.length > 0 || loading ? (
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                  {loading ? (
-                    <div className="col-span-full py-32 text-center text-[10px] text-slate-500 uppercase tracking-[0.3em] italic font-mono">
-                       Indexando Matrizes 3D...
-                    </div>
-                  ) : (
-                    filteredProducts.map(prod => (
-                      <div 
-                        key={prod.id} 
-                        className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500 hover:shadow-[0_0_40px_rgba(0,112,243,0.15)] transition-all cursor-pointer flex flex-col"
-                      >
-                         {/* IMAGE CONTAINER */}
-                         <div className="aspect-square w-full bg-black/40 relative border-b border-white/5 overflow-hidden">
-                            <div className="absolute inset-0 flex items-center justify-center p-8 group-hover:scale-105 duration-700 ease-in-out">
-                               {prod.imageUrl ? (
-                                 <img src={prod.imageUrl} className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(0,112,243,0.3)]" />
-                               ) : (
-                                 <div className="flex flex-col items-center gap-2 opacity-10">
-                                    <ImageIcon className="h-16 w-16 text-white" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Sem Preview</span>
-                                 </div>
-                               )}
-                            </div>
-                            {/* ACTIONS */}
-                            <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500 z-10">
-                               <div 
-                                 className="p-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl hover:bg-white hover:text-black transition-all cursor-pointer"
-                                 onClick={(e) => { e.stopPropagation(); setViewingProduct(prod); }}
-                               >
-                                  <Eye className="h-4 w-4" />
-                               </div>
-                               <div 
-                                 className="p-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl hover:bg-white hover:text-black transition-all cursor-pointer"
-                                 onClick={(e) => { e.stopPropagation(); handleEdit(prod); }}
-                               >
-                                  <Edit3 className="h-4 w-4" />
-                               </div>
-                            </div>
-                            
-                            <div className="absolute bottom-4 left-4">
-                               <div className="bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10 text-[10px] font-bold text-slate-300 uppercase tracking-widest shadow-2xl">
-                                  {prod.category || 'Peça Industrial'}
-                               </div>
-                            </div>
-                         </div>
+             {/* PRODUCT TABLE LIST */}
+             <div className="bg-[#1a1d24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+               {/* Table Header */}
+               <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#1a1d24]">
+                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">IMAGEM</div>
+                  <div className="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">NOME / DESCRIÇÃO</div>
+                  <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">SKU</div>
+                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">TIPO</div>
+                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">ESTOQUE</div>
+                  <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">CUSTO UNIT.</div>
+                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">PREÇO VENDA</div>
+                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">AÇÕES</div>
+               </div>
 
-                         {/* INFO CONTAINER */}
-                         <div className="p-6 space-y-6 flex-1 flex flex-col justify-between">
-                            <div className="space-y-2">
-                               <div className="flex justify-between items-start gap-4">
-                                 <h3 className="text-[18px] font-bold text-white tracking-tight leading-tight">{prod.name || 'Sem Nome'}</h3>
-                                 <div className="text-right">
-                                    <p className="text-[18px] font-mono font-black text-white">R$ {(prod.sellingPrice || 0).toFixed(2)}</p>
-                                 </div>
+               {/* Table Body */}
+               {products.length > 0 || loading ? (
+                 <div className="divide-y divide-white/5">
+                    {loading ? (
+                      <div className="py-16 text-center text-xs text-slate-500 uppercase tracking-widest italic font-mono">
+                         Carregando...
+                      </div>
+                    ) : (
+                      filteredProducts.map(prod => (
+                        <div key={prod.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
+                           <div className="col-span-1">
+                              <div className="w-12 h-12 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
+                                 {prod.imageUrl ? (
+                                   <img src={prod.imageUrl} className="w-full h-full object-cover" />
+                                 ) : (
+                                   <ImageIcon className="h-5 w-5 text-slate-500" />
+                                 )}
                               </div>
-                              <p className="text-[12px] font-mono font-semibold text-slate-500 uppercase tracking-widest">SKU: {prod.sku || 'N/A'}</p>
+                           </div>
+                           
+                           <div className="col-span-3">
+                              <p className="text-sm font-bold text-white truncate">{prod.name || 'Sem Nome'}</p>
                            </div>
 
-                           <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                 <div className={cn(
-                                   "w-2 h-2 rounded-full",
-                                   (prod.stockQuantity || 0) > 0 ? "bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-red-500"
-                                 )} />
-                                 <span className={cn(
-                                   "text-[11px] font-bold uppercase tracking-widest",
-                                   (prod.stockQuantity || 0) > 0 ? "text-emerald-500" : "text-red-500"
-                                 )}>
-                                    {(prod.stockQuantity || 0) > 0 ? `${prod.stockQuantity} UN` : 'Sem Estoque'}
-                                 </span>
-                              </div>
-                              <span className="text-[10px] text-slate-500 font-bold uppercase">{prod.material?.name || 'Material S/N'}</span>
+                           <div className="col-span-2">
+                              <p className="text-sm text-slate-400 truncate">{prod.sku || 'N/A'}</p>
+                           </div>
+
+                           <div className="col-span-1">
+                              <span className="inline-block px-2.5 py-1 bg-[#1e293b] text-slate-300 text-[10px] font-bold rounded-lg border border-white/10">
+                                 {prod.category || 'Geral'}
+                              </span>
+                           </div>
+
+                           <div className="col-span-1 text-center">
+                              <span className={cn(
+                                "text-sm font-bold",
+                                (prod.stockQuantity || 0) > 0 ? "text-white" : "text-red-400"
+                              )}>
+                                 {prod.stockQuantity || 0}
+                              </span>
+                           </div>
+
+                           <div className="col-span-2">
+                              <p className="text-sm font-bold text-slate-300 font-mono">
+                                 R$ {(prod.calculatedCost || 0).toFixed(2)}
+                              </p>
+                           </div>
+
+                           <div className="col-span-1">
+                              <p className="text-sm font-bold text-emerald-400 font-mono">
+                                 R$ {(prod.sellingPrice || 0).toFixed(2)}
+                              </p>
+                           </div>
+
+                           <div className="col-span-1 flex items-center justify-end gap-2">
+                              <button onClick={() => setViewingProduct(prod)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-md transition-colors" title="Ver Detalhes">
+                                 <Info className="h-4 w-4" />
+                              </button>
+                              <button onClick={() => handleEdit(prod)} className="p-1.5 text-cyan-400 hover:bg-cyan-400/10 rounded-md transition-colors" title="Editar">
+                                 <Edit3 className="h-4 w-4" />
+                              </button>
+                              <button className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-md transition-colors" title="Excluir">
+                                 <Trash2 className="h-4 w-4" />
+                              </button>
                            </div>
                         </div>
-                      </div>
-                    ))
-                  )}
-               </div>
-             ) : (
-                <div className="py-40 text-center border border-dashed border-white/10 rounded-3xl bg-white/5 backdrop-blur-md">
-                   <div className="flex flex-col items-center gap-4 opacity-20">
-                      <Box className="h-16 w-16 text-white" />
-                      <p className="text-[12px] font-black uppercase tracking-[0.3em] text-white">Cofre de Matrizes Vazio</p>
-                   </div>
-                   <button 
-                     onClick={() => setIsAddingMode(true)}
-                     className="mt-8 text-blue-500 text-[11px] font-bold underline underline-offset-4 hover:text-blue-400 transition-colors"
-                   >
-                     Registrar Primeiro Ativo
-                   </button>
-                </div>
-             )}
+                      ))
+                    )}
+                 </div>
+               ) : (
+                  <div className="py-24 text-center">
+                     <Box className="h-12 w-12 text-slate-600 mx-auto mb-4 opacity-50" />
+                     <p className="text-sm font-bold text-slate-400">Nenhum produto encontrado</p>
+                  </div>
+               )}
+             </div>
           </div>
         )}
 
