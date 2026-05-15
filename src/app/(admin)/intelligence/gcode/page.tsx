@@ -55,6 +55,12 @@ export default function GCodeAnalyzerPage() {
     }
   };
 
+  useEffect(() => {
+    if (file) {
+      simulateAnalysis(file);
+    }
+  }, [selectedMaterialId]);
+
   const simulateAnalysis = async (file: File) => {
     setFile(file);
     setIsAnalyzing(true);
