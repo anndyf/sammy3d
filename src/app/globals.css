@@ -132,3 +132,7 @@ input:-webkit-autofill:active {
 h1, h2, h3, h4, h5, h6 {
     color: #ffffff !important;
 }
+
+label, .text-slate-400, .text-slate-500, .text-slate-600 {
+    color: #94a3b8 !important; /* slate-400 */
+}
