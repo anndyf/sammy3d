@@ -10,7 +10,7 @@ export default function StockPage() {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isAddingModo, setIsAddingModo] = useState(false);
+  const [isAddingMode, setIsAddingMode] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
 
   const [name, setName] = useState("");
@@ -26,9 +26,8 @@ export default function StockPage() {
     try {
       const res = await fetch('/api/materials');
       const json = await res.json();
-      // A API retorna { data: Material[], meta: ... } ou o array diretamente dependendo da implementação
-      const data = json.data || json; 
-      if (Array.isArray(data)) setMaterials(data);
+      const list = json.data?.data || json.data || [];
+      if (Array.isArray(list)) setMaterials(list);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
@@ -42,7 +41,7 @@ export default function StockPage() {
     setCostPerUnit(m.costPerUnit.toString());
     setTotalAmount(m.totalAmount.toString());
     setUnitType(m.unitType);
-    setIsAddingModo(true);
+    setIsAddingMode(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -66,7 +65,7 @@ export default function StockPage() {
         })
       });
       if (res.ok) {
-        setIsAddingModo(false); setEditingMaterial(null);
+        setIsAddingMode(false); setEditingMaterial(null);
         setName(""); setType("FILAMENT"); setColor(""); setCostPerUnit(""); setTotalAmount(""); setUnitType("g");
         setRecordExpense(false); setAmountPaid("");
         fetchData();
@@ -111,14 +110,14 @@ export default function StockPage() {
             <div className="p-3 bg-transparent rounded-xl">
                <Package className="h-6 w-6 text-cyan-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">Filamentos</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Inventário de Insumos</h1>
          </div>
          <button 
-           onClick={() => setIsAddingModo(!isAddingModo)}
-           className="bg-cyan-500 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg"
+           onClick={() => setIsAddingMode(!isAddingMode)}
+           className="bg-cyan-500 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg uppercase tracking-widest"
          >
-           {isAddingModo ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-           {isAddingModo ? "Fechar Inventário" : "Novo Filamento"}
+           {isAddingMode ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+           {isAddingMode ? "Fechar" : "Novo Filamento"}
          </button>
       </div>
 
@@ -139,19 +138,14 @@ export default function StockPage() {
            <button className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-white transition-colors">
               <Filter className="h-5 w-5" />
            </button>
-           <select className="bg-[#14161b] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-cyan-500 transition-all cursor-pointer">
-              <option>Todos os Tipos</option>
-              <option>FILAMENT</option>
-              <option>RESIN</option>
-           </select>
         </div>
 
-        {isAddingModo && (
+        {isAddingMode && (
           <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 mb-10 shadow-lg animate-in slide-in-from-top-4 duration-500">
              <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
                 <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
                   <Plus className="h-4 w-4 text-cyan-400" /> 
-                  {editingMaterial ? 'Editar Filamento' : 'Novo Filamento'}
+                  {editingMaterial ? 'Editar Insumo' : 'Novo Insumo'}
                 </h3>
                 <div className="bg-[#14161b] text-cyan-400 px-3 py-1 rounded-lg text-[10px] font-black uppercase border border-white/5">
                   {editingMaterial ? 'Edição' : 'Cadastro'}
@@ -186,7 +180,7 @@ export default function StockPage() {
                 </div>
 
                 <div className="flex justify-end pt-4 gap-4">
-                   <button type="button" onClick={()=>{setIsAddingModo(false); setEditingMaterial(null);}} className="px-8 h-11 bg-[#14161b] text-slate-400 rounded-lg text-sm font-bold transition-all hover:bg-white/5 hover:text-white">Cancelar</button>
+                   <button type="button" onClick={()=>{setIsAddingMode(false); setEditingMaterial(null);}} className="px-8 h-11 bg-[#14161b] text-slate-400 rounded-lg text-sm font-bold transition-all hover:bg-white/5 hover:text-white">Cancelar</button>
                    <button type="submit" className="bg-cyan-500 text-black px-8 h-11 rounded-lg text-sm font-bold shadow-lg hover:bg-cyan-400 transition-all">{editingMaterial ? 'Salvar' : 'Cadastrar'}</button>
                 </div>
              </form>

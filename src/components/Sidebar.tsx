@@ -54,7 +54,7 @@ const sidebarGroups: SidebarGroup[] = [
     title: "PRODUÇÃO",
     items: [
       { label: "Orçamento", icon: FileText, href: "/quotes" },
-      { label: "Analisador .gcode", icon: Cpu, href: "/intelligence/gcode" },
+      { label: "Analisador .gcode", icon: Cpu, href: "/production/smart" },
       { label: "Produção Manual", icon: Hammer, href: "/production/manual" },
       { label: "Histórico de Produção", icon: History, href: "/production/history" },
       { label: "Relatórios Avançados", icon: BarChart3, href: "/intelligence/reports" },
@@ -113,9 +113,10 @@ export function Sidebar() {
                  </div>
               </div>
            </div>
-           <div className="px-4 py-1 bg-[#1e293b] border border-white/10 rounded-full text-[9px] font-black text-cyan-400 uppercase tracking-[0.2em] shadow-inner">
-             Admin Center
-           </div>
+            <div className="flex flex-col">
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Sammy 3D OS</span>
+                 <span className="text-[12px] font-bold text-white group-hover:text-cyan-400 truncate w-[130px]">Painel Operacional</span>
+            </div>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 pb-4 space-y-6 custom-scrollbar">
