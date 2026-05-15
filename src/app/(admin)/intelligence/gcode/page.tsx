@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Cpu, Upload, FileCode2, Clock, Box, DollarSign, Activity, AlertTriangle, CheckCircle2, ChevronRight, Wand2, Sparkles, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function GCodeAnalyzerPage() {
+  const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -86,6 +88,29 @@ export default function GCodeAnalyzerPage() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleGenerateQuote = () => {
+    if (!results) return;
+    
+    // Extrai horas e minutos do formato "Xh Ym"
+    const timeMatch = results.metrics.time.match(/(\d+)h\s+(\d+)m/);
+    const h = timeMatch ? timeMatch[1] : "0";
+    const m = timeMatch ? timeMatch[2] : "0";
+    
+    // Limpa o peso "7.0g" -> "7.0"
+    const weight = results.metrics.weight.replace('g', '');
+    
+    const params = new URLSearchParams({
+      fromGcode: 'true',
+      projectName: file?.name || 'Projeto GCode',
+      weight,
+      hours: h,
+      minutes: m,
+      materialId: selectedMaterialId
+    });
+
+    router.push(`/quotes?${params.toString()}`);
   };
 
   return (
@@ -277,7 +302,10 @@ export default function GCodeAnalyzerPage() {
                    </div>
 
                    <div className="mt-8 pt-8 border-t border-white/5 flex gap-4">
-                      <button className="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white h-14 rounded-xl text-xs font-black uppercase tracking-widest transition-colors shadow-lg flex items-center justify-center gap-2">
+                      <button 
+                        onClick={handleGenerateQuote}
+                        className="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white h-14 rounded-xl text-xs font-black uppercase tracking-widest transition-colors shadow-lg flex items-center justify-center gap-2"
+                      >
                         Gerar Orçamento do GCODE <ChevronRight className="h-4 w-4" />
                       </button>
                    </div>
