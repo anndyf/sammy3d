@@ -1,14 +1,33 @@
 "use client"
 
-import { useState } from "react";
-import { Cpu, Upload, FileCode2, Clock, Box, DollarSign, Activity, AlertTriangle, CheckCircle2, ChevronRight, Wand2, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Cpu, Upload, FileCode2, Clock, Box, DollarSign, Activity, AlertTriangle, CheckCircle2, ChevronRight, Wand2, Sparkles, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function GCodeAnalyzerPage() {
+  const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<any>(null);
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [selectedMaterialId, setSelectedMaterialId] = useState<string>("avg");
+
+  useEffect(() => {
+    fetchMaterials();
+  }, []);
+
+  const fetchMaterials = async () => {
+    try {
+      const res = await fetch('/api/materials');
+      const data = await res.json();
+      const list = data.data || data;
+      if (Array.isArray(list)) setMaterials(list);
+    } catch (err) {
+      console.error("Erro ao carregar materiais", err);
+    }
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -26,7 +45,7 @@ export default function GCodeAnalyzerPage() {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFile = e.dataTransfer.files[0];
       if (droppedFile.name.endsWith('.gcode') || droppedFile.name.endsWith('.stl')) {
-        simulateAnalysis(droppedFile);
+        analyzeFile(droppedFile);
       } else {
         alert("Apenas arquivos .gcode ou .stl são permitidos");
       }
@@ -35,60 +54,102 @@ export default function GCodeAnalyzerPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      simulateAnalysis(e.target.files[0]);
+      analyzeFile(e.target.files[0]);
     }
   };
 
-  const simulateAnalysis = (file: File) => {
-    setFile(file);
+  // Re-analisar se o material mudar
+  useEffect(() => {
+    if (file) {
+      analyzeFile(file);
+    }
+  }, [selectedMaterialId]);
+
+  const analyzeFile = async (targetFile: File) => {
+    setFile(targetFile);
     setIsAnalyzing(true);
     setResults(null);
     
-    // Simulate API delay
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setResults({
-        metrics: {
-          time: "02h 45m",
-          weight: "128g",
-          length: "42.5m",
-          layers: 540,
-          cost: "R$ 15,40"
-        },
-        ai: {
-          score: 85,
-          warnings: [
-            { type: 'warning', msg: "Risco moderado de Warp detectado nas extremidades da camada base. Considere usar brim." },
-            { type: 'info', msg: "Densidade de infill (15%) pode ser insuficiente para suportar a pressão do encaixe superior." }
-          ],
-          passes: [
-            "Overhangs sob controle (< 45º)",
-            "Adesão inicial da primeira camada parece otimizada",
-            "Temperaturas recomendadas: 220ºC Bico / 70ºC Mesa"
-          ]
-        }
+    try {
+      const formData = new FormData();
+      formData.append('file', targetFile);
+      formData.append('materialId', selectedMaterialId);
+
+      const res = await fetch('/api/intelligence/analyze', {
+        method: 'POST',
+        body: formData
       });
-    }, 3000);
+
+      if (!res.ok) throw new Error('Falha na análise');
+      
+      const data = await res.json();
+      setResults(data);
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao analisar o arquivo. Certifique-se que é um GCODE válido.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleGenerateQuote = () => {
+    if (!results) return;
+    
+    // Extrai horas e minutos do formato "Xh Ym"
+    const timeMatch = results.metrics.time.match(/(\d+)h\s+(\d+)m/);
+    const h = timeMatch ? timeMatch[1] : "0";
+    const m = timeMatch ? timeMatch[2] : "0";
+    
+    // Limpa o peso "128.5g" -> "128.5"
+    const weight = results.metrics.weight.replace('g', '');
+    
+    const params = new URLSearchParams({
+      fromGcode: 'true',
+      projectName: file?.name || 'Projeto GCode',
+      weight,
+      hours: h,
+      minutes: m,
+      materialId: selectedMaterialId
+    });
+
+    router.push(`/quotes?${params.toString()}`);
   };
 
   return (
     <div className="space-y-6 pb-20 max-w-[1200px] mx-auto">
       
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
-         <div className="flex items-center gap-4">
-            <div className="p-3 bg-transparent rounded-xl flex relative">
-               <Cpu className="h-6 w-6 text-indigo-400" />
-               <Sparkles className="h-3 w-3 text-cyan-400 absolute top-2 right-2 animate-pulse" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                Analisador .gcode <span className="text-[9px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-1.5 py-0.5 rounded font-black tracking-widest uppercase">PRO</span>
-              </h1>
-              <p className="text-xs text-slate-500 font-bold">Extração inteligente de custos e predição de falhas com IA.</p>
-            </div>
-         </div>
-      </div>
+       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
+          <div className="flex items-center gap-4">
+             <div className="p-3 bg-transparent rounded-xl flex relative">
+                <Cpu className="h-6 w-6 text-indigo-400" />
+                <Sparkles className="h-3 w-3 text-cyan-400 absolute top-2 right-2 animate-pulse" />
+             </div>
+             <div>
+               <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                 Analisador .gcode <span className="text-[9px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-1.5 py-0.5 rounded font-black tracking-widest uppercase">REAL-TIME</span>
+               </h1>
+               <p className="text-xs text-slate-500 font-bold">Extração inteligente de custos e predição de falhas com IA.</p>
+             </div>
+          </div>
+
+          {/* MATERIAL SELECTOR */}
+          <div className="flex items-center gap-3 bg-[#1a1d24] border border-white/5 p-2 rounded-xl">
+             <Layers className="h-4 w-4 text-slate-500 ml-2" />
+             <select 
+               value={selectedMaterialId}
+               onChange={(e) => setSelectedMaterialId(e.target.value)}
+               className="bg-transparent text-xs font-bold text-white outline-none border-none pr-8 cursor-pointer"
+             >
+               <option value="avg" className="bg-[#1a1d24]">Custo Médio (Filamentos)</option>
+               {materials.map(m => (
+                 <option key={m.id} value={m.id} className="bg-[#1a1d24]">
+                   {m.name} ({m.color}) - R$ {m.costPerUnit.toFixed(2)}/{m.unitType}
+                 </option>
+               ))}
+             </select>
+          </div>
+       </div>
 
       {!results && !isAnalyzing && (
         <div 
@@ -124,8 +185,8 @@ export default function GCodeAnalyzerPage() {
                 <FileCode2 className="h-10 w-10 animate-pulse" />
               </div>
            </div>
-           <h3 className="text-lg font-black text-white tracking-tight mb-2 animate-pulse">Lendo milhares de coordenadas X, Y, Z...</h3>
-           <p className="text-sm text-slate-500">Calculando extrusão, tempos e varrendo riscos estruturais.</p>
+           <h3 className="text-lg font-black text-white tracking-tight mb-2 animate-pulse">Analisando coordenadas X, Y, Z...</h3>
+           <p className="text-sm text-slate-500">Calculando extrusão real e varrendo riscos estruturais.</p>
         </div>
       )}
 
@@ -137,7 +198,7 @@ export default function GCodeAnalyzerPage() {
                 <div className="p-3 bg-[#14161b] rounded-xl border border-white/5 text-indigo-400"><FileCode2 className="h-6 w-6" /></div>
                 <div>
                    <h3 className="text-sm font-bold text-white">{file?.name || 'arquivo.gcode'}</h3>
-                   <p className="text-[10px] text-slate-500 font-mono">{(file?.size ? (file.size / 1024 / 1024).toFixed(2) : '14.2')} MB</p>
+                   <p className="text-[10px] text-slate-500 font-mono">{(file?.size ? (file.size / 1024 / 1024).toFixed(2) : '0')} MB</p>
                 </div>
              </div>
              <button onClick={() => setResults(null)} className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white px-4 py-2 border border-white/5 rounded-lg bg-[#14161b] transition-colors">
@@ -167,16 +228,33 @@ export default function GCodeAnalyzerPage() {
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Camadas</span>
                       <span className="text-xl font-black text-white font-mono">{results.metrics.layers}</span>
                    </div>
-                   <div className="bg-[#14161b] border border-emerald-500/20 p-5 rounded-2xl shadow-lg flex flex-col relative overflow-hidden">
+                   <div className="bg-[#14161b] border border-emerald-500/20 p-5 rounded-2xl shadow-lg flex flex-col relative overflow-hidden group">
                       <div className="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl"></div>
                       <DollarSign className="h-4 w-4 text-emerald-400 mb-4 relative z-10" />
                       <span className="text-[10px] text-emerald-500/70 uppercase tracking-widest font-bold mb-1 relative z-10">Custo Base</span>
                       <span className="text-xl font-black text-emerald-400 font-mono relative z-10">{results.metrics.cost}</span>
+                      
+                      {results.metrics.breakdown && (
+                        <div className="mt-3 pt-3 border-t border-white/5 space-y-1 relative z-10">
+                           <div className="flex justify-between text-[9px] font-bold">
+                              <span className="text-slate-500 uppercase">Filamento:</span>
+                              <span className="text-slate-300">R$ {results.metrics.breakdown.material}</span>
+                           </div>
+                           <div className="flex justify-between text-[9px] font-bold">
+                              <span className="text-slate-500 uppercase">Energia:</span>
+                              <span className="text-slate-300">R$ {results.metrics.breakdown.energy}</span>
+                           </div>
+                           <div className="flex justify-between text-[9px] font-bold">
+                              <span className="text-slate-500 uppercase">Máquina:</span>
+                              <span className="text-slate-300">R$ {results.metrics.breakdown.depreciation}</span>
+                           </div>
+                        </div>
+                      )}
                    </div>
                 </div>
              </div>
 
-             {/* RIGHT: AI ANALYSIS */}
+             {/* RIGHT: RELATÓRIO */}
              <div className="lg:col-span-8">
                 <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 pl-2 flex items-center gap-2">
                   <Wand2 className="h-3 w-3 text-indigo-400" /> Relatório de Inteligência
@@ -203,7 +281,7 @@ export default function GCodeAnalyzerPage() {
                    <div className="space-y-6">
                       <h5 className="text-[11px] font-black text-white uppercase tracking-widest">Avisos e Recomendações</h5>
                       <div className="space-y-3">
-                         {results.ai.warnings.map((w: any, idx: number) => (
+                         {results.ai.warnings.length > 0 ? results.ai.warnings.map((w: any, idx: number) => (
                            <div key={idx} className={cn(
                              "p-4 rounded-xl border flex gap-4 items-start",
                              w.type === 'warning' ? "bg-amber-500/5 border-amber-500/20" : "bg-indigo-500/5 border-indigo-500/20"
@@ -211,7 +289,12 @@ export default function GCodeAnalyzerPage() {
                               {w.type === 'warning' ? <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" /> : <InfoIcon className="h-5 w-5 text-indigo-400 shrink-0 mt-0.5" />}
                               <p className={cn("text-sm font-medium", w.type === 'warning' ? "text-amber-200" : "text-indigo-200")}>{w.msg}</p>
                            </div>
-                         ))}
+                         )) : (
+                            <div className="p-4 rounded-xl border bg-emerald-500/5 border-emerald-500/20 flex gap-4 items-start">
+                               <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                               <p className="text-sm font-medium text-emerald-200">Nenhum risco detectado. O fatiamento parece otimizado para o material selecionado.</p>
+                            </div>
+                         )}
                       </div>
 
                       <h5 className="text-[11px] font-black text-white uppercase tracking-widest pt-4 border-t border-white/5">Aprovações Estruturais</h5>
@@ -226,7 +309,10 @@ export default function GCodeAnalyzerPage() {
                    </div>
 
                    <div className="mt-8 pt-8 border-t border-white/5 flex gap-4">
-                      <button className="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white h-14 rounded-xl text-xs font-black uppercase tracking-widest transition-colors shadow-lg flex items-center justify-center gap-2">
+                      <button 
+                        onClick={handleGenerateQuote}
+                        className="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white h-14 rounded-xl text-xs font-black uppercase tracking-widest transition-colors shadow-lg flex items-center justify-center gap-2"
+                      >
                         Gerar Orçamento do GCODE <ChevronRight className="h-4 w-4" />
                       </button>
                    </div>

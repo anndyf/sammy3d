@@ -33,8 +33,6 @@ export async function POST(request: Request) {
 
     // 3. BUSCAR IMPRESSORA MÉDIA (DEPRECIAÇÃO E POTÊNCIA)
     const machineStats = { powerW: 300, depreciationH: 0.50 };
-    // Tentativa de pegar dados reais de 'printers' se estivessem no DB (assumindo mockup por enquanto se não houver model Printer no prisma)
-    // No schema.prisma não há model Printer, então usaremos valores seguros ou config.
     
     const content = await file.text();
     const lines = content.split('\n');
@@ -48,6 +46,7 @@ export async function POST(request: Request) {
     for (const line of lines) {
       const upperLine = line.toUpperCase().trim();
 
+      // Tempo (Creality / Cura / Outros)
       if (upperLine.startsWith('M73')) {
         const rMatch = upperLine.match(/R(\d+)/);
         if (rMatch && totalTimeMinutes === 0) totalTimeMinutes = parseInt(rMatch[1]);
@@ -58,21 +57,25 @@ export async function POST(request: Request) {
         if (tMatch && totalTimeMinutes === 0) totalTimeMinutes = Math.round(parseInt(tMatch[1]) / 60);
       }
 
+      // Camadas
       if (upperLine.includes('TOTAL LAYER NUMBER:')) {
         const lMatch = upperLine.match(/TOTAL LAYER NUMBER:\s*(\d+)/);
         if (lMatch) layerCount = parseInt(lMatch[1]);
       }
 
+      // Comprimento de filamento declarado
       if (upperLine.includes('FILAMENT USED:')) {
          const mmMatch = upperLine.match(/FILAMENT USED:\s*([\d.]+)/);
          if (mmMatch) totalFilamentLengthMeters = parseFloat(mmMatch[1]) / 1000;
       }
 
+      // Densidade
       if (upperLine.includes('FILAMENT_DENSITY:')) {
          const dMatch = upperLine.match(/FILAMENT_DENSITY:\s*([\d.]+)/);
          if (dMatch) filamentDensity = parseFloat(dMatch[1]);
       }
 
+      // Parsing de extrusão bruta (G1 E...)
       if (upperLine.startsWith('G1') && upperLine.includes(' E')) {
          const eMatch = upperLine.match(/E([\d.-]+)/);
          if (eMatch) {
@@ -82,6 +85,7 @@ export async function POST(request: Request) {
       }
     }
 
+    // Fallback de peso se não detectado diretamente
     if (totalFilamentWeightGrams === 0 && totalFilamentLengthMeters > 0) {
        const radius = 1.75 / 2;
        const volumeMm3 = Math.PI * Math.pow(radius, 2) * (totalFilamentLengthMeters * 1000);
@@ -89,14 +93,9 @@ export async function POST(request: Request) {
     }
 
     // --- CÁLCULO DE CUSTO REAL ---
-    // 1. Custo de Material
     const materialCost = totalFilamentWeightGrams * costPerGram;
-    
-    // 2. Custo de Energia: (Watts / 1000) * Horas * Preço kWh
     const hours = totalTimeMinutes / 60;
     const energyCost = (machineStats.powerW / 1000) * hours * energyPriceKwh;
-
-    // 3. Custo de Depreciação: Horas * Taxa/hora
     const depreciationCost = hours * machineStats.depreciationH;
 
     const totalBaseCost = materialCost + energyCost + depreciationCost;
