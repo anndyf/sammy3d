@@ -54,15 +54,9 @@ const sidebarGroups: SidebarGroup[] = [
     title: "PRODUÇÃO",
     items: [
       { label: "Orçamento", icon: FileText, href: "/quotes" },
-      { label: "Produção Manual", icon: Hammer, href: "/production/manual" },
-      { label: "Produção Smart (.gcode)", icon: Zap, href: "/production/smart" },
-      { label: "Histórico de Produção", icon: History, href: "/production/history" },
-    ]
-  },
-  {
-    title: "INTELIGÊNCIA",
-    items: [
       { label: "Analisador .gcode", icon: Cpu, href: "/intelligence/gcode" },
+      { label: "Produção Manual", icon: Hammer, href: "/production/manual" },
+      { label: "Histórico de Produção", icon: History, href: "/production/history" },
       { label: "Relatórios Avançados", icon: BarChart3, href: "/intelligence/reports" },
     ]
   },
