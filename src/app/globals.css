@@ -128,3 +128,7 @@ input:-webkit-autofill:active {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+}
