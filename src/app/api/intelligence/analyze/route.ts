@@ -19,12 +19,16 @@ export async function POST(request: Request) {
     let costPerGram = 0.15;
     if (materialId && materialId !== 'avg') {
       const material = await prisma.material.findUnique({ where: { id: materialId } });
-      if (material) costPerGram = material.costPerUnit;
+      if (material) {
+        // Correção de Unidade: Se o custo for > 10, provavelmente é R$/kg, então dividimos por 1000 para gramas.
+        costPerGram = material.costPerUnit > 10 ? material.costPerUnit / 1000 : material.costPerUnit;
+      }
     } else {
       const avgMaterial = await prisma.material.aggregate({
         _avg: { costPerUnit: true }
       });
-      costPerGram = avgMaterial._avg.costPerUnit || 0.15;
+      const avg = avgMaterial._avg.costPerUnit || 150; // Assume 150/kg se vazio
+      costPerGram = avg > 10 ? avg / 1000 : avg;
     }
 
     // 3. BUSCAR IMPRESSORA MÉDIA (DEPRECIAÇÃO E POTÊNCIA)
