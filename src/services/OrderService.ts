@@ -45,7 +45,7 @@ export class OrderService {
     let finalStatus = status || 'PENDING';
 
     // Fase de leitura e reserva: Checar estoque (Próprio ou Composição)
-    if (type === 'CATALOG' && Array.isArray(items)) {
+    if (type === 'CATALOG' && Array.isArray(items) && items.length > 0) {
       let allReady = true;
       for (const item of items) {
         const product = await prisma.product.findUnique({ 
@@ -74,6 +74,8 @@ export class OrderService {
         if (!allReady) break;
       }
       finalStatus = allReady ? 'PICKING' : 'PENDING';
+    } else if (type === 'CUSTOM') {
+      finalStatus = status || 'PENDING';
     }
 
     return await prisma.$transaction(async (tx) => {
