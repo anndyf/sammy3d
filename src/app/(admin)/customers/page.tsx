@@ -12,7 +12,7 @@ export default function ComingSoonPage() {
           <Sparkles className="h-4 w-4 text-amber-400 absolute top-4 right-4 animate-pulse" />
        </div>
 
-       <h1 className="text-4xl font-black text-white tracking-tighter mb-4 uppercase italic">Feature em Desenvolvimento</h1>
+       <h1 className="text-4xl font-black text-white tracking-tighter mb-4 uppercase italic force-white-text">Feature em Desenvolvimento</h1>
        <p className="text-slate-500 max-w-md mx-auto font-bold text-sm leading-relaxed mb-10">
           Estamos modernizando esta ferramenta para o padrão Midnight Tech v2.0. Em breve você terá acesso total a estas funcionalidades premium.
        </p>

@@ -129,7 +129,7 @@ export function Sidebar() {
              <div key={groupIndex} className="space-y-1">
                {group.title && (
                  <div className="flex items-center gap-3 px-3 mb-2 mt-4">
-                   <h3 className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.15em]">{group.title}</h3>
+                   <h3 className="text-[10px] font-black text-white uppercase tracking-[0.15em]">{group.title}</h3>
                    <div className="h-px bg-white/5 flex-1"></div>
                  </div>
                )}
