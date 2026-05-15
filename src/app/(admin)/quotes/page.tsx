@@ -30,8 +30,9 @@ function QuotesContent() {
   const [printerWatts, setPrinterWatts] = useState("300");
   const [kwhCost, setKwhCost] = useState("1.32");
   const [depreciationHour, setDepreciationHour] = useState("0.50");
+  const [packagingCost, setPackagingCost] = useState("1.50");
 
-  const [metrics, setMetrics] = useState({ materialCost: 0, powerCost: 0, depreciationCost: 0, totalCost: 0 });
+  const [metrics, setMetrics] = useState({ materialCost: 0, powerCost: 0, depreciationCost: 0, packagingCost: 0, totalCost: 0 });
 
   useEffect(() => {
     const fromGcode = searchParams.get('fromGcode');
@@ -73,10 +74,12 @@ function QuotesContent() {
     const totalHours = totalMinutes / 60;
     const powerCost = (parseFloat(printerWatts) / 1000) * totalHours * parseFloat(kwhCost);
     const depreciationCost = totalHours * parseFloat(depreciationHour);
-    const baseCost = matCost + powerCost + depreciationCost;
+    const packCost = parseFloat(packagingCost) || 0;
+
+    const baseCost = matCost + powerCost + depreciationCost + packCost;
     
-    setMetrics({ materialCost: matCost, powerCost, depreciationCost, totalCost: baseCost });
-  }, [materials, selectedMaterialId, weightGrams, printHours, printMinutes, printerWatts, kwhCost, depreciationHour]);
+    setMetrics({ materialCost: matCost, powerCost, depreciationCost, packagingCost: packCost, totalCost: baseCost });
+  }, [materials, selectedMaterialId, weightGrams, printHours, printMinutes, printerWatts, kwhCost, depreciationHour, packagingCost]);
 
   // SINCRONIZAR PREÇO COM MARKUP (QUANDO O CUSTO OU MARKUP MUDA)
   useEffect(() => {
@@ -205,7 +208,7 @@ function QuotesContent() {
                  </div>
 
                  {/* DETALHAMENTO HORIZONTAL (PEDIDO PELO USUÁRIO) */}
-                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-6 border-t border-white/5">
+                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 pt-6 border-t border-white/5">
                     <div className="bg-[#14161b]/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
                        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Filamento</span>
                        <span className="text-sm font-black text-white">R$ {metrics.materialCost.toFixed(2)}</span>
@@ -217,6 +220,10 @@ function QuotesContent() {
                     <div className="bg-[#14161b]/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
                        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Máquina</span>
                        <span className="text-sm font-black text-white">R$ {metrics.depreciationCost.toFixed(2)}</span>
+                    </div>
+                    <div className="bg-[#14161b]/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
+                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Embalagem</span>
+                       <span className="text-sm font-black text-white">R$ {metrics.packagingCost.toFixed(2)}</span>
                     </div>
                     <div className="bg-cyan-500/10 p-4 rounded-2xl border border-cyan-500/20 flex flex-col items-center justify-center">
                        <span className="text-[8px] font-black text-cyan-500 uppercase tracking-widest mb-1">Custo Total</span>
