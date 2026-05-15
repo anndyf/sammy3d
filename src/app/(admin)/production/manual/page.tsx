@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react";
-import { KanbanSquare, Plus, MoreHorizontal, Clock, Box, Play, CheckCircle2, Search, Filter, Trash2, ArrowRight, Calendar, RotateCcw } from "lucide-react";
+import { KanbanSquare, Plus, MoreHorizontal, Clock, Box, Play, CheckCircle2, Search, Filter, Trash2, ArrowRight, Calendar, RotateCcw, AlertCircle, BellRing } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Order {
@@ -101,6 +101,22 @@ export default function ProductionKanbanPage() {
     );
   };
 
+  const getDeadlineStatus = (deadline?: string) => {
+    if (!deadline) return null;
+    const now = new Date();
+    const dDate = new Date(deadline);
+    now.setHours(0, 0, 0, 0);
+    dDate.setHours(0, 0, 0, 0);
+
+    const diffTime = dDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return { label: `ATRASADO ${Math.abs(diffDays)}D`, type: 'danger' };
+    if (diffDays === 0) return { label: 'VENCE HOJE', type: 'warning' };
+    if (diffDays === 1) return { label: 'VENCE AMANHÃ', type: 'info' };
+    return { label: `${diffDays} DIAS RESTANTES`, type: 'safe' };
+  };
+
   const getNextStatus = (current: string) => {
     if (current === "FINISHED") return null;
     const idx = PRODUCTION_COLUMNS.findIndex(c => c.id === current);
@@ -114,12 +130,12 @@ export default function ProductionKanbanPage() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 shrink-0 pt-2 pr-2">
          <div className="flex items-center gap-4">
-            <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/20">
+            <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 shadow-lg shadow-cyan-500/5">
                <KanbanSquare className="h-6 w-6 text-cyan-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tight">Fluxo de Produção</h1>
-              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest text-glow-indigo">Painel de Controle Operacional</p>
+              <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Fluxo de Produção</h1>
+              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest text-glow-indigo">Monitoramento em Tempo Real</p>
             </div>
          </div>
          
@@ -156,73 +172,95 @@ export default function ProductionKanbanPage() {
                     <MoreHorizontal className="h-4 w-4 text-slate-600" />
                  </div>
 
-                 <div className="p-6 space-y-5 overflow-y-auto max-h-[600px] custom-scrollbar">
+                 <div className="p-6 space-y-5 overflow-y-auto max-h-[700px] custom-scrollbar">
                     {items.length === 0 ? (
                       <div className="py-20 text-center opacity-10">
                         <Box className="w-8 h-8 mx-auto mb-2 text-slate-600" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">Vazio</p>
                       </div>
-                    ) : items.map(item => (
-                      <div key={item.id} className="bg-[#14161b] border border-white/5 p-6 rounded-[1.8rem] shadow-xl hover:border-cyan-500/30 transition-all group relative overflow-hidden">
-                         <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => deleteOrder(item.id)} className="p-2 hover:bg-red-500/10 text-slate-700 hover:text-red-500 rounded-xl transition-all">
-                               <Trash2 className="h-4 w-4" />
-                            </button>
-                         </div>
+                    ) : items.map(item => {
+                      const dlStatus = getDeadlineStatus(item.deadline);
+                      return (
+                        <div key={item.id} className={cn(
+                          "bg-[#14161b] border p-6 rounded-[1.8rem] shadow-xl transition-all group relative overflow-hidden",
+                          dlStatus?.type === 'danger' ? "border-red-500/50 animate-pulse-subtle shadow-red-500/5" : 
+                          dlStatus?.type === 'warning' ? "border-amber-500/50 shadow-amber-500/5" :
+                          "border-white/5 hover:border-cyan-500/30"
+                        )}>
+                           <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                              <button onClick={() => deleteOrder(item.id)} className="p-2 hover:bg-red-500/10 text-slate-700 hover:text-red-500 rounded-xl transition-all">
+                                 <Trash2 className="h-4 w-4" />
+                              </button>
+                           </div>
+                           
+                           <div className="flex items-center justify-between gap-2 mb-4">
+                              <span className="text-[9px] font-black text-cyan-400 bg-cyan-400/5 px-2 py-1 rounded-lg border border-cyan-400/10 uppercase tracking-widest">#{item.id.substring(0,6)}</span>
+                              
+                              {dlStatus && (
+                                <div className={cn(
+                                  "flex items-center gap-1.5 px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest",
+                                  dlStatus.type === 'danger' ? "bg-red-500/20 text-red-400 border border-red-500/30" :
+                                  dlStatus.type === 'warning' ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
+                                  "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                )}>
+                                  {dlStatus.type === 'danger' ? <AlertCircle className="h-2.5 w-2.5" /> : <Clock className="h-2.5 w-2.5" />}
+                                  {dlStatus.label}
+                                </div>
+                              )}
+                           </div>
+                           
+                           <h4 className="text-sm font-black text-white mb-3 leading-tight uppercase group-hover:text-cyan-400 transition-colors">
+                              {item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto Customizado'}
+                           </h4>
                          
-                         <div className="flex items-center gap-2 mb-4">
-                            <span className="text-[9px] font-black text-cyan-400 bg-cyan-400/5 px-2 py-1 rounded-lg border border-cyan-400/10 uppercase tracking-widest">#{item.id.substring(0,6)}</span>
-                         </div>
-                         
-                         <h4 className="text-sm font-black text-white mb-3 leading-tight uppercase group-hover:text-cyan-400 transition-colors">
-                            {item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto Customizado'}
-                         </h4>
-                       
-                         <div className="space-y-2 mb-6 bg-black/20 p-4 rounded-2xl border border-white/5">
-                            {item.notes?.split('\n').filter(l => l.includes('⚙️') || l.includes('⚖️') || l.includes('⏳')).map((line, idx) => (
-                              <div key={idx} className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                 {line}
+                           <div className="space-y-2 mb-6 bg-black/20 p-4 rounded-2xl border border-white/5">
+                              {item.notes?.split('\n').filter(l => l.includes('⚙️') || l.includes('⚖️') || l.includes('⏳')).map((line, idx) => (
+                                <div key={idx} className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                   {line}
+                                </div>
+                              ))}
+                           </div>
+
+                           <div className="flex items-center gap-3 mb-6">
+                              <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-black text-[10px] border border-indigo-500/20">{item.customerName.substring(0,2).toUpperCase()}</div>
+                              <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">{item.customerName}</span>
+                           </div>
+
+                           <div className="pt-6 border-t border-white/5 space-y-4">
+                              <div className="flex flex-wrap gap-2">
+                                 {[2, 3, 5, 7].map(days => (
+                                   <button 
+                                     key={days}
+                                     onClick={() => updateDeadline(item.id, days, item.createdAt)}
+                                     className="text-[9px] font-black px-2 py-1.5 rounded-lg bg-white/5 text-slate-500 border border-white/5 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/20 transition-all"
+                                   >
+                                     +{days} DIAS
+                                   </button>
+                                 ))}
                               </div>
-                            ))}
-                         </div>
 
-                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-black text-[10px] border border-indigo-500/20">{item.customerName.substring(0,2).toUpperCase()}</div>
-                            <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">{item.customerName}</span>
-                         </div>
-
-                         <div className="pt-6 border-t border-white/5 space-y-4">
-                            {/* DEADLINE SELECTOR */}
-                            <div className="flex flex-wrap gap-2">
-                               {[2, 3, 5, 7].map(days => (
+                              <div className="flex items-center justify-between">
+                                 <div className="flex items-center gap-2">
+                                    <Calendar className="h-3.5 w-3.5 text-slate-600" />
+                                    <span className={cn(
+                                      "text-[10px] font-black uppercase",
+                                      dlStatus?.type === 'danger' ? "text-red-400" : "text-slate-500"
+                                    )}>
+                                       {item.deadline ? new Date(item.deadline).toLocaleDateString('pt-BR') : 'Definir Prazo'}
+                                    </span>
+                                 </div>
+                                 
                                  <button 
-                                   key={days}
-                                   onClick={() => updateDeadline(item.id, days, item.createdAt)}
-                                   className="text-[9px] font-black px-2 py-1.5 rounded-lg bg-white/5 text-slate-500 border border-white/5 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/20 transition-all"
+                                   onClick={() => updateStatus(item.id, getNextStatus(col.id)!)}
+                                   className="h-10 px-4 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-black transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
                                  >
-                                   +{days} DIAS
+                                    Próximo <ArrowRight className="h-3.5 w-3.5" />
                                  </button>
-                               ))}
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                               <div className="flex items-center gap-2">
-                                  <Calendar className="h-3.5 w-3.5 text-slate-600" />
-                                  <span className="text-[10px] font-black text-slate-500 uppercase">
-                                     {item.deadline ? new Date(item.deadline).toLocaleDateString('pt-BR') : 'Definir Prazo'}
-                                  </span>
-                               </div>
-                               
-                               <button 
-                                 onClick={() => updateStatus(item.id, getNextStatus(col.id)!)}
-                                 className="h-10 px-4 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-black transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
-                               >
-                                  Próximo <ArrowRight className="h-3.5 w-3.5" />
-                               </button>
-                            </div>
-                         </div>
-                      </div>
-                    ))}
+                              </div>
+                           </div>
+                        </div>
+                      );
+                    })}
                  </div>
               </div>
              );
