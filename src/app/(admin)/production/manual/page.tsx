@@ -38,9 +38,8 @@ export default function ProductionKanbanPage() {
       setLoading(true);
       const res = await fetch('/api/orders?limit=100');
       const json = await res.json();
-      if (json.data?.data) {
-        setOrders(json.data.data);
-      }
+      const list = json.data?.data || json.data || [];
+      setOrders(Array.isArray(list) ? list : []);
     } catch (err) {
       console.error(err);
     } finally {
