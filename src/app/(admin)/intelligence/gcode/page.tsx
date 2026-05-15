@@ -161,11 +161,28 @@ export default function GCodeAnalyzerPage() {
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Camadas</span>
                       <span className="text-xl font-black text-white font-mono">{results.metrics.layers}</span>
                    </div>
-                   <div className="bg-[#14161b] border border-emerald-500/20 p-5 rounded-2xl shadow-lg flex flex-col relative overflow-hidden">
+                   <div className="bg-[#14161b] border border-emerald-500/20 p-5 rounded-2xl shadow-lg flex flex-col relative overflow-hidden group">
                       <div className="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl"></div>
                       <DollarSign className="h-4 w-4 text-emerald-400 mb-4 relative z-10" />
                       <span className="text-[10px] text-emerald-500/70 uppercase tracking-widest font-bold mb-1 relative z-10">Custo Base</span>
                       <span className="text-xl font-black text-emerald-400 font-mono relative z-10">{results.metrics.cost}</span>
+                      
+                      {results.metrics.breakdown && (
+                        <div className="mt-3 pt-3 border-t border-white/5 space-y-1 relative z-10">
+                           <div className="flex justify-between text-[9px] font-bold">
+                              <span className="text-slate-500 uppercase">Filamento:</span>
+                              <span className="text-slate-300">R$ {results.metrics.breakdown.material}</span>
+                           </div>
+                           <div className="flex justify-between text-[9px] font-bold">
+                              <span className="text-slate-500 uppercase">Energia:</span>
+                              <span className="text-slate-300">R$ {results.metrics.breakdown.energy}</span>
+                           </div>
+                           <div className="flex justify-between text-[9px] font-bold">
+                              <span className="text-slate-500 uppercase">Máquina:</span>
+                              <span className="text-slate-300">R$ {results.metrics.breakdown.depreciation}</span>
+                           </div>
+                        </div>
+                      )}
                    </div>
                 </div>
              </div>
