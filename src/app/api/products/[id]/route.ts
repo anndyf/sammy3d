@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { ConfigService } from '@/services/ConfigService';
 import { MaterialService } from '@/services/MaterialService';
+import { ProductService } from '@/services/ProductService';
 
 export async function PATCH(
   request: Request,
@@ -70,74 +71,12 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-
-    if (!id) {
-      return NextResponse.json({ error: 'ID is missing' }, { status: 400 });
-    }
+    if (!id) return NextResponse.json({ error: 'ID is missing' }, { status: 400 });
 
     const body = await request.json();
-    const { 
-      name, description, productionTime, weightGrams, additionalCost, 
-      materialId, sellingPrice, stockQuantity, category, subcategory, sku, shopeeUrl, imageUrl, parentId
-    } = body;
+    const product = await ProductService.update(id, body);
 
-    // 1. Busca produto e material para auditoria de estoque
-    const product = await prisma.product.findUnique({ where: { id } });
-    const material = await prisma.material.findUnique({ where: { id: materialId } });
-    
-    if (!product || !material) return NextResponse.json({ error: 'Produto ou Material não encontrado' }, { status: 400 });
-
-    // 2. Calcula a Baixa Automática de Material se o estoque aumentou
-    const oldQty = product.stockQuantity || 0;
-    const newQty = Number(stockQuantity || 0);
-
-    const configs = await ConfigService.list();
-    const energyH = parseFloat(configs.production_energy_cost || "0.50");
-    const machineH = parseFloat(configs.production_machine_wear || "1.20");
-    const failPct = parseFloat(configs.production_fail_rate || "5") / 100;
-
-    const result = await prisma.$transaction(async (tx) => {
-      if (newQty > oldQty) {
-        const diff = newQty - oldQty;
-        await MaterialService.deduct(tx, materialId, Number(weightGrams), diff);
-      }
-
-      // 3. Recalcula o Custo Base dinâmico
-      let costPerGram = material.costPerUnit / material.totalAmount;
-      if (material.unitType === 'kg' || material.unitType === 'l') {
-        costPerGram = costPerGram / 1000;
-      }
-
-      const materialCost = (Number(weightGrams) * costPerGram) * (1 + failPct);
-      const timeH = Number(productionTime) / 60;
-      const productionCost = timeH * (energyH + machineH);
-      
-      const calculatedCost = materialCost + productionCost + Number(additionalCost || 0);
-
-      // 4. Atualiza o banco
-      return await tx.product.update({
-        where: { id },
-        data: {
-          name,
-          description: description || null,
-          productionTime: Number(productionTime),
-          weightGrams: Number(weightGrams),
-          additionalCost: Number(additionalCost || 0),
-          materialId,
-          calculatedCost: Number(calculatedCost),
-          sellingPrice: Number(sellingPrice),
-          stockQuantity: newQty,
-          category: category || "Chaveiros",
-          subcategory: subcategory || null,
-          sku: sku || undefined,
-          shopeeUrl: shopeeUrl || null,
-          parentId: parentId || null,
-          ...(imageUrl !== undefined && { imageUrl: imageUrl || null })
-        }
-      });
-    });
-
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(product, { status: 200 });
   } catch (error: any) {
     console.error("PRODUCT PUT ERRO:", error);
     return NextResponse.json({ error: 'Erro ao editar produto', details: error.message }, { status: 500 });

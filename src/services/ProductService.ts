@@ -40,6 +40,9 @@ export class ProductService {
           material: true,
           variations: {
             include: { material: true }
+          },
+          components: {
+            include: { component: { include: { material: true } } }
           }
         },
         orderBy: { createdAt: 'desc' },
@@ -59,7 +62,7 @@ export class ProductService {
    * Cria um novo produto e realiza baixa inicial de material se necessário.
    */
   static async create(data: any) {
-    const { materialId, weightGrams, stockQuantity } = data;
+    const { materialId, weightGrams, stockQuantity, components } = data;
     
     const material = await prisma.material.findUnique({ where: { id: materialId } });
     if (!material) throw new Error('Material não encontrado');
@@ -72,10 +75,13 @@ export class ProductService {
 
     const sku = this.generateSKU(data.name, data.category, data.sku);
 
+    // Remover campos que não estão no prisma antes de passar para create
+    const { components: _, ...dbData } = data;
+
     return await prisma.$transaction(async (tx) => {
       const product = await tx.product.create({
         data: {
-          ...data,
+          ...dbData,
           weightGrams: Number(weightGrams),
           sellingPrice: Number(data.sellingPrice),
           productionTime: Number(data.productionTime || 0),
@@ -87,9 +93,81 @@ export class ProductService {
         },
       });
 
+      // Salvar Composição
+      if (Array.isArray(components)) {
+        for (const comp of components) {
+          await tx.productComposition.create({
+            data: {
+              kitId: product.id,
+              componentId: comp.componentId,
+              quantity: Number(comp.quantity) || 1
+            }
+          });
+        }
+      }
+
       const initialQty = Number(stockQuantity || 0);
       if (initialQty > 0) {
         await MaterialService.deduct(tx, materialId, Number(weightGrams), initialQty);
+      }
+
+      return product;
+    });
+  }
+
+  static async update(id: string, data: any) {
+    const { materialId, weightGrams, components } = data;
+    
+    const material = await prisma.material.findUnique({ where: { id: materialId } });
+    if (!material) throw new Error('Material não encontrado');
+
+    const calculatedCost = this.calculateProductionCost(
+      Number(weightGrams), 
+      material, 
+      Number(data.additionalCost || 0)
+    );
+
+    const { components: _, ...dbData } = data;
+
+    const oldProduct = await prisma.product.findUnique({ where: { id } });
+    const oldQty = oldProduct?.stockQuantity || 0;
+    const newQty = Number(data.stockQuantity || 0);
+
+    return await prisma.$transaction(async (tx) => {
+      const product = await tx.product.update({
+        where: { id },
+        data: {
+          ...dbData,
+          weightGrams: Number(weightGrams),
+          sellingPrice: Number(data.sellingPrice),
+          productionTime: Number(data.productionTime || 0),
+          additionalCost: Number(data.additionalCost || 0),
+          stockQuantity: newQty,
+          calculatedCost: Number(calculatedCost.toFixed(4)),
+          parentId: data.parentId || null,
+        },
+      });
+
+      // Se o estoque aumentou manualmente, dar baixa no material
+      if (newQty > oldQty) {
+        const diff = newQty - oldQty;
+        await MaterialService.deduct(tx, materialId, Number(weightGrams), diff);
+      }
+
+      // Atualizar Composição
+      if (Array.isArray(components)) {
+        // Limpar anteriores
+        await tx.productComposition.deleteMany({ where: { kitId: id } });
+        // Adicionar novos
+        for (const comp of components) {
+          await tx.productComposition.create({
+            data: {
+              kitId: id,
+              componentId: comp.componentId,
+              quantity: Number(comp.quantity) || 1
+            }
+          });
+        }
       }
 
       return product;

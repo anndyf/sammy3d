@@ -61,6 +61,22 @@ model Product {
   parentId       String?
   parent         Product?    @relation("ProductVariations", fields: [parentId], references: [id])
   variations     Product[]   @relation("ProductVariations")
+
+  // Composição de Kits
+  components     ProductComposition[] @relation("KitComponents")
+  usedIn         ProductComposition[] @relation("ComponentOf")
+}
+
+model ProductComposition {
+  id          String  @id @default(cuid())
+  kitId       String
+  componentId String
+  quantity    Int     @default(1)
+  
+  kit         Product @relation("KitComponents", fields: [kitId], references: [id])
+  component   Product @relation("ComponentOf", fields: [componentId], references: [id])
+  
+  @@unique([kitId, componentId])
 }
 
 model Order {

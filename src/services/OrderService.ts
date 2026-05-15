@@ -44,17 +44,36 @@ export class OrderService {
     const deadlineDate = deadline ? new Date(deadline) : null;
     let finalStatus = status || 'PENDING';
 
-    // Fase de leitura: Checar estoque se for catálogo
+    // Fase de leitura e reserva: Checar estoque (Próprio ou Composição)
     if (type === 'CATALOG' && Array.isArray(items)) {
-      let allInStock = true;
+      let allReady = true;
       for (const item of items) {
-        const product = await prisma.product.findUnique({ where: { id: item.productId } });
-        if (!product || product.stockQuantity < Number(item.quantity)) {
-          allInStock = false;
-          break;
+        const product = await prisma.product.findUnique({ 
+          where: { id: item.productId },
+          include: { components: true }
+        });
+        
+        if (!product) { allReady = false; break; }
+
+        // Se tem estoque do kit pronto
+        if (product.stockQuantity >= Number(item.quantity)) continue;
+
+        // Se não tem estoque do kit, checa componentes
+        if (product.components && product.components.length > 0) {
+          for (const comp of product.components) {
+            const part = await prisma.product.findUnique({ where: { id: comp.componentId } });
+            if (!part || part.stockQuantity < (comp.quantity * Number(item.quantity))) {
+              allReady = false;
+              break;
+            }
+          }
+        } else {
+          // Não tem kit nem componentes suficientes
+          allReady = false;
         }
+        if (!allReady) break;
       }
-      finalStatus = allInStock ? 'PICKING' : 'PENDING';
+      finalStatus = allReady ? 'PICKING' : 'PENDING';
     }
 
     return await prisma.$transaction(async (tx) => {
@@ -75,7 +94,7 @@ export class OrderService {
         }
       });
 
-      // 2. Itens + Baixa de Estoque
+      // 2. Itens + Baixa de Estoque Inteligente (Kit vs Peças)
       if (Array.isArray(items)) {
         for (const item of items) {
           await tx.orderItem.create({
@@ -89,10 +108,34 @@ export class OrderService {
           });
 
           if (type === 'CATALOG' && item.productId) {
-            await tx.product.update({
-              where: { id: String(item.productId) },
-              data: { stockQuantity: { decrement: Number(item.quantity) || 1 } }
+            const product = await tx.product.findUnique({ 
+              where: { id: item.productId },
+              include: { components: true }
             });
+
+            if (product) {
+              // Se tiver estoque do KIT pronto, tira do KIT
+              if (product.stockQuantity >= Number(item.quantity)) {
+                await tx.product.update({
+                  where: { id: product.id },
+                  data: { stockQuantity: { decrement: Number(item.quantity) } }
+                });
+              } else if (product.components && product.components.length > 0) {
+                // Se não tem KIT mas tem COMPONENTES, tira dos COMPONENTES
+                for (const comp of product.components) {
+                  await tx.product.update({
+                    where: { id: comp.componentId },
+                    data: { stockQuantity: { decrement: comp.quantity * Number(item.quantity) } }
+                  });
+                }
+              } else {
+                // Se não tem nem KIT nem COMPONENTES (ficou negativo)
+                await tx.product.update({
+                  where: { id: product.id },
+                  data: { stockQuantity: { decrement: Number(item.quantity) } }
+                });
+              }
+            }
           }
         }
       }

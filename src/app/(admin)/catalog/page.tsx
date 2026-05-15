@@ -5,7 +5,8 @@ import { Plus, Search, Tag, Box, DollarSign, Clock, Settings2, Trash2, Edit3, Ey
 import { cn } from "@/lib/utils";
 
 interface Material { id: string; name: string; color?: string; costPerUnit: number; totalAmount: number; unitType: string; }
-interface Product { id: string; name: string; description?: string; imageUrl?: string; productionTime: number; weightGrams: number; additionalCost: number; materialId: string; category: string; subcategory?: string; sku?: string; shopeeUrl?: string; calculatedCost: number; sellingPrice: number; stockQuantity: number; material: Material; parentId?: string | null; variations?: Product[]; }
+interface ProductComposition { componentId: string; quantity: number; component?: Product; }
+interface Product { id: string; name: string; description?: string; imageUrl?: string; productionTime: number; weightGrams: number; additionalCost: number; materialId: string; category: string; subcategory?: string; sku?: string; shopeeUrl?: string; calculatedCost: number; sellingPrice: number; stockQuantity: number; material: Material; parentId?: string | null; variations?: Product[]; components?: ProductComposition[]; }
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -32,6 +33,8 @@ export default function CatalogPage() {
   const [shopeeUrl, setShopeeUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [parentId, setParentId] = useState<string | null>(null);
+  const [composition, setComposition] = useState<ProductComposition[]>([]);
+  const [compSearch, setCompSearch] = useState("");
 
   const defaultTaxonomy = ["ARTICULADOS", "SENSORIAIS", "CHAVEIROS", "FIDGETS", "PLACAS", "FLEXIVEIS", "MULTICOLOR", "PINTADO", "INDUSTRIAL"];
   const [availableCategories, setAvailableCategories] = useState(defaultTaxonomy);
@@ -123,6 +126,7 @@ export default function CatalogPage() {
     }
     
     setParentId(p.parentId || null);
+    setComposition(p.components || []);
     setIsAddingMode(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -232,7 +236,8 @@ export default function CatalogPage() {
           productionTime: (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0),
           shopeeUrl,
           imageUrl,
-          parentId
+          parentId,
+          components: composition.map(c => ({ componentId: c.componentId, quantity: c.quantity }))
         })
       });
       
@@ -243,6 +248,7 @@ export default function CatalogPage() {
         setIsAddingMode(false); setEditingProduct(null); setParentId(null);
         setName(""); setCategory(""); setSubcategory(""); setSku(""); setDescription(""); setSellingPrice(""); setStockQuantity("");
         setWeightGrams(""); setMaterialId(""); setHours(""); setMinutes(""); setShopeeUrl(""); setImageUrl("");
+        setComposition([]); setCompSearch("");
         fetchData();
       } else {
         showStatus('error', `❌ Erro: ${result.error || 'Falha no servidor'}`);
@@ -269,6 +275,21 @@ export default function CatalogPage() {
   const marginPercentage = parseFloat(sellingPrice) > 0 ? (grossProfit / parseFloat(sellingPrice)) * 100 : 0;
 
   const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const compResults = compSearch ? products.filter(p => p.name.toLowerCase().includes(compSearch.toLowerCase()) && p.id !== editingProduct?.id) : [];
+
+  const addComp = (p: Product) => {
+    if (composition.some(c => c.componentId === p.id)) return;
+    setComposition(prev => [...prev, { componentId: p.id, quantity: 1, component: p }]);
+    setCompSearch("");
+  };
+
+  const removeComp = (id: string) => {
+    setComposition(prev => prev.filter(c => c.componentId !== id));
+  };
+
+  const updateCompQty = (id: string, qty: number) => {
+    setComposition(prev => prev.map(c => c.componentId === id ? { ...c, quantity: qty } : c));
+  };
 
   return (
     <div className="bg-transparent min-h-screen text-white font-sans select-none animate-fade-in pb-40">
@@ -516,15 +537,61 @@ export default function CatalogPage() {
                          </div>
                       </div>
 
-                      <div className="bg-black/20 border border-white/5 border-dashed rounded-xl p-4 flex items-center gap-4 group">
-                         <div className="p-2 bg-white/5 rounded-lg text-slate-600">
-                            <Lock className="h-4 w-4" />
+                      {/* Kit Composition section */}
+                      <div className="space-y-4 pt-4 border-t border-white/5">
+                         <label className="text-[11px] font-black text-cyan-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <LayoutGrid className="h-3 w-3" /> Composição do Kit (Peças)
+                         </label>
+                         
+                         <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                            <input 
+                              type="text" 
+                              placeholder="Buscar peça para adicionar..." 
+                              className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white outline-none focus:border-cyan-500/50 transition-all"
+                              value={compSearch}
+                              onChange={e=>setCompSearch(e.target.value)}
+                            />
+                            {compResults.length > 0 && (
+                              <div className="absolute top-full left-0 w-full z-[300] bg-[#1a1d24] border border-white/10 rounded-xl mt-1 shadow-2xl overflow-hidden max-h-40 overflow-y-auto">
+                                 {compResults.map(p => (
+                                   <button 
+                                     key={p.id} 
+                                     type="button"
+                                     onClick={() => addComp(p)}
+                                     className="w-full px-4 py-2 text-left text-xs hover:bg-white/5 flex items-center justify-between group text-white"
+                                   >
+                                      <span>{p.name}</span>
+                                      <Plus className="h-3 w-3 opacity-0 group-hover:opacity-100 text-cyan-400" />
+                                   </button>
+                                 ))}
+                               </div>
+                            )}
                          </div>
-                         <div>
-                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Configuração Fiscal Bloqueada</p>
-                            <p className="text-[9px] font-medium text-slate-600">Disponível no plano PRO Fiscal</p>
+
+                         <div className="space-y-2">
+                            {composition.map(c => (
+                              <div key={c.componentId} className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center justify-between">
+                                 <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
+                                       <Box className="h-4 w-4 text-slate-500" />
+                                    </div>
+                                    <span className="text-xs font-bold text-white">{c.component?.name || products.find(p => p.id === c.componentId)?.name || 'Peça'}</span>
+                                 </div>
+                                 <div className="flex items-center gap-3">
+                                    <input 
+                                      type="number" 
+                                      className="w-12 bg-black border border-white/10 rounded px-2 py-1 text-[10px] text-center text-white" 
+                                      value={c.quantity} 
+                                      onChange={e => updateCompQty(c.componentId, parseInt(e.target.value) || 1)}
+                                    />
+                                    <button type="button" onClick={() => removeComp(c.componentId)} className="text-red-500 hover:text-red-400"><X className="h-4 w-4" /></button>
+                                 </div>
+                              </div>
+                            ))}
                          </div>
                       </div>
+
                    </div>
 
                    <button 
@@ -583,17 +650,11 @@ export default function CatalogPage() {
                   </div>
 
                   <div className="space-y-4">
-                     <p className="text-[11px] font-black text-black uppercase tracking-widest flex items-center gap-2"><DollarSign className="h-3 w-3 text-emerald-500" /> Inteligência de Preço</p>
-                     <div className="bg-white border border-slate-100 rounded-2xl p-6 divide-y divide-slate-50 shadow-sm">
-                        <div className="flex justify-between py-3">
-                           <span className="text-[13px] font-medium text-slate-500">Custo de Produção</span>
-                           <span className="font-mono font-bold text-black">
-                              R$ {(viewingProduct.calculatedCost || 0).toFixed(2)}
-                           </span>
-                        </div>
-                        <div className="flex justify-between py-3">
-                           <span className="text-[13px] font-medium text-slate-500">Preço de Venda</span>
-                           <span className="font-mono font-extrabold text-black">R$ {viewingProduct.sellingPrice.toFixed(2)}</span>
+                     <p className="text-[11px] font-black text-black uppercase tracking-widest flex items-center gap-2"><DollarSign className="h-3 w-3 text-emerald-500" /> Valor de Venda</p>
+                     <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+                        <div className="flex justify-between items-center">
+                           <span className="text-[13px] font-medium text-slate-500">Preço de Venda Sugerido</span>
+                           <span className="font-mono font-extrabold text-2xl text-black">R$ {viewingProduct.sellingPrice.toFixed(2)}</span>
                         </div>
                      </div>
                   </div>
