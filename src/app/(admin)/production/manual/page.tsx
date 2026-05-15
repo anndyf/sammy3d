@@ -1,16 +1,17 @@
 "use client"
 
-import { KanbanSquare, Plus, MoreHorizontal, Clock, Box, Play, CheckCircle2, Search, Filter } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { KanbanSquare, Plus, MoreHorizontal, Clock, Box, Play, CheckCircle2, Search, Filter, Trash2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface KanbanItem {
+interface Order {
   id: string;
-  product: string;
-  material: string;
-  time: string;
-  client: string;
-  machine?: string;
+  customerName: string;
+  notes: string;
+  status: string;
+  weightGrams?: number;
+  deadline?: string;
+  type: string;
 }
 
 interface KanbanColumn {
@@ -18,153 +19,196 @@ interface KanbanColumn {
   title: string;
   color: string;
   textColor: string;
-  count: number;
-  items: KanbanItem[];
 }
 
+const COLUMNS: KanbanColumn[] = [
+  { id: "PENDING", title: "Fila de Impressão", color: "border-slate-500", textColor: "text-slate-400" },
+  { id: "PRINTING", title: "Imprimindo", color: "border-cyan-500", textColor: "text-cyan-400" },
+  { id: "POST_PROCESSING", title: "Pós-Produção", color: "border-amber-500", textColor: "text-amber-500" },
+  { id: "FINISHED", title: "Concluído", color: "border-emerald-500", textColor: "text-emerald-500" }
+];
+
 export default function ProductionKanbanPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const columns: KanbanColumn[] = [
-    {
-      id: "fila",
-      title: "Fila de Impressão",
-      color: "border-slate-500",
-      textColor: "text-slate-400",
-      count: 2,
-      items: [
-        { id: "ORD-001", product: "Suporte VESA 100mm", material: "PETG Preto", time: "2h 30m", client: "João S." },
-        { id: "ORD-002", product: "Engrenagem Helicoidal", material: "ABS Branco", time: "4h 15m", client: "Tech Solutions" }
-      ]
-    },
-    {
-      id: "imprimindo",
-      title: "Imprimindo",
-      color: "border-cyan-500",
-      textColor: "text-cyan-400",
-      count: 1,
-      items: [
-        { id: "ORD-003", product: "Case Raspberry Pi 4", material: "PLA Cinza", time: "1h 10m restante", client: "Maria A.", machine: "HI COMBO" }
-      ]
-    },
-    {
-      id: "pos_producao",
-      title: "Pós-Produção",
-      color: "border-amber-500",
-      textColor: "text-amber-500",
-      count: 1,
-      items: [
-        { id: "ORD-004", product: "Miniatura RPG", material: "Resina Standard", time: "Aguardando cura", client: "Pedro C." }
-      ]
-    },
-    {
-      id: "concluido",
-      title: "Concluído",
-      color: "border-emerald-500",
-      textColor: "text-emerald-500",
-      count: 3,
-      items: [
-        { id: "ORD-005", product: "Vaso Decorativo", material: "PLA Silk Ouro", time: "Finalizado", client: "Ana B." }
-      ]
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/orders?limit=100');
+      const json = await res.json();
+      if (json.data?.data) {
+        setOrders(json.data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const updateStatus = async (id: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/orders/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) fetchOrders();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const deleteOrder = async (id: string) => {
+    if (!confirm("Excluir esta ordem permanentemente?")) return;
+    try {
+      const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+      if (res.ok) fetchOrders();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getFilteredOrders = (status: string) => {
+    return orders.filter(o => 
+      o.status === status && 
+      (o.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+       o.notes?.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  };
+
+  const getNextStatus = (current: string) => {
+    const idx = COLUMNS.findIndex(c => c.id === current);
+    return idx < COLUMNS.length - 1 ? COLUMNS[idx + 1].id : null;
+  };
 
   return (
-    <div className="space-y-6 pb-20 min-h-[calc(100vh-100px)] flex flex-col">
+    <div className="flex flex-col h-[calc(100vh-140px)] space-y-6 animate-fade-in overflow-hidden">
+      
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-2 mt-2 shrink-0">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 shrink-0 pt-2">
          <div className="flex items-center gap-4">
-            <div className="p-3 bg-transparent rounded-xl">
+            <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/20">
                <KanbanSquare className="h-6 w-6 text-cyan-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">Produção & Status (Kamban)</h1>
+            <div>
+              <h1 className="text-2xl font-black text-white uppercase tracking-tight">Produção (Kanban)</h1>
+              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Controle de fluxo operacional</p>
+            </div>
          </div>
          
          <div className="flex items-center gap-3">
-            <div className="relative">
-               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <div className="relative group">
+               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
                <input 
                  type="text" 
-                 placeholder="Buscar peça..." 
-                 className="w-64 bg-[#1a1d24] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white outline-none hover:border-white/10 focus:bg-[#1a1d24] focus:border-cyan-500 transition-all shadow-sm" 
+                 placeholder="Buscar peça ou cliente..." 
+                 className="w-64 bg-[#1a1d24] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all shadow-sm" 
                  value={searchTerm} 
                  onChange={e=>setSearchTerm(e.target.value)} 
                />
             </div>
-            <button className="p-2.5 bg-[#1a1d24] border border-white/5 text-slate-400 rounded-lg hover:text-white transition-colors">
-               <Filter className="h-4 w-4" />
-            </button>
-            <button className="bg-cyan-500 text-black px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg">
-              <Plus className="h-4 w-4" />
-              Nova Ordem
+            <button onClick={fetchOrders} className="p-3 bg-[#1a1d24] border border-white/5 text-slate-400 rounded-xl hover:text-white transition-all">
+               <RotateCcwIcon className="h-4 w-4" />
             </button>
          </div>
       </div>
 
       {/* KANBAN BOARD */}
-      <div className="flex gap-6 overflow-x-auto pb-4 flex-1 items-start snap-x">
-         {columns.map(col => (
-           <div key={col.id} className="bg-[#1a1d24] border border-white/5 rounded-2xl w-80 shrink-0 flex flex-col max-h-full snap-start shadow-xl">
-              
-              {/* COLUMN HEADER */}
-              <div className={cn("p-4 border-b-2 border-white/5 flex items-center justify-between", col.color)}>
-                 <div className="flex items-center gap-2">
-                    <h3 className={cn("text-sm font-bold uppercase tracking-widest", col.textColor)}>{col.title}</h3>
-                    <span className="bg-[#14161b] px-2 py-0.5 rounded text-[10px] font-bold text-slate-400">{col.count}</span>
-                 </div>
-                 <button className="text-slate-500 hover:text-white transition-colors">
-                    <MoreHorizontal className="h-4 w-4" />
-                 </button>
-              </div>
+      <div className="flex gap-6 overflow-x-auto pb-4 flex-1 items-start custom-scrollbar">
+         {COLUMNS.map(col => {
+           const items = getFilteredOrders(col.id);
+           return (
+            <div key={col.id} className="bg-[#1a1d24]/50 border border-white/5 rounded-[2rem] w-80 shrink-0 flex flex-col h-full shadow-2xl relative">
+               
+               <div className={cn("p-6 border-b-2 flex items-center justify-between", col.color)}>
+                  <div className="flex items-center gap-3">
+                     <h3 className={cn("text-[11px] font-black uppercase tracking-[0.2em]", col.textColor)}>{col.title}</h3>
+                     <span className="bg-[#14161b] px-2 py-0.5 rounded-md text-[9px] font-black text-slate-500 border border-white/5">{items.length}</span>
+                  </div>
+                  <MoreHorizontal className="h-4 w-4 text-slate-600" />
+               </div>
 
-              {/* COLUMN CONTENT (CARDS) */}
-              <div className="p-4 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
-                 {col.items.map(item => (
-                   <div key={item.id} className="bg-[#14161b] border border-white/5 p-4 rounded-xl shadow-sm hover:border-white/10 hover:shadow-md transition-all cursor-grab active:cursor-grabbing group">
-                      <div className="flex justify-between items-start mb-2">
-                         <span className="text-[10px] font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase tracking-wider">{item.id}</span>
-                         <span className="text-[10px] text-slate-400 font-medium truncate max-w-[100px]">{item.client}</span>
-                      </div>
-                      
-                      <h4 className="text-sm font-bold text-white mb-2 leading-tight">{item.product}</h4>
-                      
-                      <div className="flex flex-col gap-2">
-                         <div className="flex items-center gap-1.5">
-                            <Box className="h-3.5 w-3.5 text-slate-500" />
-                            <span className="text-[11px] font-medium text-slate-400">{item.material}</span>
-                         </div>
-                         
-                         {item.machine && (
-                           <div className="flex items-center gap-1.5">
-                              <Play className="h-3.5 w-3.5 text-cyan-400" />
-                              <span className="text-[11px] font-bold text-cyan-400">{item.machine}</span>
-                           </div>
-                         )}
+               <div className="p-4 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
+                  {loading && items.length === 0 ? (
+                    <div className="py-10 text-center animate-pulse">
+                      <div className="w-8 h-8 border-2 border-white/5 border-t-cyan-500 rounded-full animate-spin mx-auto mb-2"></div>
+                    </div>
+                  ) : items.length === 0 ? (
+                    <div className="py-20 text-center opacity-20">
+                      <Box className="w-8 h-8 mx-auto mb-2 text-slate-600" />
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">Vazio</p>
+                    </div>
+                  ) : items.map(item => (
+                    <div key={item.id} className="bg-[#14161b] border border-white/5 p-5 rounded-2xl shadow-lg hover:border-cyan-500/30 transition-all group relative">
+                       <div className="flex justify-between items-start mb-3">
+                          <span className="text-[9px] font-black text-slate-500 bg-white/5 px-2 py-1 rounded border border-white/5 uppercase">#{item.id.substring(0,6)}</span>
+                          <button onClick={() => deleteOrder(item.id)} className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 text-slate-700 hover:text-red-500 rounded-lg transition-all">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                       </div>
+                       
+                       <h4 className="text-sm font-bold text-white mb-2 leading-tight uppercase group-hover:text-cyan-400 transition-colors">{item.notes?.split('\n')[0] || 'Projeto Customizado'}</h4>
+                       
+                       <div className="space-y-2 mb-6">
+                          <div className="flex items-center gap-2">
+                             <UserIcon className="h-3 w-3 text-slate-500" />
+                             <span className="text-[10px] font-bold text-slate-400">{item.customerName}</span>
+                          </div>
+                          {item.weightGrams && (
+                            <div className="flex items-center gap-2">
+                               <Box className="h-3 w-3 text-slate-500" />
+                               <span className="text-[10px] font-bold text-slate-400">{item.weightGrams}g</span>
+                            </div>
+                          )}
+                       </div>
 
-                         <div className="flex items-center gap-1.5 mt-1 border-t border-white/5 pt-2">
-                            {col.id === "concluido" ? (
-                               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                            ) : (
-                               <Clock className="h-3.5 w-3.5 text-slate-500" />
-                            )}
-                            <span className={cn(
-                              "text-[10px] font-bold uppercase tracking-wider",
-                              col.id === "imprimindo" ? "text-cyan-400" :
-                              col.id === "concluido" ? "text-emerald-500" : "text-slate-500"
-                            )}>{item.time}</span>
-                         </div>
-                      </div>
-                   </div>
-                 ))}
-                 
-                 {/* EMPTY STATE OR ADD BUTTON */}
-                 <button className="w-full py-3 border border-dashed border-white/10 rounded-xl text-[11px] font-bold text-slate-500 uppercase tracking-widest hover:border-white/20 hover:text-slate-300 transition-colors flex items-center justify-center gap-2">
-                    <Plus className="h-3.5 w-3.5" /> Adicionar
-                 </button>
-              </div>
-           </div>
-         ))}
+                       <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                          <div className="flex items-center gap-1.5">
+                             <Clock className="h-3 w-3 text-slate-600" />
+                             <span className="text-[9px] font-black text-slate-600 uppercase">{item.deadline ? new Date(item.deadline).toLocaleDateString() : 'Sem prazo'}</span>
+                          </div>
+                          
+                          {getNextStatus(col.id) && (
+                            <button 
+                              onClick={() => updateStatus(item.id, getNextStatus(col.id)!)}
+                              className="p-2 bg-cyan-500/10 text-cyan-400 rounded-lg hover:bg-cyan-500 hover:text-black transition-all"
+                            >
+                               <ArrowRight className="h-4 w-4" />
+                            </button>
+                          )}
+                       </div>
+                    </div>
+                  ))}
+               </div>
+            </div>
+           );
+         })}
       </div>
     </div>
+  );
+}
+
+function RotateCcwIcon(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+    </svg>
+  );
+}
+
+function UserIcon(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
   );
 }
