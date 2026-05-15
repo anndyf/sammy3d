@@ -26,15 +26,14 @@ export async function POST(request: Request) {
     for (const line of lines) {
       const upperLine = line.toUpperCase().trim();
 
-      // Tempo (Segundos ou Minutos)
-      // Cura: ;TIME:6521
-      // Bambu/Prusa: ; total time: 1h 20m 10s ou ; estimated printing time (normal mode) = 2h 5m 30s
+      // Tempo
+      // Creality/Cura: ;TIME:6521
+      // Bambu/Prusa: ; total time: 1h 20m 10s
       if (upperLine.includes('TIME')) {
-        const timeMatch = upperLine.match(/TIME\s*[:=]\s*(\d+)/); // Cura
+        const timeMatch = upperLine.match(/TIME\s*[:=]\s*(\d+)/);
         if (timeMatch) {
           totalTimeMinutes = Math.round(parseInt(timeMatch[1]) / 60);
         } else {
-          // Formato 1h 20m
           const hMatch = upperLine.match(/(\d+)H/);
           const mMatch = upperLine.match(/(\d+)M/);
           if (hMatch || mMatch) {
@@ -43,13 +42,25 @@ export async function POST(request: Request) {
         }
       }
       
-      // Filament Length (Cura/Generic)
-      if (upperLine.includes('FILAMENT USED')) {
-         const mmMatch = upperLine.match(/FILAMENT USED\s*[:=]\s*([\d.]+)\s*MM/);
-         if (mmMatch) totalFilamentLengthMeters = parseFloat(mmMatch[1]) / 1000;
+      // Filament Length & Weight (Creality Print uses 'Filament used:' and 'Filament Weight:')
+      if (upperLine.includes('FILAMENT')) {
+         // Length: ;Filament used: 12.5m
+         const mmMatch = upperLine.match(/FILAMENT USED\s*[:=]\s*([\d.]+)/);
+         if (mmMatch) {
+           const val = parseFloat(mmMatch[1]);
+           // Creality pode vir em metros ou mm. Se for muito baixo, provavelmente é metros.
+           totalFilamentLengthMeters = val < 500 ? val : val / 1000;
+         }
 
-         const gMatch = upperLine.match(/FILAMENT USED\s*(?:\[G\])?\s*[:=]\s*([\d.]+)\s*G/);
+         // Weight: ;Filament Weight: 15.4
+         const gMatch = upperLine.match(/FILAMENT WEIGHT\s*[:=]\s*([\d.]+)/);
          if (gMatch) totalFilamentWeightGrams = parseFloat(gMatch[1]);
+
+         // Altura de camada (opcional para insight)
+         const lhMatch = upperLine.match(/LAYER HEIGHT\s*[:=]\s*([\d.]+)/);
+         if (lhMatch) {
+            // Pode ser usado para predição de qualidade
+         }
       }
 
       // Bambu / Orca Specific
@@ -59,12 +70,12 @@ export async function POST(request: Request) {
       }
 
       // Layers
-      if (upperLine.includes('LAYER_COUNT') || upperLine.includes('TOTAL LAYERS')) {
-         const match = upperLine.match(/(?:LAYER_COUNT|TOTAL LAYERS)\s*[:=]\s*(\d+)/);
+      if (upperLine.includes('LAYER_COUNT') || upperLine.includes('TOTAL LAYERS') || upperLine.includes('LAYERS:')) {
+         const match = upperLine.match(/(?:LAYER_COUNT|TOTAL LAYERS|LAYERS)\s*[:=]\s*(\d+)/);
          if (match) layerCount = parseInt(match[1]);
       }
       
-      // Fallback: se não achar o peso direto, calcular pelo comprimento (assumindo PLA 1.75mm ~ 2.98g/m)
+      // Fallback
       if (totalFilamentWeightGrams === 0 && totalFilamentLengthMeters > 0) {
         totalFilamentWeightGrams = totalFilamentLengthMeters * 2.98;
       }
