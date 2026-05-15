@@ -1,184 +1,275 @@
 "use client"
 
-import { Wallet, Calendar, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Filter, Printer, Search, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { Wallet, Calendar, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Filter, Printer, Search, Plus, Trash2, MoreVertical, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function FinancePage() {
-  const transactions = [
-    {
-      id: 1,
-      date: "14/05/2026",
-      description: "Compra de Filamento: VOOLT PRETO PETG (4 un)",
-      subDescription: "Outros",
-      category: "Material",
-      status: "Pago",
-      value: -384.00
-    }
-  ];
+interface Transaction {
+  id: string;
+  date: string;
+  description: string;
+  category: string;
+  type: 'INCOME' | 'EXPENSE';
+  amount: number;
+  status?: string;
+}
 
-  const totalIncome = 0.00;
-  const totalExpense = 384.00;
-  const balance = totalIncome - totalExpense;
+export default function FinancePage() {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<{ transactions: Transaction[], summary: any }>({
+    transactions: [],
+    summary: { totalIncome: 0, totalExpense: 0, balance: 0 }
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newTransaction, setNewTransaction] = useState({
+    description: "",
+    amount: "",
+    type: "EXPENSE" as 'INCOME' | 'EXPENSE',
+    category: "Outros"
+  });
+
+  const fetchFinance = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/finance');
+      const json = await res.json();
+      if (json.data) {
+        setData(json.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFinance();
+  }, [fetchFinance]);
+
+  const handleAddTransaction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/finance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newTransaction,
+          amount: parseFloat(newTransaction.amount)
+        })
+      });
+
+      if (res.ok) {
+        setIsModalOpen(false);
+        setNewTransaction({ description: "", amount: "", type: "EXPENSE", category: "Outros" });
+        fetchFinance();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Excluir lançamento permanentemente?")) return;
+    try {
+      const res = await fetch(`/api/finance/${id}`, { method: 'DELETE' });
+      if (res.ok) fetchFinance();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 pb-20 animate-fade-in">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-2 mt-2">
          <div className="flex items-center gap-4">
-            <div className="p-3 bg-transparent rounded-xl">
+            <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                <Wallet className="h-6 w-6 text-emerald-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">Fluxo de Caixa</h1>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Fluxo de Caixa</h1>
+              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Gestão financeira em tempo real</p>
+            </div>
          </div>
          
-         {/* MONTH NAVIGATOR */}
          <div className="flex items-center bg-[#1a1d24] border border-white/5 rounded-xl shadow-lg overflow-hidden p-1">
-            <button className="p-2 hover:bg-white/5 text-slate-400 rounded-lg transition-colors">
-               <ChevronLeft className="h-5 w-5" />
-            </button>
+            <button className="p-2 hover:bg-white/5 text-slate-400 rounded-lg transition-colors"><ChevronLeft className="h-5 w-5" /></button>
             <div className="flex items-center gap-2 px-4 py-1">
                <Calendar className="h-4 w-4 text-cyan-400" />
-               <span className="text-sm font-bold text-white uppercase tracking-widest">MAIO 2026</span>
+               <span className="text-xs font-black text-white uppercase tracking-widest">MAIO 2026</span>
             </div>
-            <button className="p-2 hover:bg-white/5 text-slate-400 rounded-lg transition-colors">
-               <ChevronRight className="h-5 w-5" />
-            </button>
+            <button className="p-2 hover:bg-white/5 text-slate-400 rounded-lg transition-colors"><ChevronRight className="h-5 w-5" /></button>
          </div>
       </div>
 
       {/* SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         {/* SALDO */}
-         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
             <div>
-               <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">SALDO REALIZADO</h3>
-               <p className={cn("text-4xl font-black font-mono tracking-tighter", balance >= 0 ? "text-white" : "text-red-400")}>
-                  R$ {balance.toFixed(2)}
+               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">SALDO REALIZADO</h3>
+               <p className={cn("text-4xl font-black font-mono tracking-tighter", data.summary.balance >= 0 ? "text-white" : "text-red-400")}>
+                  R$ {data.summary.balance.toFixed(2)}
                </p>
             </div>
-            <p className="text-[11px] font-medium text-slate-500 mt-4 flex items-center gap-1.5">
-               <TrendingLine className="h-4 w-4" />
-               {balance >= 0 ? "Lucro no período" : "Prejuízo no período"}
+            <p className="text-[10px] font-bold text-slate-500 mt-6 flex items-center gap-2 uppercase">
+               <TrendingLine className={cn("h-4 w-4", data.summary.balance >= 0 ? "text-emerald-400" : "text-red-400")} />
+               {data.summary.balance >= 0 ? "Saldo Positivo" : "Prejuízo no período"}
             </p>
          </div>
 
-         {/* RECEITAS */}
-         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
-            <div className="absolute right-6 top-6 p-2 bg-cyan-500/10 rounded-lg border border-cyan-500/20 text-cyan-400 group-hover:scale-110 transition-transform">
-               <ArrowUpRight className="h-5 w-5" />
+         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+            <div className="absolute right-8 top-8 p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20 text-cyan-400 group-hover:rotate-12 transition-all">
+               <ArrowUpRight className="h-6 w-6" />
             </div>
             <div>
-               <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">RECEITAS (PAGAS)</h3>
+               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">RECEITAS ACUMULADAS</h3>
                <p className="text-3xl font-black text-cyan-400 font-mono tracking-tighter">
-                  R$ {totalIncome.toFixed(2)}
+                  R$ {data.summary.totalIncome.toFixed(2)}
                </p>
             </div>
          </div>
 
-         {/* DESPESAS */}
-         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
-            <div className="absolute right-6 top-6 p-2 bg-red-500/10 rounded-lg border border-red-500/20 text-red-400 group-hover:scale-110 transition-transform">
-               <ArrowDownRight className="h-5 w-5" />
+         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+            <div className="absolute right-8 top-8 p-3 bg-red-500/10 rounded-xl border border-red-500/20 text-red-400 group-hover:rotate-12 transition-all">
+               <ArrowDownRight className="h-6 w-6" />
             </div>
             <div>
-               <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">DESPESAS (PAGAS)</h3>
+               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">DESPESAS ACUMULADAS</h3>
                <p className="text-3xl font-black text-red-400 font-mono tracking-tighter">
-                  R$ {totalExpense.toFixed(2)}
+                  R$ {data.summary.totalExpense.toFixed(2)}
                </p>
             </div>
          </div>
       </div>
 
-      {/* FILTERS BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#1a1d24] border border-white/5 rounded-2xl p-4 shadow-lg">
-         <div className="flex items-center gap-3">
-            <Filter className="h-4 w-4 text-slate-500 ml-2" />
-            <span className="text-sm font-bold text-slate-400">Filtros:</span>
-            <select className="bg-[#14161b] border border-white/5 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-cyan-500 transition-colors">
-               <option>Todos os Tipos</option>
-            </select>
-            <select className="bg-[#14161b] border border-white/5 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-cyan-500 transition-colors">
-               <option>Todos os Status</option>
-            </select>
-            <select className="bg-[#14161b] border border-white/5 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-cyan-500 transition-colors">
-               <option>Todas as Categorias</option>
-            </select>
+      {/* ACTIONS */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+         <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
+            <input 
+              type="text" 
+              placeholder="Pesquisar lançamentos..." 
+              className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-4 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all shadow-sm" 
+            />
          </div>
-         <button className="flex items-center gap-2 px-4 py-2 bg-[#14161b] border border-white/10 rounded-lg text-sm font-bold text-slate-300 hover:text-white hover:bg-white/5 transition-all">
-            <Printer className="h-4 w-4" />
-            Imprimir Relatório
+         <button 
+           onClick={() => setIsModalOpen(true)}
+           className="bg-cyan-500 text-black px-8 h-14 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-cyan-400 transition-all flex items-center gap-3 shadow-xl shadow-cyan-500/10"
+         >
+           <Plus className="h-4 w-4" /> Novo Lançamento
          </button>
       </div>
 
-      {/* LIST SECTION */}
-      <div>
-         <div className="flex items-center gap-4 mb-6">
-            <div className="relative flex-1">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-               <input 
-                 type="text" 
-                 placeholder="Buscar lançamento..." 
-                 className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:bg-[#1a1d24] focus:border-cyan-500 transition-all shadow-sm" 
-               />
-            </div>
-            <button className="bg-cyan-500 text-black px-6 py-3.5 rounded-xl text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg whitespace-nowrap">
-              <Plus className="h-4 w-4" />
-              Novo Lançamento
-            </button>
+      {/* TABLE */}
+      <div className="bg-[#1a1d24] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+         <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#14161b]/30">
+            <div className="col-span-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">DATA</div>
+            <div className="col-span-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">DESCRIÇÃO / CATEGORIA</div>
+            <div className="col-span-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-center">STATUS</div>
+            <div className="col-span-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-right">VALOR</div>
          </div>
 
-         {/* TABLE */}
-         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
-            {/* Header */}
-            <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5">
-               <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">DATA</div>
-               <div className="col-span-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">DESCRIÇÃO</div>
-               <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">CATEGORIA</div>
-               <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">STATUS</div>
-               <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">VALOR</div>
-            </div>
-
-            {/* Body */}
-            <div className="divide-y divide-white/5">
-               {transactions.map(t => (
-                 <div key={t.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
-                    <div className="col-span-2">
-                       <span className="text-sm font-bold text-slate-300">{t.date}</span>
-                    </div>
-                    
-                    <div className="col-span-5 flex flex-col">
-                       <span className="text-sm font-bold text-white">{t.description}</span>
-                       <span className="text-xs text-slate-500">{t.subDescription}</span>
-                    </div>
-
-                    <div className="col-span-2 text-center">
-                       <span className="inline-block px-3 py-1 bg-[#14161b] border border-white/5 rounded-lg text-[10px] font-bold text-slate-300">
-                          {t.category}
-                       </span>
-                    </div>
-
-                    <div className="col-span-1 text-center">
-                       <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-emerald-500/20">
-                          {t.status}
-                       </span>
-                    </div>
-
-                    <div className="col-span-2 text-right">
-                       <span className={cn("text-sm font-black font-mono", t.value >= 0 ? "text-cyan-400" : "text-red-400")}>
-                          {t.value >= 0 ? "+ " : "- "}R$ {Math.abs(t.value).toFixed(2)}
-                       </span>
-                    </div>
+         <div className="divide-y divide-white/5">
+            {loading ? (
+              <div className="py-20 text-center animate-pulse">
+                <p className="text-xs text-slate-500 font-black uppercase tracking-widest">Sincronizando com o banco de dados...</p>
+              </div>
+            ) : data.transactions.length === 0 ? (
+              <div className="py-20 text-center">
+                <p className="text-xs text-slate-600 font-black uppercase tracking-widest">Nenhum lançamento encontrado</p>
+              </div>
+            ) : data.transactions.map(t => (
+              <div key={t.id} className="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-white/5 transition-all group">
+                 <div className="col-span-2">
+                    <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
+                      {new Date(t.date).toLocaleDateString()}
+                    </span>
                  </div>
-               ))}
-            </div>
+                 
+                 <div className="col-span-5 flex flex-col">
+                    <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors uppercase truncate">
+                      {t.description || 'Lançamento Manual'}
+                    </span>
+                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
+                      {t.category}
+                    </span>
+                 </div>
+
+                 <div className="col-span-3 text-center">
+                    <span className={cn(
+                      "inline-flex items-center px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border",
+                      t.type === 'INCOME' ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
+                    )}>
+                       {t.type === 'INCOME' ? 'Receita' : 'Despesa'}
+                    </span>
+                 </div>
+
+                 <div className="col-span-2 text-right flex items-center justify-end gap-4">
+                    <span className={cn("text-md font-black font-mono", t.type === 'INCOME' ? "text-cyan-400" : "text-red-400")}>
+                       {t.type === 'INCOME' ? "+ " : "- "}R$ {Math.abs(t.amount).toFixed(2)}
+                    </span>
+                    <button onClick={() => handleDelete(t.id)} className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-slate-600 hover:text-red-500 rounded-lg transition-all">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                 </div>
+              </div>
+            ))}
          </div>
       </div>
+
+      {/* MODAL NOVO LANÇAMENTO */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
+           <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
+              <div className="flex items-center justify-between mb-8">
+                 <h2 className="text-xl font-black text-white uppercase tracking-tight">Novo Lançamento</h2>
+                 <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-500 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
+              </div>
+
+              <form onSubmit={handleAddTransaction} className="space-y-6">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Descrição</label>
+                    <input required type="text" className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-sm font-bold text-white outline-none focus:border-cyan-500" value={newTransaction.description} onChange={e=>setNewTransaction({...newTransaction, description: e.target.value})} />
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Valor (R$)</label>
+                       <input required type="number" step="0.01" className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xl font-black text-white outline-none focus:border-cyan-500" value={newTransaction.amount} onChange={e=>setNewTransaction({...newTransaction, amount: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Tipo</label>
+                       <select className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-cyan-500 appearance-none" value={newTransaction.type} onChange={e=>setNewTransaction({...newTransaction, type: e.target.value as any})}>
+                          <option value="EXPENSE">DESPESA (-)</option>
+                          <option value="INCOME">RECEITA (+)</option>
+                       </select>
+                    </div>
+                 </div>
+
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Categoria</label>
+                    <select className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-cyan-500 appearance-none" value={newTransaction.category} onChange={e=>setNewTransaction({...newTransaction, category: e.target.value})}>
+                       <option value="Outros">Outros</option>
+                       <option value="Material">Material</option>
+                       <option value="Venda">Venda</option>
+                       <option value="Infraestrutura">Infraestrutura</option>
+                    </select>
+                 </div>
+
+                 <button type="submit" className="w-full bg-cyan-500 text-black h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-xl shadow-cyan-500/10 mt-4">
+                    Confirmar Lançamento
+                 </button>
+              </form>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// Simple sparkline-like icon for the balance card
 function TrendingLine({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
