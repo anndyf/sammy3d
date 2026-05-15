@@ -64,6 +64,17 @@ export async function POST(request: Request) {
          const dMatch = upperLine.match(/FILAMENT_DENSITY:\s*([\d.]+)/);
          if (dMatch) filamentDensity = parseFloat(dMatch[1]);
       }
+
+      // 5. CONSUMO REAL VIA G1 (Fallback agressivo se não houver metadados)
+      // Percorre as linhas de comando para somar a extrusão (E)
+      if (upperLine.startsWith('G1') && upperLine.includes(' E')) {
+         const eMatch = upperLine.match(/E([\d.-]+)/);
+         if (eMatch) {
+            const eVal = parseFloat(eMatch[1]);
+            // Se for extrusão relativa (comum em Klipper/Bambu/Creality), somamos apenas positivos
+            if (eVal > 0) totalFilamentLengthMeters += eVal / 1000;
+         }
+      }
     }
 
     // Cálculo final se não achou peso direto
