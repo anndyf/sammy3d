@@ -155,20 +155,24 @@ export default function ProductionKanbanPage() {
                             </button>
                          </div>
                          
-                         <h4 className="text-sm font-bold text-white mb-2 leading-tight uppercase group-hover:text-cyan-400 transition-colors truncate">{item.notes?.split('\n')[0] || 'Projeto Customizado'}</h4>
-                         
-                         <div className="space-y-2 mb-6">
-                            <div className="flex items-center gap-2">
-                               <UserIcon className="h-3 w-3 text-slate-500" />
-                               <span className="text-[10px] font-bold text-slate-400 truncate">{item.customerName}</span>
+                         <h4 className="text-sm font-black text-white mb-2 leading-tight uppercase group-hover:text-cyan-400 transition-colors truncate">
+                         {item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto Customizado'}
+                       </h4>
+                       
+                       <div className="space-y-1.5 mb-4 bg-black/20 p-3 rounded-xl border border-white/5">
+                          {item.notes?.split('\n').filter(l => l.includes('⚙️') || l.includes('⚖️') || l.includes('⏳')).map((line, idx) => (
+                            <div key={idx} className="text-[9px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                               {line}
                             </div>
-                            {item.weightGrams && (
-                              <div className="flex items-center gap-2">
-                                 <Box className="h-3 w-3 text-slate-500" />
-                                 <span className="text-[10px] font-bold text-slate-400">{item.weightGrams}g</span>
-                              </div>
-                            )}
-                         </div>
+                          ))}
+                       </div>
+
+                       <div className="space-y-2 mb-6">
+                          <div className="flex items-center gap-2">
+                             <UserIcon className="h-3 w-3 text-cyan-500/50" />
+                             <span className="text-[10px] font-black text-slate-300 truncate uppercase">{item.customerName}</span>
+                          </div>
+                       </div>
 
                          <div className="flex items-center justify-between pt-4 border-t border-white/5">
                             <div className="flex items-center gap-1.5">

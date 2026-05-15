@@ -111,13 +111,20 @@ function QuotesContent() {
   const handleApproveToProduction = async () => {
     if (!customerName || !projectName) return alert("Dados insuficientes.");
     try {
+      const matName = materials.find(m => m.id === selectedMaterialId)?.name || 'Premium';
+      const formattedNotes = `PROJETO: ${projectName}\n` +
+                             `⚙️ MATERIAL: ${matName}\n` +
+                             `⚖️ PESO: ${weightGrams}g\n` +
+                             `⏳ TEMPO: ${printHours}h ${printMinutes}m\n\n` +
+                             `📝 OBSERVAÇÕES:\n${notes}`;
+
       const res = await fetch('/api/orders', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customerName, type: 'CUSTOM', status: 'PENDING',
           totalAmount: parseFloat(chargedPrice),
-          notes: `${projectName}\n\n${notes}`,
+          notes: formattedNotes,
           weightGrams: parseFloat(weightGrams),
           materialId: selectedMaterialId,
           items: [] 
