@@ -86,7 +86,7 @@ export default function LoginPage() {
                     autoFocus
                     required
                     type="text" 
-                    className="w-full h-14 bg-[#0a0b0e] border border-white/5 rounded-2xl pl-12 pr-4 text-sm text-[#ffffff] caret-white font-medium outline-none focus:border-cyan-500/50 transition-all placeholder:text-slate-800" 
+                    className="w-full h-14 bg-[#0a0b0e] border border-white/5 rounded-2xl pl-12 pr-4 text-sm text-white caret-white font-medium outline-none focus:border-cyan-500/50 transition-all placeholder:text-slate-800 force-white-text" 
                     placeholder="ex: sammy3d"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
@@ -101,7 +101,7 @@ export default function LoginPage() {
                   <input 
                     required
                     type="password" 
-                    className="w-full h-14 bg-[#0a0b0e] border border-white/5 rounded-2xl pl-12 pr-4 text-sm text-[#ffffff] caret-white font-medium outline-none focus:border-cyan-500/50 transition-all placeholder:text-slate-800" 
+                    className="w-full h-14 bg-[#0a0b0e] border border-white/5 rounded-2xl pl-12 pr-4 text-sm text-white caret-white font-medium outline-none focus:border-cyan-500/50 transition-all placeholder:text-slate-800 force-white-text" 
                     placeholder="••••••••"
                     value={password}
                     onChange={e => setPassword(e.target.value)}

@@ -123,3 +123,8 @@ input:-webkit-autofill:active {
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
 }
+
+.force-white-text {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
