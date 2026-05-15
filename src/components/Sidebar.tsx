@@ -45,7 +45,7 @@ const sidebarGroups: SidebarGroup[] = [
     items: [
       { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
       { label: "Vendas", icon: ShoppingCart, href: "/sales" },
-      { label: "Importar Marketplace", icon: UploadCloud, href: "/sales/import", isPro: true, isSubItem: true },
+      { label: "Importar Marketplace", icon: UploadCloud, href: "/sales/import", isSubItem: true },
       { label: "Produtos", icon: Package, href: "/catalog" },
       { label: "Financeiro", icon: Wallet, href: "/finance" },
     ]
@@ -53,23 +53,23 @@ const sidebarGroups: SidebarGroup[] = [
   {
     title: "PRODUÇÃO",
     items: [
-      { label: "Orçamento", icon: FileText, href: "/quotes", isPro: true },
+      { label: "Orçamento", icon: FileText, href: "/quotes" },
       { label: "Produção Manual", icon: Hammer, href: "/production/manual" },
-      { label: "Produção Smart (.gcode)", icon: Zap, href: "/production/smart", isPro: true },
-      { label: "Histórico de Produção", icon: History, href: "/production/history", isPro: true },
+      { label: "Produção Smart (.gcode)", icon: Zap, href: "/production/smart" },
+      { label: "Histórico de Produção", icon: History, href: "/production/history" },
     ]
   },
   {
     title: "INTELIGÊNCIA",
     items: [
-      { label: "Analisador .gcode", icon: Cpu, href: "/intelligence/gcode", isPro: true },
-      { label: "Relatórios Avançados", icon: BarChart3, href: "/intelligence/reports", isPro: true },
+      { label: "Analisador .gcode", icon: Cpu, href: "/intelligence/gcode" },
+      { label: "Relatórios Avançados", icon: BarChart3, href: "/intelligence/reports" },
     ]
   },
   {
     title: "CADASTROS",
     items: [
-      { label: "Meus Clientes", icon: Users, href: "/customers", isPro: true },
+      { label: "Meus Clientes", icon: Users, href: "/customers" },
       { label: "Impressoras", icon: Printer, href: "/printers" },
       { label: "Filamentos", icon: Disc, href: "/stock" },
       { label: "Canais de Venda", icon: Store, href: "/channels" },
@@ -120,7 +120,7 @@ export function Sidebar() {
               </div>
            </div>
            <div className="px-4 py-1 bg-[#1e293b] border border-white/10 rounded-full text-[9px] font-black text-cyan-400 uppercase tracking-[0.2em] shadow-inner">
-             Plano Básico
+             Admin Center
            </div>
         </div>
 

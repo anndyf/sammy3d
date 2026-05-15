@@ -24,35 +24,49 @@ export async function POST(request: Request) {
     // Ex: ;total layers count: 120
 
     for (const line of lines) {
-      const upperLine = line.toUpperCase();
+      const upperLine = line.toUpperCase().trim();
 
-      // Tempo
-      if (upperLine.includes('TIME:')) {
-        const timeMatch = upperLine.match(/TIME:(\d+)/);
-        if (timeMatch) totalTimeMinutes = Math.round(parseInt(timeMatch[1]) / 60);
+      // Tempo (Segundos ou Minutos)
+      // Cura: ;TIME:6521
+      // Bambu/Prusa: ; total time: 1h 20m 10s ou ; estimated printing time (normal mode) = 2h 5m 30s
+      if (upperLine.includes('TIME')) {
+        const timeMatch = upperLine.match(/TIME\s*[:=]\s*(\d+)/); // Cura
+        if (timeMatch) {
+          totalTimeMinutes = Math.round(parseInt(timeMatch[1]) / 60);
+        } else {
+          // Formato 1h 20m
+          const hMatch = upperLine.match(/(\d+)H/);
+          const mMatch = upperLine.match(/(\d+)M/);
+          if (hMatch || mMatch) {
+            totalTimeMinutes = (parseInt(hMatch?.[1] || "0") * 60) + parseInt(mMatch?.[1] || "0");
+          }
+        }
       }
       
-      // Cura / generic filament used in mm
-      if (upperLine.includes('FILAMENT USED [MM]:') || upperLine.includes('FILAMENT USED:')) {
-         const match = upperLine.match(/FILAMENT USED\s*(?:\[MM\])?\s*[:=]\s*([\d.]+)/);
-         if (match) totalFilamentLengthMeters = parseFloat(match[1]) / 1000;
+      // Filament Length (Cura/Generic)
+      if (upperLine.includes('FILAMENT USED')) {
+         const mmMatch = upperLine.match(/FILAMENT USED\s*[:=]\s*([\d.]+)\s*MM/);
+         if (mmMatch) totalFilamentLengthMeters = parseFloat(mmMatch[1]) / 1000;
+
+         const gMatch = upperLine.match(/FILAMENT USED\s*(?:\[G\])?\s*[:=]\s*([\d.]+)\s*G/);
+         if (gMatch) totalFilamentWeightGrams = parseFloat(gMatch[1]);
       }
 
-      // Weight (Bambu / Prusa / Orca)
-      if (upperLine.includes('FILAMENT USED [G]:') || upperLine.includes('FILAMENT USED [G] =')) {
-         const match = upperLine.match(/FILAMENT USED\s*\[G\]\s*[:=]\s*([\d.]+)/);
+      // Bambu / Orca Specific
+      if (upperLine.includes('FILAMENT_G')) {
+         const match = upperLine.match(/FILAMENT_G\s*[:=]\s*([\d.]+)/);
          if (match) totalFilamentWeightGrams = parseFloat(match[1]);
       }
 
       // Layers
-      if (upperLine.includes('LAYER_COUNT:') || upperLine.includes('TOTAL LAYERS COUNT:')) {
-         const match = upperLine.match(/(?:LAYER_COUNT|TOTAL LAYERS COUNT)\s*[:=]\s*(\d+)/);
+      if (upperLine.includes('LAYER_COUNT') || upperLine.includes('TOTAL LAYERS')) {
+         const match = upperLine.match(/(?:LAYER_COUNT|TOTAL LAYERS)\s*[:=]\s*(\d+)/);
          if (match) layerCount = parseInt(match[1]);
       }
       
-      // Fallback: se não achar o peso direto, calcular pelo comprimento (assumindo PLA 1.75mm ~ 2.4g/m)
+      // Fallback: se não achar o peso direto, calcular pelo comprimento (assumindo PLA 1.75mm ~ 2.98g/m)
       if (totalFilamentWeightGrams === 0 && totalFilamentLengthMeters > 0) {
-        totalFilamentWeightGrams = totalFilamentLengthMeters * 2.98; // Média segura
+        totalFilamentWeightGrams = totalFilamentLengthMeters * 2.98;
       }
     }
 
