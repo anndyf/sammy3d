@@ -23,78 +23,68 @@ export async function POST(request: Request) {
     // Ex: ;filament used [mm] = 4500
     // Ex: ;total layers count: 120
 
+    let filamentDensity = 1.24; // Padrão PLA
+
     for (const line of lines) {
       const upperLine = line.toUpperCase().trim();
 
-      // Tempo
-      // Creality/Cura: ;TIME:6521
-      // Bambu/Prusa: ; total time: 1h 20m 10s
-      if (upperLine.includes('TIME')) {
-        const timeMatch = upperLine.match(/TIME\s*[:=]\s*(\d+)/);
-        if (timeMatch) {
-          totalTimeMinutes = Math.round(parseInt(timeMatch[1]) / 60);
-        } else {
-          const hMatch = upperLine.match(/(\d+)H/);
-          const mMatch = upperLine.match(/(\d+)M/);
-          if (hMatch || mMatch) {
-            totalTimeMinutes = (parseInt(hMatch?.[1] || "0") * 60) + parseInt(mMatch?.[1] || "0");
-          }
+      // 1. TEMPO
+      // Creality Print / Klipper / Bambu usam M73 (Remaining time)
+      // Ex: M73 P0 R20 (R20 significa 20 minutos restantes no início do arquivo)
+      if (upperLine.startsWith('M73')) {
+        const rMatch = upperLine.match(/R(\d+)/);
+        if (rMatch && totalTimeMinutes === 0) {
+          totalTimeMinutes = parseInt(rMatch[1]);
         }
       }
-      
-      // Filament Length & Weight (Creality Print uses 'Filament used:' and 'Filament Weight:')
-      if (upperLine.includes('FILAMENT')) {
-         // Length: ;Filament used: 12.5m
-         const mmMatch = upperLine.match(/FILAMENT USED\s*[:=]\s*([\d.]+)/);
-         if (mmMatch) {
-           const val = parseFloat(mmMatch[1]);
-           // Creality pode vir em metros ou mm. Se for muito baixo, provavelmente é metros.
-           totalFilamentLengthMeters = val < 500 ? val : val / 1000;
-         }
 
-         // Weight: ;Filament Weight: 15.4
-         const gMatch = upperLine.match(/FILAMENT WEIGHT\s*[:=]\s*([\d.]+)/);
-         if (gMatch) totalFilamentWeightGrams = parseFloat(gMatch[1]);
-
-         // Altura de camada (opcional para insight)
-         const lhMatch = upperLine.match(/LAYER HEIGHT\s*[:=]\s*([\d.]+)/);
-         if (lhMatch) {
-            // Pode ser usado para predição de qualidade
-         }
+      // Fallback para ;TIME: (Cura/Creality)
+      if (upperLine.includes('TIME:')) {
+        const tMatch = upperLine.match(/TIME:(\d+)/);
+        if (tMatch && totalTimeMinutes === 0) totalTimeMinutes = Math.round(parseInt(tMatch[1]) / 60);
       }
 
-      // Bambu / Orca Specific
-      if (upperLine.includes('FILAMENT_G')) {
-         const match = upperLine.match(/FILAMENT_G\s*[:=]\s*([\d.]+)/);
-         if (match) totalFilamentWeightGrams = parseFloat(match[1]);
+      // 2. CAMADAS
+      // Creality Print: ; total layer number: 130
+      if (upperLine.includes('TOTAL LAYER NUMBER:')) {
+        const lMatch = upperLine.match(/TOTAL LAYER NUMBER:\s*(\d+)/);
+        if (lMatch) layerCount = parseInt(lMatch[1]);
       }
 
-      // Layers
-      if (upperLine.includes('LAYER_COUNT') || upperLine.includes('TOTAL LAYERS') || upperLine.includes('LAYERS:')) {
-         const match = upperLine.match(/(?:LAYER_COUNT|TOTAL LAYERS|LAYERS)\s*[:=]\s*(\d+)/);
-         if (match) layerCount = parseInt(match[1]);
+      // 3. FILAMENTO (Consumo em mm)
+      // Creality gera muitos metadados, mas o consumo real é somado ou pego no final.
+      // Vamos pegar o comprimento se disponível em ;Filament used:
+      if (upperLine.includes('FILAMENT USED:')) {
+         const mmMatch = upperLine.match(/FILAMENT USED:\s*([\d.]+)/);
+         if (mmMatch) totalFilamentLengthMeters = parseFloat(mmMatch[1]) / 1000;
       }
-      
-      // Fallback
-      if (totalFilamentWeightGrams === 0 && totalFilamentLengthMeters > 0) {
-        totalFilamentWeightGrams = totalFilamentLengthMeters * 2.98;
+
+      // 4. DENSIDADE (Para cálculo de peso)
+      if (upperLine.includes('FILAMENT_DENSITY:')) {
+         const dMatch = upperLine.match(/FILAMENT_DENSITY:\s*([\d.]+)/);
+         if (dMatch) filamentDensity = parseFloat(dMatch[1]);
       }
+    }
+
+    // Cálculo final se não achou peso direto
+    if (totalFilamentWeightGrams === 0 && totalFilamentLengthMeters > 0) {
+       // Peso (g) = Volume (mm³) * Densidade (g/cm³) / 1000
+       // Volume = PI * (r²) * length
+       const radius = 1.75 / 2;
+       const volumeMm3 = Math.PI * Math.pow(radius, 2) * (totalFilamentLengthMeters * 1000);
+       totalFilamentWeightGrams = (volumeMm3 * filamentDensity) / 1000;
     }
 
     // Gerar "Insights" baseados no conteúdo
     const warnings = [];
     const passes = ["Estrutura de coordenadas válida", "Início de extrusão detectado"];
 
-    if (content.includes('M104 S220') || content.includes('M109 S220')) {
-      passes.push("Temperatura de bico (220ºC) OK para PLA");
-    }
-
     if (totalFilamentWeightGrams > 200) {
       warnings.push({ type: 'warning', msg: "Peça grande detectada. Verifique se há material suficiente no carretel." });
     }
 
-    if (!content.includes('G29') && !content.includes('BED_MESH_CALIBRATE')) {
-      warnings.push({ type: 'info', msg: "Nivelamento automático (G29) não encontrado no início. Verifique a primeira camada." });
+    if (!content.includes('G29') && !content.includes('BED_MESH_CALIBRATE') && !content.includes('START_PRINT')) {
+      warnings.push({ type: 'info', msg: "Nivelamento automático não detectado explicitamente. Verifique a mesa." });
     }
 
     return NextResponse.json({
@@ -103,7 +93,7 @@ export async function POST(request: Request) {
         weight: `${totalFilamentWeightGrams.toFixed(1)}g`,
         length: `${totalFilamentLengthMeters.toFixed(1)}m`,
         layers: layerCount || "Detectando...",
-        cost: `R$ ${(totalFilamentWeightGrams * 0.15).toFixed(2)}` // Estimativa simples 150/kg
+        cost: `R$ ${(totalFilamentWeightGrams * 0.15).toFixed(2)}`
       },
       ai: {
         score: warnings.length > 0 ? 85 : 98,
