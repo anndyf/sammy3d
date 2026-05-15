@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Plus, Search, Tag, Box, DollarSign, Clock, Settings2, Trash2, Edit3, Eye, Image as ImageIcon, ChevronDown, ChevronUp, AlertCircle, ShoppingCart, ArrowRight, Share2, MoreHorizontal, LayoutGrid, List, X, ExternalLink, Globe, Monitor, Smartphone, MessageCircle, Calculator, Sparkles, Package, Info } from "lucide-react";
+import { Plus, Search, Tag, Box, DollarSign, Clock, Settings2, Trash2, Edit3, Eye, Image as ImageIcon, ChevronDown, ChevronUp, AlertCircle, ShoppingCart, ArrowRight, Share2, MoreHorizontal, LayoutGrid, List, X, ExternalLink, Globe, Monitor, Smartphone, MessageCircle, Calculator, Sparkles, Package, Info, Activity, UploadCloud, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Material { id: string; name: string; color?: string; costPerUnit: number; totalAmount: number; unitType: string; }
@@ -87,7 +87,6 @@ export default function CatalogPage() {
       const pData = await resP.json();
       const mData = await resM.json();
 
-      // Suporte ao novo formato paginado { data: [], meta: {} }
       const products = Array.isArray(pData) ? pData : (pData?.data ?? []);
       const materials = Array.isArray(mData) ? mData : (mData?.data ?? []);
 
@@ -113,14 +112,12 @@ export default function CatalogPage() {
     setWeightGrams(p.weightGrams.toString());
     setMaterialId(p.materialId);
     
-    // Converter minutos totais para H:Min
     const totalMinutes = p.productionTime || 0;
     setHours(Math.floor(totalMinutes / 60).toString());
     setMinutes((totalMinutes % 60).toString());
     setShopeeUrl(p.shopeeUrl || "");
     setImageUrl(p.imageUrl || "");
 
-    // Garantir que a categoria do produto editado esteja no select, se for customizada
     if (p.category && !availableCategories.includes(p.category)) {
       setAvailableCategories(prev => [...prev, p.category]);
     }
@@ -149,7 +146,7 @@ export default function CatalogPage() {
     setShopeeUrl(p.shopeeUrl || "");
     setImageUrl(p.imageUrl || "");
     
-    setParentId(p.id); // Este é o link para o produto pai!
+    setParentId(p.id);
     setIsAddingMode(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -160,7 +157,6 @@ export default function CatalogPage() {
       reader.onloadend = () => {
         const img = new Image();
         img.onload = () => {
-          // Definir dimensão máxima (mantém proporção)
           const MAX_SIZE = 800;
           let { width, height } = img;
 
@@ -178,7 +174,6 @@ export default function CatalogPage() {
           if (!ctx) return reject(new Error('Canvas não suportado'));
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Exportar como JPEG com qualidade 80%
           const compressed = canvas.toDataURL('image/jpeg', 0.80);
           resolve(compressed);
         };
@@ -194,7 +189,6 @@ export default function CatalogPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Limite generoso — a compressão vai reduzir bastante
     if (file.size > 10 * 1024 * 1024) {
       alert("Imagem muito grande! Limite máximo: 10MB.");
       return;
@@ -203,12 +197,6 @@ export default function CatalogPage() {
     try {
       setStatus({ type: 'loading', message: '🗜️ Comprimindo imagem...' });
       const compressed = await compressImage(file);
-
-      // Mostrar comparativo no console para debug
-      const originalKB = Math.round(file.size / 1024);
-      const compressedKB = Math.round((compressed.length * 3) / 4 / 1024);
-      console.log(`📦 Imagem: ${originalKB}KB → ${compressedKB}KB (${Math.round((1 - compressedKB / originalKB) * 100)}% menor)`);
-
       setImageUrl(compressed);
       setStatus({ type: '', message: '' });
     } catch (err) {
@@ -222,8 +210,7 @@ export default function CatalogPage() {
     e.preventDefault();
     const method = editingProduct ? "PUT" : "POST";
     const url = editingProduct ? `/api/products/${editingProduct.id}` : "/api/products";
-    const totalTimeMinutes = (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0);
-    // Função auxiliar para resetar status
+    
     const showStatus = (type: 'success' | 'error', message: string) => {
       setStatus({ type, message });
       setTimeout(() => setStatus({ type: '', message: '' }), 4000);
@@ -240,7 +227,7 @@ export default function CatalogPage() {
           name, category, subcategory, sku, description, 
           sellingPrice: parseFloat(sellingPrice), 
           stockQuantity: parseInt(stockQuantity),
-          weightGrams: parseFloat(weightGrams),
+          weightGrams: parseFloat(weightGrams) || 0,
           materialId,
           productionTime: (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0),
           shopeeUrl,
@@ -252,7 +239,7 @@ export default function CatalogPage() {
       const result = await res.json();
 
       if (res.ok) {
-        showStatus('success', '✅ Matriz Industrial Autorizada com Sucesso!');
+        showStatus('success', '✅ Produto Salvo com Sucesso!');
         setIsAddingMode(false); setEditingProduct(null); setParentId(null);
         setName(""); setCategory(""); setSubcategory(""); setSku(""); setDescription(""); setSellingPrice(""); setStockQuantity("");
         setWeightGrams(""); setMaterialId(""); setHours(""); setMinutes(""); setShopeeUrl(""); setImageUrl("");
@@ -321,7 +308,6 @@ export default function CatalogPage() {
       <div>
         {!isAddingMode && (
           <div className="space-y-6">
-             {/* SEARCH */}
              <div className="relative w-full">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
                 <input 
@@ -333,311 +319,226 @@ export default function CatalogPage() {
                 />
              </div>
 
-             {/* PRODUCT TABLE LIST */}
              <div className="bg-[#1a1d24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
-               {/* Table Header */}
-               <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#1a1d24]">
-                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">IMAGEM</div>
-                  <div className="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">NOME / DESCRIÇÃO</div>
-                  <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">SKU</div>
-                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">TIPO</div>
-                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">ESTOQUE</div>
-                  <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">CUSTO UNIT.</div>
-                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">PREÇO VENDA</div>
-                  <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">AÇÕES</div>
-               </div>
+                <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#1a1d24]">
+                   <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">IMAGEM</div>
+                   <div className="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">NOME / DESCRIÇÃO</div>
+                   <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">SKU</div>
+                   <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">TIPO</div>
+                   <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">ESTOQUE</div>
+                   <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">CUSTO UNIT.</div>
+                   <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">PREÇO VENDA</div>
+                   <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">AÇÕES</div>
+                </div>
 
-               {/* Table Body */}
-               {products.length > 0 || loading ? (
-                 <div className="divide-y divide-white/5">
-                    {loading ? (
-                      <div className="py-16 text-center text-xs text-slate-500 uppercase tracking-widest italic font-mono">
-                         Carregando...
-                      </div>
-                    ) : (
-                      filteredProducts.map(prod => (
-                        <div key={prod.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
-                           <div className="col-span-1">
-                              <div className="w-12 h-12 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
-                                 {prod.imageUrl ? (
-                                   <img src={prod.imageUrl} className="w-full h-full object-cover" />
-                                 ) : (
-                                   <ImageIcon className="h-5 w-5 text-slate-500" />
-                                 )}
-                              </div>
-                           </div>
-                           
-                           <div className="col-span-3">
-                              <p className="text-sm font-bold text-white truncate">{prod.name || 'Sem Nome'}</p>
-                           </div>
+                {products.length > 0 || loading ? (
+                  <div className="divide-y divide-white/5">
+                     {loading ? (
+                       <div className="py-16 text-center text-xs text-slate-500 uppercase tracking-widest italic font-mono">
+                          Carregando...
+                       </div>
+                     ) : (
+                       filteredProducts.map(prod => (
+                         <div key={prod.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
+                            <div className="col-span-1">
+                               <div className="w-12 h-12 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
+                                  {prod.imageUrl ? (
+                                    <img src={prod.imageUrl} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <ImageIcon className="h-5 w-5 text-slate-500" />
+                                  )}
+                               </div>
+                            </div>
+                            
+                            <div className="col-span-3">
+                               <p className="text-sm font-bold text-white truncate">{prod.name || 'Sem Nome'}</p>
+                            </div>
 
-                           <div className="col-span-2">
-                              <p className="text-sm text-slate-400 truncate">{prod.sku || 'N/A'}</p>
-                           </div>
+                            <div className="col-span-2">
+                               <p className="text-sm text-slate-400 truncate">{prod.sku || 'N/A'}</p>
+                            </div>
 
-                           <div className="col-span-1">
-                              <span className="inline-block px-2.5 py-1 bg-[#1e293b] text-slate-300 text-[10px] font-bold rounded-lg border border-white/10">
-                                 {prod.category || 'Geral'}
-                              </span>
-                           </div>
+                            <div className="col-span-1">
+                               <span className="inline-block px-2.5 py-1 bg-[#1e293b] text-slate-300 text-[10px] font-bold rounded-lg border border-white/10">
+                                  {prod.category || 'Geral'}
+                               </span>
+                            </div>
 
-                           <div className="col-span-1 text-center">
-                              <span className={cn(
-                                "text-sm font-bold",
-                                (prod.stockQuantity || 0) > 0 ? "text-white" : "text-red-400"
-                              )}>
-                                 {prod.stockQuantity || 0}
-                              </span>
-                           </div>
+                            <div className="col-span-1 text-center">
+                               <span className={cn(
+                                 "text-sm font-bold",
+                                 (prod.stockQuantity || 0) > 0 ? "text-white" : "text-red-400"
+                               )}>
+                                  {prod.stockQuantity || 0}
+                               </span>
+                            </div>
 
-                           <div className="col-span-2">
-                              <p className="text-sm font-bold text-slate-300 font-mono">
-                                 R$ {(prod.calculatedCost || 0).toFixed(2)}
-                              </p>
-                           </div>
+                            <div className="col-span-2">
+                               <p className="text-sm font-bold text-slate-300 font-mono">
+                                  R$ {(prod.calculatedCost || 0).toFixed(2)}
+                                </p>
+                            </div>
 
-                           <div className="col-span-1">
-                              <p className="text-sm font-bold text-emerald-400 font-mono">
-                                 R$ {(prod.sellingPrice || 0).toFixed(2)}
-                              </p>
-                           </div>
+                            <div className="col-span-1">
+                               <p className="text-sm font-bold text-emerald-400 font-mono">
+                                  R$ {(prod.sellingPrice || 0).toFixed(2)}
+                               </p>
+                            </div>
 
-                           <div className="col-span-1 flex items-center justify-end gap-2">
-                              <button onClick={() => setViewingProduct(prod)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-md transition-colors" title="Ver Detalhes">
-                                 <Info className="h-4 w-4" />
-                              </button>
-                              <button onClick={() => handleEdit(prod)} className="p-1.5 text-cyan-400 hover:bg-cyan-400/10 rounded-md transition-colors" title="Editar">
-                                 <Edit3 className="h-4 w-4" />
-                              </button>
-                              <button className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-md transition-colors" title="Excluir">
-                                 <Trash2 className="h-4 w-4" />
-                              </button>
-                           </div>
-                        </div>
-                      ))
-                    )}
-                 </div>
-               ) : (
-                  <div className="py-24 text-center">
-                     <Box className="h-12 w-12 text-slate-600 mx-auto mb-4 opacity-50" />
-                     <p className="text-sm font-bold text-slate-400">Nenhum produto encontrado</p>
+                            <div className="col-span-1 flex items-center justify-end gap-2">
+                               <button onClick={() => setViewingProduct(prod)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-md transition-colors" title="Ver Detalhes">
+                                  <Info className="h-4 w-4" />
+                               </button>
+                               <button onClick={() => handleEdit(prod)} className="p-1.5 text-cyan-400 hover:bg-cyan-400/10 rounded-md transition-colors" title="Editar">
+                                  <Edit3 className="h-4 w-4" />
+                               </button>
+                               <button className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-md transition-colors" title="Excluir">
+                                  <Trash2 className="h-4 w-4" />
+                               </button>
+                            </div>
+                         </div>
+                       ))
+                     )}
                   </div>
-               )}
+                ) : (
+                   <div className="py-24 text-center">
+                      <Box className="h-12 w-12 text-slate-600 mx-auto mb-4 opacity-50" />
+                      <p className="text-sm font-bold text-slate-400">Nenhum produto encontrado</p>
+                   </div>
+                )}
              </div>
           </div>
         )}
 
         {isAddingMode && (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-10 animate-in slide-in-from-top-4 duration-500 shadow-2xl">
-             <div className="flex items-center justify-between mb-10 border-b border-white/5 pb-6">
-                <h3 className="text-[15px] font-bold text-white uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Tag className="h-4.5 w-4.5 text-blue-500" /> 
-                  {editingProduct ? 'Ajuste de Ativo Industrial' : (parentId ? 'Registro de Nova Variação' : 'Registro de Ativo Industrial')}
-                </h3>
-                <div className="px-3 py-1 bg-white/10 text-white text-[10px] font-bold rounded-lg border border-white/10 uppercase tracking-widest">{editingProduct ? 'Editando' : 'Novo Item'}</div>
-             </div>
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
+             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => { setIsAddingMode(false); setEditingProduct(null); }} />
              
-             <form className="space-y-10" onSubmit={handleSave}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Identificação do Modelo</label>
-                      <input type="text" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none focus:bg-white/10 focus:border-white transition-all" required value={name} onChange={e=>setName(e.target.value)} placeholder="Ex: Oreo Box" />
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Categoria Técnica</label>
-                      <div className="flex gap-2">
-                         {isAddingCat ? (
-                            <input type="text" className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none focus:border-blue-500" value={newCatInput} onChange={e=>setNewCatInput(e.target.value)} placeholder="Nova Categoria..." autoFocus />
-                         ) : (
-                            <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none" required value={category} onChange={e=>setCategory(e.target.value)}>
-                               <option value="" className="bg-black dark:bg-black">Selecionar...</option>
-                               {availableCategories.map(cat => (
-                                 <option key={cat} value={cat} className="bg-black dark:bg-black">{cat}</option>
-                               ))}
-                            </select>
-                         )}
-                         {isAddingCat ? (
-                            <button type="button" onClick={addCategory} className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all font-bold">OK</button>
-                         ) : (
-                            <button type="button" onClick={()=>setIsAddingCat(true)} className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white hover:text-black transition-all"><Plus className="h-4 w-4" /></button>
-                         )}
-                      </div>
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Subcategoria Técnica</label>
-                      <div className="flex gap-2">
-                         {isAddingSubcat ? (
-                            <input type="text" className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none focus:border-blue-500" value={newSubcatInput} onChange={e=>setNewSubcatInput(e.target.value)} placeholder="Nova Subcategoria..." autoFocus />
-                         ) : (
-                            <select className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] text-white outline-none" value={subcategory} onChange={e=>setSubcategory(e.target.value)}>
-                               <option value="" className="bg-black dark:bg-black">Selecionar...</option>
-                               {availableSubcategories.map(sub => (
-                                 <option key={sub} value={sub} className="bg-black dark:bg-black">{sub}</option>
-                               ))}
-                            </select>
-                         )}
-                         {isAddingSubcat ? (
-                            <button type="button" onClick={addSubcategory} className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all font-bold">OK</button>
-                         ) : (
-                            <button type="button" onClick={()=>setIsAddingSubcat(true)} className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white hover:text-black transition-all"><Plus className="h-4 w-4" /></button>
-                         )}
-                      </div>
-                   </div>
-                   <div className="space-y-2 relative group">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1 flex items-center gap-2">
-                         SKU Global 
-                         {!editingProduct && name && category && <Sparkles className="h-3 w-3 text-blue-500 animate-pulse" />}
-                      </label>
-                      <input type="text" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-4 text-[14px] outline-none font-mono font-bold text-blue-500" value={sku} onChange={e=>setSku(e.target.value)} placeholder="AUTO-GEN" />
-                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Material Base</label>
-                      <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-[14px] text-white outline-none" required value={materialId} onChange={e=>setMaterialId(e.target.value)}>
-                         <option value="" className="bg-black">Selecionar Insumo...</option>
-                         {materials.map(m => (
-                           <option key={m.id} value={m.id} className="bg-black">{m.name} ({m.color})</option>
-                         ))}
-                      </select>
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Peso da Peça (g)</label>
-                      <input type="number" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-[14px] text-white outline-none" required value={weightGrams} onChange={e=>setWeightGrams(e.target.value)} />
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Preço de Venda (R$)</label>
-                      <input type="number" step="0.01" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-[14px] text-white outline-none" required value={sellingPrice} onChange={e=>setSellingPrice(e.target.value)} />
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Tempo de Impressão</label>
-                      <div className="flex items-center gap-2">
-                         <div className="flex-1 relative">
-                            <input type="number" placeholder="H" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-[14px] text-white outline-none focus:bg-white/10 focus:border-white transition-all" value={hours} onChange={e=>setHours(e.target.value)} />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500 uppercase">hrs</span>
-                         </div>
-                         <div className="flex-1 relative">
-                            <input type="number" placeholder="Min" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-[14px] text-white outline-none focus:bg-white/10 focus:border-white transition-all" value={minutes} onChange={e=>setMinutes(e.target.value)} />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500 uppercase">min</span>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-
-                {/* CALCULATED COST & PRICING INTELLIGENCE */}
-                <div className="space-y-6">
-                   <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col md:grid md:grid-cols-3 items-center gap-10">
-                      <div className="flex items-center gap-4">
-                         <div className="w-12 h-12 bg-white/10 rounded-xl border border-white/10 flex items-center justify-center text-blue-500 shadow-2xl">
-                            <Calculator className="h-6 w-6" />
-                         </div>
-                         <div>
-                            <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">Custo de Produção</p>
-                            <p className="text-2xl font-black text-white font-mono">R$ {estimatedProdCost.toFixed(2)}</p>
-                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-4 border-l border-white/10 pl-8">
-                         <div className="w-12 h-12 bg-white/10 rounded-xl border border-white/10 flex items-center justify-center text-emerald-500 shadow-2xl">
-                            <DollarSign className="h-6 w-6" />
-                         </div>
-                         <div>
-                            <p className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">Sugestão de Venda</p>
-                            <p className="text-2xl font-black text-emerald-500 font-mono">R$ {suggestedPrice.toFixed(2)}</p>
-                         </div>
-                      </div>
-
-                      <div className="flex flex-col items-end gap-1 border-l border-white/10 pl-8">
-                         <p className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">Lucro Bruto Estimado</p>
-                         <div className="flex flex-col items-end">
-                            <p className={cn("text-3xl font-black font-mono leading-none", grossProfit > 0 ? "text-white" : "text-red-500")}>
-                               R$ {grossProfit.toFixed(2)}
-                            </p>
-                            <p className={cn("text-[13px] font-bold uppercase tracking-widest mt-1", marginPercentage > 50 ? "text-emerald-500" : "text-amber-500")}>
-                               {marginPercentage.toFixed(1)}% de Margem
-                            </p>
-                         </div>
-                      </div>
-                   </div>
-
-                   {/* MARKETPLACE PROJECTION */}
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-bottom-2 duration-700">
-                      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
-                         <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-black text-orange-500 uppercase tracking-widest">Retorno Shopee</span>
-                            <div className="px-2 py-0.5 bg-orange-500/10 text-orange-400 text-[9px] font-black rounded uppercase">20% + R$ 4,00</div>
-                         </div>
-                         <div className="flex items-baseline justify-between">
-                            <div className="text-[10px] text-slate-500 font-bold uppercase">Taxa Est: <span className="text-white font-mono">R$ {(parseFloat(sellingPrice || "0") * 0.20 + 4).toFixed(2)}</span></div>
-                            <div className="text-right">
-                               <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Líquido a Receber</p>
-                               <p className="text-2xl font-black text-white font-mono">R$ {(parseFloat(sellingPrice || "0") - (parseFloat(sellingPrice || "0") * 0.20) - 4).toFixed(2)}</p>
-                            </div>
-                         </div>
-                      </div>
-
-                      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
-                         <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-black text-yellow-500 uppercase tracking-widest">Retorno Mercado Livre</span>
-                            <div className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 text-[9px] font-black rounded uppercase">16.5% + Taxa Fixa/Frete</div>
-                         </div>
-                         <div className="flex items-baseline justify-between">
-                            <div className="text-[10px] text-slate-500 font-bold uppercase">Taxa Est: <span className="text-white font-mono">R$ {(parseFloat(sellingPrice || "0") * 0.165 + (parseFloat(sellingPrice || "0") < 79 ? 6 : 28.30)).toFixed(2)}</span></div>
-                            <div className="text-right">
-                               <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Líquido a Receber</p>
-                               <p className="text-2xl font-black text-white font-mono">R$ {(parseFloat(sellingPrice || "0") - (parseFloat(sellingPrice || "0") * 0.165) - (parseFloat(sellingPrice || "0") < 79 ? 6 : 28.30)).toFixed(2)}</p>
-                            </div>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Qtd Estoque (UN)</label>
-                      <input type="number" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-[14px] text-white outline-none" value={stockQuantity} onChange={e=>setStockQuantity(e.target.value)} />
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Link Anúncio Shopee</label>
-                      <div className="relative group">
-                         <ShoppingCart className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-orange-400 opacity-30 group-focus-within:opacity-100 transition-opacity" />
-                         <input type="url" className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-4 text-[14px] text-white outline-none focus:bg-white/10 focus:border-orange-500/30 transition-all font-mono" value={shopeeUrl} onChange={e=>setShopeeUrl(e.target.value)} placeholder="https://shopee.com.br/..." />
-                      </div>
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Foto do Produto</label>
-                      <div className="flex gap-2">
-                         <div className="relative flex-1 group">
-                            <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400 opacity-30 group-focus-within:opacity-100 transition-opacity" />
-                            <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-4 text-[14px] text-white outline-none focus:bg-white/10 focus:border-blue-500/30 transition-all font-mono" value={imageUrl.startsWith('data:') ? 'IMAGEM CARREGADA' : imageUrl} onChange={e=>setImageUrl(e.target.value)} placeholder="URL ou Upload..." />
-                         </div>
-                         <label className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white hover:text-black transition-all cursor-pointer flex items-center justify-center shadow-2xl">
-                            <Plus className="h-4 w-4" />
-                            <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
-                         </label>
-                      </div>
-                   </div>
-                </div>
-
-                <div className="space-y-2">
-                   <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest pl-1">Breve Descritivo Técnico</label>
-                   <textarea className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-[14px] text-white min-h-[160px] outline-none" value={description} onChange={e=>setDescription(e.target.value)} />
-                </div>
-                 <div className="flex justify-end pt-4 gap-4">
+             <div className="relative w-full max-w-xl bg-[#1a1d24] border border-white/10 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+                <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between">
+                   <h3 className="text-xl font-bold text-white">{editingProduct ? 'Editar Produto' : 'Novo Produto'}</h3>
                    <button 
-                     type="button"
-                     onClick={() => { setIsAddingMode(false); setEditingProduct(null); setParentId(null); }}
-                     className="px-10 h-14 bg-white/5 text-slate-500 rounded-xl text-[13px] font-bold uppercase transition-all hover:bg-white/10"
+                     onClick={() => { setIsAddingMode(false); setEditingProduct(null); }}
+                     className="p-2 hover:bg-white/5 rounded-full text-slate-400 hover:text-white transition-all"
                    >
-                     Cancelar
-                   </button>
-                   <button type="submit" disabled={saving} className={cn("bg-white text-black px-12 h-14 rounded-xl text-[14px] font-bold hover:bg-slate-200 transition-all shadow-2xl active:scale-95 flex items-center gap-3", saving && "opacity-50 cursor-not-allowed")}>
-                      {saving ? <Sparkles className="h-4 w-4 animate-spin text-black" /> : null}
-                      {saving ? 'Processando Matriz...' : (editingProduct ? 'Atualizar Ativo' : 'Autorizar Ativo')}
+                      <X className="h-6 w-6" />
                    </button>
                 </div>
-             </form>
+
+                <form className="p-8 space-y-6 overflow-y-auto max-h-[80vh] custom-scrollbar" onSubmit={handleSave}>
+                   <div className="flex justify-center mb-4">
+                      <label className="w-40 h-40 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-cyan-500/50 hover:bg-white/5 transition-all group relative overflow-hidden">
+                         {imageUrl ? (
+                            <img src={imageUrl} className="w-full h-full object-cover" />
+                         ) : (
+                            <>
+                               <UploadCloud className="h-8 w-8 text-slate-500 group-hover:text-cyan-400 mb-2 transition-colors" />
+                               <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Foto</span>
+                            </>
+                         )}
+                         <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                      </label>
+                   </div>
+
+                   <div className="space-y-4">
+                      <div className="space-y-2">
+                         <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Nome do Produto</label>
+                         <input 
+                           type="text" 
+                           className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 transition-all placeholder:text-slate-600 force-white-text" 
+                           required 
+                           value={name} 
+                           onChange={e=>setName(e.target.value)} 
+                         />
+                      </div>
+
+                      <div className="space-y-2">
+                         <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU (Cód.)</label>
+                         <input 
+                           type="text" 
+                           className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 transition-all placeholder:text-slate-600 force-white-text font-mono" 
+                           value={sku} 
+                           onChange={e=>setSku(e.target.value)} 
+                         />
+                      </div>
+
+                      <div className="space-y-2">
+                         <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Descrição</label>
+                         <textarea 
+                           className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 transition-all placeholder:text-slate-600 min-h-[100px] force-white-text" 
+                           value={description} 
+                           onChange={e=>setDescription(e.target.value)} 
+                         />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                               <Tag className="h-3 w-3" /> Tipo
+                            </label>
+                            <select 
+                              className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 transition-all"
+                              required
+                              value={category}
+                              onChange={e=>setCategory(e.target.value)}
+                            >
+                               <option value="">Outros / Diversos</option>
+                               {availableCategories.map(cat => (
+                                 <option key={cat} value={cat}>{cat}</option>
+                               ))}
+                            </select>
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                               <Activity className="h-3 w-3" /> Personalização
+                            </label>
+                            <select 
+                              className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 transition-all"
+                              value={subcategory}
+                              onChange={e=>setSubcategory(e.target.value)}
+                            >
+                               <option value="">Sem Personalização</option>
+                               {availableSubcategories.map(sub => (
+                                 <option key={sub} value={sub}>{sub}</option>
+                               ))}
+                            </select>
+                         </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Preço de Venda (R$)</label>
+                            <input type="number" step="0.01" className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" required value={sellingPrice} onChange={e=>setSellingPrice(e.target.value)} />
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Estoque Inicial</label>
+                            <input type="number" className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" value={stockQuantity} onChange={e=>setStockQuantity(e.target.value)} />
+                         </div>
+                      </div>
+
+                      <div className="bg-black/20 border border-white/5 border-dashed rounded-xl p-4 flex items-center gap-4 group">
+                         <div className="p-2 bg-white/5 rounded-lg text-slate-600">
+                            <Lock className="h-4 w-4" />
+                         </div>
+                         <div>
+                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Configuração Fiscal Bloqueada</p>
+                            <p className="text-[9px] font-medium text-slate-600">Disponível no plano PRO Fiscal</p>
+                         </div>
+                      </div>
+                   </div>
+
+                   <button 
+                     type="submit" 
+                     disabled={saving}
+                     className={cn(
+                       "w-full py-4 bg-gradient-to-r from-cyan-500 to-cyan-400 text-black text-sm font-black uppercase tracking-[0.1em] rounded-xl shadow-[0_4px_20px_rgba(34,211,238,0.2)] hover:shadow-[0_4px_30px_rgba(34,211,238,0.4)] hover:scale-[1.01] transition-all active:scale-95 disabled:opacity-50",
+                       saving && "animate-pulse"
+                     )}
+                   >
+                      {saving ? 'PROCESSANDO...' : 'Salvar Produto'}
+                   </button>
+                </form>
+             </div>
           </div>
         )}
       </div>
@@ -648,7 +549,6 @@ export default function CatalogPage() {
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setViewingProduct(null)} />
             <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 overflow-hidden">
                
-               {/* HEADER */}
                <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-black text-white">
                   <div>
                      <h3 className="text-xl font-bold tracking-tight">Ficha Técnica</h3>
@@ -657,10 +557,7 @@ export default function CatalogPage() {
                   <button onClick={() => setViewingProduct(null)} className="p-2 hover:bg-white/10 rounded-lg transition-all"><X className="h-5 w-5" /></button>
                </div>
 
-               {/* CONTENT */}
                <div className="flex-1 overflow-y-auto p-10 space-y-12">
-                  
-                  {/* PREVIEW & NAME */}
                   <div className="flex items-center gap-6">
                      <div className="w-24 h-24 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center overflow-hidden">
                         {viewingProduct.imageUrl ? <img src={viewingProduct.imageUrl} className="w-full h-full object-contain" /> : <Box className="h-8 w-8 text-slate-300" />}
@@ -674,7 +571,6 @@ export default function CatalogPage() {
                      </div>
                   </div>
 
-                  {/* CORE STATS */}
                   <div className="grid grid-cols-2 gap-4">
                      <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Peso Estimado</p>
@@ -686,65 +582,22 @@ export default function CatalogPage() {
                      </div>
                   </div>
 
-                  {/* PRICING INTEL */}
                   <div className="space-y-4">
                      <p className="text-[11px] font-black text-black uppercase tracking-widest flex items-center gap-2"><DollarSign className="h-3 w-3 text-emerald-500" /> Inteligência de Preço</p>
                      <div className="bg-white border border-slate-100 rounded-2xl p-6 divide-y divide-slate-50 shadow-sm">
                         <div className="flex justify-between py-3">
                            <span className="text-[13px] font-medium text-slate-500">Custo de Produção</span>
                            <span className="font-mono font-bold text-black">
-                              R$ {(
-                                viewingProduct.calculatedCost || 
-                                ((viewingProduct.weightGrams * (
-                                  (viewingProduct.material?.costPerUnit || 0) / 
-                                  ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? viewingProduct.material?.totalAmount * 1000 : viewingProduct.material?.totalAmount) || 1)
-                                )) + (viewingProduct.productionTime / 60 * 0.40))
-                              ).toFixed(2)}
+                              R$ {(viewingProduct.calculatedCost || 0).toFixed(2)}
                            </span>
                         </div>
                         <div className="flex justify-between py-3">
                            <span className="text-[13px] font-medium text-slate-500">Preço de Venda</span>
                            <span className="font-mono font-extrabold text-black">R$ {viewingProduct.sellingPrice.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between py-3">
-                           <span className="text-[13px] font-black text-emerald-600 uppercase tracking-widest">Lucro Bruto Estimado</span>
-                           <span className="font-mono font-black text-emerald-600">
-                              R$ {(
-                                viewingProduct.sellingPrice - (
-                                  viewingProduct.calculatedCost || 
-                                  ((viewingProduct.weightGrams * (
-                                    (viewingProduct.material?.costPerUnit || 0) / 
-                                    ((viewingProduct.material?.unitType?.toLowerCase() === 'kg' ? viewingProduct.material?.totalAmount * 1000 : viewingProduct.material?.totalAmount) || 1)
-                                  )) + (viewingProduct.productionTime / 60 * 0.40))
-                                )
-                              ).toFixed(2)}
-                           </span>
-                        </div>
                      </div>
                   </div>
 
-                  {/* MARKETPLACE PROJECTION */}
-                  <div className="space-y-4">
-                     <p className="text-[11px] font-black text-black uppercase tracking-widest flex items-center gap-2"><Globe className="h-3 w-3 text-blue-500" /> Canais Digitais</p>
-                     <div className="grid grid-cols-1 gap-4">
-                        <div className="bg-orange-50/30 border border-orange-100 rounded-2xl p-6 flex justify-between items-center">
-                           <div>
-                              <p className="text-[11px] font-black text-orange-600 uppercase tracking-widest">Recebimento Shopee</p>
-                              <p className="text-[9px] text-orange-400 font-bold uppercase mt-0.5">20% + R$ 4,00 Fee</p>
-                           </div>
-                           <p className="text-2xl font-black text-orange-700 font-mono">R$ {(viewingProduct.sellingPrice - (viewingProduct.sellingPrice * 0.20) - 4).toFixed(2)}</p>
-                        </div>
-                        <div className="bg-yellow-50/30 border border-yellow-100 rounded-2xl p-6 flex justify-between items-center">
-                           <div>
-                              <p className="text-[11px] font-black text-yellow-700 uppercase tracking-widest">Recebimento M. Livre</p>
-                              <p className="text-[9px] text-yellow-600 font-bold uppercase mt-0.5">16.5% + Taxa Fixa/Frete</p>
-                           </div>
-                           <p className="text-2xl font-black text-yellow-800 font-mono">R$ {(viewingProduct.sellingPrice - (viewingProduct.sellingPrice * 0.165) - (viewingProduct.sellingPrice < 79 ? 6 : 28.30)).toFixed(2)}</p>
-                        </div>
-                     </div>
-                  </div>
-
-                  {/* VARIATIONS */}
                   {viewingProduct.variations && viewingProduct.variations.length > 0 && (
                     <div className="space-y-4">
                        <p className="text-[11px] font-black text-black uppercase tracking-widest flex items-center gap-2"><List className="h-3 w-3 text-purple-500" /> Variações Disponíveis</p>
@@ -766,7 +619,6 @@ export default function CatalogPage() {
                        </div>
                     </div>
                   )}
-
                </div>
 
                <div className="p-8 border-t border-slate-100 bg-[#FAFAFA] flex gap-4">
