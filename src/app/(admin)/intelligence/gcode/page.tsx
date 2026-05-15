@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react";
-import { Cpu, Upload, FileCode2, Clock, Box, DollarSign, Activity, AlertTriangle, CheckCircle2, ChevronRight, Wand2, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Cpu, Upload, FileCode2, Clock, Box, DollarSign, Activity, AlertTriangle, CheckCircle2, ChevronRight, Wand2, Sparkles, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function GCodeAnalyzerPage() {
@@ -9,6 +9,22 @@ export default function GCodeAnalyzerPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<any>(null);
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [selectedMaterialId, setSelectedMaterialId] = useState<string>("avg");
+
+  useEffect(() => {
+    fetchMaterials();
+  }, []);
+
+  const fetchMaterials = async () => {
+    try {
+      const res = await fetch('/api/materials');
+      const data = await res.json();
+      if (data.data) setMaterials(data.data);
+    } catch (err) {
+      console.error("Erro ao carregar materiais", err);
+    }
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -47,6 +63,7 @@ export default function GCodeAnalyzerPage() {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('materialId', selectedMaterialId);
 
       const res = await fetch('/api/intelligence/analyze', {
         method: 'POST',
@@ -69,20 +86,37 @@ export default function GCodeAnalyzerPage() {
     <div className="space-y-6 pb-20 max-w-[1200px] mx-auto">
       
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
-         <div className="flex items-center gap-4">
-            <div className="p-3 bg-transparent rounded-xl flex relative">
-               <Cpu className="h-6 w-6 text-indigo-400" />
-               <Sparkles className="h-3 w-3 text-cyan-400 absolute top-2 right-2 animate-pulse" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                Analisador .gcode
-              </h1>
-              <p className="text-xs text-slate-500 font-bold">Extração inteligente de custos e predição de falhas com IA.</p>
-            </div>
-         </div>
-      </div>
+       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
+          <div className="flex items-center gap-4">
+             <div className="p-3 bg-transparent rounded-xl flex relative">
+                <Cpu className="h-6 w-6 text-indigo-400" />
+                <Sparkles className="h-3 w-3 text-cyan-400 absolute top-2 right-2 animate-pulse" />
+             </div>
+             <div>
+               <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                 Analisador .gcode
+               </h1>
+               <p className="text-xs text-slate-500 font-bold">Extração inteligente de custos e predição de falhas com IA.</p>
+             </div>
+          </div>
+
+          {/* MATERIAL SELECTOR */}
+          <div className="flex items-center gap-3 bg-[#1a1d24] border border-white/5 p-2 rounded-xl">
+             <Layers className="h-4 w-4 text-slate-500 ml-2" />
+             <select 
+               value={selectedMaterialId}
+               onChange={(e) => setSelectedMaterialId(e.target.value)}
+               className="bg-transparent text-xs font-bold text-white outline-none border-none pr-8 cursor-pointer"
+             >
+               <option value="avg" className="bg-[#1a1d24]">Custo Médio (Filamentos)</option>
+               {materials.map(m => (
+                 <option key={m.id} value={m.id} className="bg-[#1a1d24]">
+                   {m.name} ({m.color}) - R$ {m.costPerUnit.toFixed(2)}/g
+                 </option>
+               ))}
+             </select>
+          </div>
+       </div>
 
       {!results && !isAnalyzing && (
         <div 

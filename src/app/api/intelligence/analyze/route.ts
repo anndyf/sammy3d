@@ -5,6 +5,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const materialId = formData.get('materialId') as string;
 
     if (!file) {
       return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
@@ -14,15 +15,19 @@ export async function POST(request: Request) {
     const energyConfig = await prisma.config.findUnique({ where: { key: 'energy_price' } });
     const energyPriceKwh = energyConfig ? parseFloat(energyConfig.value.replace(',', '.')) : 1.32;
 
-    // 2. BUSCAR FILAMENTO MÉDIO (CUSTO)
-    const avgMaterial = await prisma.material.aggregate({
-      _avg: { costPerUnit: true }
-    });
-    const costPerGram = avgMaterial._avg.costPerUnit || 0.15;
+    // 2. BUSCAR CUSTO DO FILAMENTO (ESPECÍFICO OU MÉDIO)
+    let costPerGram = 0.15;
+    if (materialId && materialId !== 'avg') {
+      const material = await prisma.material.findUnique({ where: { id: materialId } });
+      if (material) costPerGram = material.costPerUnit;
+    } else {
+      const avgMaterial = await prisma.material.aggregate({
+        _avg: { costPerUnit: true }
+      });
+      costPerGram = avgMaterial._avg.costPerUnit || 0.15;
+    }
 
     // 3. BUSCAR IMPRESSORA MÉDIA (DEPRECIAÇÃO E POTÊNCIA)
-    // Como não sabemos qual impressora o usuário vai usar, pegamos uma média das cadastradas
-    // No futuro podemos deixar o usuário selecionar a máquina no analisador.
     const machineStats = { powerW: 300, depreciationH: 0.50 };
     // Tentativa de pegar dados reais de 'printers' se estivessem no DB (assumindo mockup por enquanto se não houver model Printer no prisma)
     // No schema.prisma não há model Printer, então usaremos valores seguros ou config.
