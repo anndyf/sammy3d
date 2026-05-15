@@ -159,34 +159,42 @@ export default function SettingsPage() {
                 <h2 className="text-lg font-bold text-white tracking-tight">Parâmetros de Cálculo</h2>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Tarifa de Energia (R$/kWh)</label>
-                   <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">R$</span>
-                      <input type="text" defaultValue="1,32" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white outline-none focus:border-cyan-500 transition-colors" />
-                   </div>
-                </div>
-                
-                <div>
-                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-1.5">
-                      Taxa de Falha Padrão
-                      <div className="text-amber-500" title="Estimativa de falha média em impressões">⚠️</div>
-                   </label>
-                   <div className="relative">
-                      <input type="text" defaultValue="5" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-4 pr-8 py-2.5 text-sm text-white outline-none focus:border-cyan-500 transition-colors" />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">%</span>
-                   </div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                 <div>
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Tarifa de Energia (R$/kWh)</label>
+                    <div className="relative">
+                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">R$</span>
+                       <input type="text" defaultValue="1,32" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white outline-none focus:border-cyan-500 transition-colors" />
+                    </div>
+                 </div>
+                 
+                 <div>
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Taxa de Embalagem (R$)</label>
+                    <div className="relative">
+                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">R$</span>
+                       <input type="text" defaultValue="1,50" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white outline-none focus:border-cyan-500 transition-colors" />
+                    </div>
+                 </div>
 
-                <div>
-                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Margem de Lucro Padrão (%)</label>
-                   <div className="relative">
-                      <input type="text" defaultValue="100" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-4 pr-8 py-2.5 text-sm text-white outline-none focus:border-cyan-500 transition-colors" />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">%</span>
-                   </div>
-                </div>
-             </div>
+                 <div>
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-1.5">
+                       Taxa de Falha
+                       <div className="text-amber-500" title="Estimativa de falha média em impressões">⚠️</div>
+                    </label>
+                    <div className="relative">
+                       <input type="text" defaultValue="5" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-4 pr-8 py-2.5 text-sm text-white outline-none focus:border-cyan-500 transition-colors" />
+                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">%</span>
+                    </div>
+                 </div>
+
+                 <div>
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Margem Lucro (%)</label>
+                    <div className="relative">
+                       <input type="text" defaultValue="100" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-4 pr-8 py-2.5 text-sm text-white outline-none focus:border-cyan-500 transition-colors" />
+                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">%</span>
+                    </div>
+                 </div>
+              </div>
           </div>
 
           <div className="flex justify-end pt-4">
