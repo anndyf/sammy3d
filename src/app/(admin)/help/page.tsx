@@ -14,7 +14,7 @@ export default function HelpDeskPage() {
       a: "O sistema multiplica o consumo do material pelo custo unitário, adiciona a taxa base de eletricidade (Watts por hora) e o tempo de operador. Sobre esse Custo de Fabricação, aplicamos sua Margem de Lucro configurada."
     },
     {
-      q: "O Analisador .gcode (PRO) lê todos os fatiadores?",
+      q: "O Analisador .gcode lê todos os fatiadores?",
       a: "Sim. A nossa IA processa os G-Codes gerados no Cura, PrusaSlicer, Bambu Studio e OrcaSlicer, extraindo tempo, peso e detectando padrões de risco (como warp e overhangs) através da leitura das camadas."
     },
     {
@@ -23,7 +23,7 @@ export default function HelpDeskPage() {
     },
     {
       q: "A linha de Produção Kamban atualiza o cliente automaticamente?",
-      a: "No plano PRO, sempre que você mover um card para a coluna 'Pronto', o sistema pode enviar um e-mail automático ou preparar uma mensagem de WhatsApp avisando seu cliente que o pedido está aguardando coleta/envio."
+      a: "Sempre que você mover um card para a coluna 'Pronto', o sistema pode enviar um e-mail automático ou preparar uma mensagem de WhatsApp avisando seu cliente que o pedido está aguardando coleta/envio."
     }
   ];
 
@@ -97,8 +97,8 @@ export default function HelpDeskPage() {
             <div className="bg-gradient-to-br from-[#1a1d24] to-[#14161b] border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
                <div className="absolute right-0 top-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
                <MessageSquare className="h-6 w-6 text-cyan-400 mb-4" />
-               <h3 className="text-sm font-black text-white mb-2">Suporte Prioritário</h3>
-               <p className="text-[11px] text-slate-400 font-bold mb-6">Você é assinante PRO e possui fila expressa com nossa equipe.</p>
+               <h3 className="text-sm font-black text-white mb-2">Suporte Direto</h3>
+               <p className="text-[11px] text-slate-400 font-bold mb-6">Fale diretamente com nossa equipe técnica para dúvidas avançadas.</p>
                <button className="w-full bg-cyan-500 text-black font-black uppercase tracking-widest text-[10px] py-3 rounded-xl hover:bg-cyan-400 transition-colors flex items-center justify-center gap-2">
                  Abrir Ticket <ArrowRight className="h-3 w-3" />
                </button>

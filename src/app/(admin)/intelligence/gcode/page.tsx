@@ -39,36 +39,30 @@ export default function GCodeAnalyzerPage() {
     }
   };
 
-  const simulateAnalysis = (file: File) => {
+  const simulateAnalysis = async (file: File) => {
     setFile(file);
     setIsAnalyzing(true);
     setResults(null);
     
-    // Simulate API delay
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setResults({
-        metrics: {
-          time: "02h 45m",
-          weight: "128g",
-          length: "42.5m",
-          layers: 540,
-          cost: "R$ 15,40"
-        },
-        ai: {
-          score: 85,
-          warnings: [
-            { type: 'warning', msg: "Risco moderado de Warp detectado nas extremidades da camada base. Considere usar brim." },
-            { type: 'info', msg: "Densidade de infill (15%) pode ser insuficiente para suportar a pressão do encaixe superior." }
-          ],
-          passes: [
-            "Overhangs sob controle (< 45º)",
-            "Adesão inicial da primeira camada parece otimizada",
-            "Temperaturas recomendadas: 220ºC Bico / 70ºC Mesa"
-          ]
-        }
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/intelligence/analyze', {
+        method: 'POST',
+        body: formData
       });
-    }, 3000);
+
+      if (!res.ok) throw new Error('Falha na análise');
+      
+      const data = await res.json();
+      setResults(data);
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao analisar o arquivo. Certifique-se que é um GCODE válido.");
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -83,7 +77,7 @@ export default function GCodeAnalyzerPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                Analisador .gcode <span className="text-[9px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-1.5 py-0.5 rounded font-black tracking-widest uppercase">PRO</span>
+                Analisador .gcode
               </h1>
               <p className="text-xs text-slate-500 font-bold">Extração inteligente de custos e predição de falhas com IA.</p>
             </div>

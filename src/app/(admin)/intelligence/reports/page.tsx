@@ -40,7 +40,7 @@ export default function AdvancedReportsPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                Relatórios Avançados <span className="text-[9px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-1.5 py-0.5 rounded font-black tracking-widest uppercase">PRO</span>
+                Relatórios Avançados
               </h1>
               <p className="text-xs text-slate-500 font-bold">BI, Inteligência e Análise profunda da sua fazenda de impressão.</p>
             </div>
