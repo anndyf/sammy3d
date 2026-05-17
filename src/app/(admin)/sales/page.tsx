@@ -318,6 +318,11 @@ export default function OrdersPage() {
     setIsEditOpen(true);
   };
 
+  const handleOpenView = (order: Order) => {
+    setSelectedOrder(order);
+    setIsViewOpen(true);
+  };
+
   const handleUpdateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedOrder) return;
