@@ -387,13 +387,47 @@ export default function CatalogPage() {
                                </span>
                             </div>
 
-                            <div className="col-span-1 text-center">
-                               <span className={cn(
-                                 "text-sm font-bold",
-                                 (prod.stockQuantity || 0) > 0 ? "text-white" : "text-red-400"
-                               )}>
-                                  {prod.stockQuantity || 0}
-                               </span>
+                             <div className="col-span-1 text-center flex flex-col items-center justify-center">
+                               {(() => {
+                                 const isKit = prod.components && prod.components.length > 0;
+                                 let possibleKits = 0;
+                                 if (isKit) {
+                                   let minPossible = Infinity;
+                                   prod.components?.forEach(comp => {
+                                     const matched = products.find(p => p.id === comp.componentId);
+                                     if (matched) {
+                                       const avail = Math.floor((matched.stockQuantity || 0) / comp.quantity);
+                                       if (avail < minPossible) {
+                                         minPossible = avail;
+                                       }
+                                     } else {
+                                       minPossible = 0;
+                                     }
+                                   });
+                                   possibleKits = minPossible === Infinity ? 0 : minPossible;
+                                 }
+
+                                 return isKit ? (
+                                   <>
+                                      <span className={cn(
+                                        "text-sm font-black",
+                                        (prod.stockQuantity || 0) > 0 ? "text-white" : "text-slate-500"
+                                      )}>
+                                         {prod.stockQuantity || 0}
+                                      </span>
+                                      <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-400/5 px-1.5 py-0.5 rounded border border-cyan-400/10 mt-1 cursor-help" title={`Você pode montar até ${possibleKits} kits com as peças individuais que tem no estoque`}>
+                                         +{possibleKits} kits
+                                      </span>
+                                   </>
+                                 ) : (
+                                   <span className={cn(
+                                     "text-sm font-bold",
+                                     (prod.stockQuantity || 0) > 0 ? "text-white" : "text-red-400"
+                                   )}>
+                                      {prod.stockQuantity || 0}
+                                   </span>
+                                 );
+                               })()}
                             </div>
 
                             <div className="col-span-2">
