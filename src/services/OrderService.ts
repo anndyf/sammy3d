@@ -45,9 +45,10 @@ export class OrderService {
     let finalStatus = status || 'PENDING';
 
     // Fase de leitura e reserva: Checar estoque (Próprio ou Composição)
-    if (type === 'CATALOG' && Array.isArray(items) && items.length > 0) {
+    if (Array.isArray(items) && items.length > 0 && items.some(item => item.productId)) {
       let allReady = true;
       for (const item of items) {
+        if (!item.productId) continue;
         const product = await prisma.product.findUnique({ 
           where: { id: item.productId },
           include: { components: true }
@@ -116,7 +117,7 @@ export class OrderService {
             }
           });
 
-          if (type === 'CATALOG' && item.productId) {
+          if (item.productId) {
             const product = await tx.product.findUnique({ 
               where: { id: item.productId },
               include: { components: true }
