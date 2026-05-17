@@ -92,6 +92,7 @@ model Order {
   weightGrams     Float?
   materialId      String?
   paymentStatus   String      @default("UNPAID")
+  channel         String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   items           OrderItem[]

@@ -78,6 +78,10 @@ export class OrderService {
       finalStatus = status || 'PENDING';
     }
 
+    let dbChannel = 'Venda Direta';
+    if (saleChannel === 'SHOPEE') dbChannel = 'Shoppe';
+    if (saleChannel === 'ML') dbChannel = 'Mercado Livre';
+
     return await prisma.$transaction(async (tx) => {
       // 1. Criar o Pedido
       const order = await tx.order.create({
@@ -94,6 +98,7 @@ export class OrderService {
           materialId: materialId ? String(materialId) : null,
           paymentStatus: String(paymentStatus || 'UNPAID'),
           printerId: printerId ? String(printerId) : null,
+          channel: dbChannel
         }
       });
 
@@ -167,7 +172,7 @@ export class OrderService {
    * Atualiza status/pagamento do pedido.
    */
   static async update(id: string, body: any) {
-    const { status, paymentStatus, saleChannel, printerId, startDate, productionDays, deadline } = body;
+    const { status, paymentStatus, saleChannel, channel, printerId, startDate, productionDays, deadline } = body;
     const oldOrder = await prisma.order.findUnique({ where: { id } });
     if (!oldOrder) throw new Error('Pedido não encontrado');
 
@@ -177,6 +182,7 @@ export class OrderService {
         data: {
           ...(status && { status }),
           ...(paymentStatus && { paymentStatus }),
+          ...(channel && { channel }),
           ...(printerId !== undefined && { printerId: printerId ? String(printerId) : null }),
           ...(startDate !== undefined && { startDate: startDate ? new Date(startDate) : null }),
           ...(productionDays !== undefined && { productionDays: productionDays !== null ? Number(productionDays) : null }),

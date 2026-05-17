@@ -6,27 +6,64 @@ export class FinanceService {
    * Lista transações com paginação e resumo.
    */
   static async list(page: number = 1, limit: number = 50) {
-    const skip = (Math.max(1, page) - 1) * limit;
-
-    const [transactions, total, allTransactions] = await Promise.all([
+    const [transactions, allTransactions, orders] = await Promise.all([
       prisma.transaction.findMany({
         orderBy: { date: 'desc' },
-        take: limit,
-        skip,
       }),
-      prisma.transaction.count(),
-      // Pegamos todos os montantes para o resumo (economiza queries se o volume for moderado)
-      // Em sistemas gigantes, usaríamos agregações (sum) no banco.
       prisma.transaction.findMany({
-        select: { type: true, amount: true }
+        select: { id: true, type: true, amount: true, description: true }
+      }),
+      prisma.order.findMany({
+        orderBy: { createdAt: 'desc' }
       })
     ]);
 
-    const totalIncome = allTransactions.filter(t => t.type === 'INCOME').reduce((a, t) => a + t.amount, 0);
-    const totalExpense = allTransactions.filter(t => t.type === 'EXPENSE').reduce((a, t) => a + t.amount, 0);
+    // Filtrar pedidos pagos ou finalizados
+    const paidOrders = orders.filter(o => 
+      o.paymentStatus === 'PAID' || ['FINISHED', 'READY', 'SHIPPED'].includes(o.status)
+    );
+
+    // Mapeia pedidos pagos como transações virtuais de receita apenas se já não houver transação correspondente
+    const virtualTransactions: any[] = [];
+    for (const order of paidOrders) {
+      const alreadyHasTx = allTransactions.some(t => t.description && t.description.includes(order.id));
+      if (!alreadyHasTx) {
+        let netAmount = order.totalAmount;
+        // Se a venda veio da Shopee ou ML, deduzir a respectiva taxa de marketplace
+        if (order.channel === 'SHOPEE' || order.channel === 'Shoppe') {
+          netAmount = order.totalAmount * 0.80 - 4.00;
+        } else if (order.channel === 'ML' || order.channel === 'Mercado Livre') {
+          const fixedFee = order.totalAmount < 79 ? 6.00 : 0;
+          netAmount = order.totalAmount * 0.88 - fixedFee;
+        }
+        netAmount = Math.max(0, netAmount);
+
+        virtualTransactions.push({
+          id: `virtual-order-${order.id}`,
+          date: order.createdAt,
+          description: `[VENDA] Cliente: ${order.customerName} (via ${order.channel || 'DIRETA'})`,
+          category: 'Venda',
+          type: 'INCOME',
+          amount: Number(netAmount.toFixed(2))
+        });
+      }
+    }
+
+    // Combina e ordena por data decrescente
+    const combinedTransactions = [...transactions, ...virtualTransactions].sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
+    const totalIncome = combinedTransactions.filter(t => t.type === 'INCOME').reduce((a, t) => a + t.amount, 0);
+    const totalExpense = combinedTransactions.filter(t => t.type === 'EXPENSE').reduce((a, t) => a + t.amount, 0);
+
+    // Paginação em memória
+    const skip = (Math.max(1, page) - 1) * limit;
+    const paginatedTransactions = combinedTransactions.slice(skip, skip + limit);
+    const total = combinedTransactions.length;
 
     return {
-      transactions,
+      transactions: paginatedTransactions,
       summary: {
         totalIncome,
         totalExpense,
