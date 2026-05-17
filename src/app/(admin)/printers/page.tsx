@@ -28,7 +28,7 @@ interface PrinterData {
 }
 
 export default function PrintersPage() {
-  const [activeTab, setActiveTab] = useState<'equipamentos' | 'manutencoes'>('equipamentos');
+  const [activeTab, setActiveTab] = useState<'equipamentos' | 'manutencoes' | 'plano'>('equipamentos');
   const [printers, setPrinters] = useState<PrinterData[]>([]);
   const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
   const [loading, setLoading] = useState(true);
@@ -255,6 +255,16 @@ export default function PrintersPage() {
               <PenTool className="h-4 w-4" />
               Manutenções
             </button>
+            <button 
+              onClick={() => setActiveTab('plano')}
+              className={cn(
+                "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all",
+                activeTab === 'plano' ? 'bg-cyan-500 text-black shadow-md' : 'text-slate-400 hover:text-white'
+              )}
+            >
+              <Wrench className="h-4 w-4" />
+              Plano Preventivo
+            </button>
          </div>
       </div>
 
@@ -386,7 +396,7 @@ export default function PrintersPage() {
             ))}
           </div>
         )
-      ) : (
+      ) : activeTab === 'manutencoes' ? (
         /* MAINTENANCES TAB LOG */
         getFilteredMaintenances().length === 0 ? (
           <div className="py-20 text-center bg-[#1a1d24]/50 border border-white/5 rounded-3xl opacity-40">
@@ -437,6 +447,146 @@ export default function PrintersPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+        )
+      ) : (
+        /* PREVENTIVE MAINTENANCE PLAN TAB */
+        getFilteredPrinters().length === 0 ? (
+          <div className="py-20 text-center bg-[#1a1d24]/50 border border-white/5 rounded-3xl opacity-40">
+            <Printer className="h-10 w-10 mx-auto text-slate-600 mb-3" />
+            <p className="text-sm text-slate-500">Nenhuma impressora ativa para monitorar.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {getFilteredPrinters().map(printer => {
+              const checkpoints = [
+                {
+                  id: "Z_AXIS",
+                  title: "Limpeza & Lubrificação Z-Axis (100h)",
+                  interval: 100,
+                  desc: "Limpar fuso Z com álcool isopropílico, lubrificar e tensionar correias X/Y.",
+                  icon: Wrench,
+                },
+                {
+                  id: "EXTRUDER",
+                  title: "Extrusora & Nivelamento (250h)",
+                  interval: 250,
+                  desc: "Limpar engrenagens da extrusora, nivelar mesa e checar fixação do hotend.",
+                  icon: List,
+                },
+                {
+                  id: "NOZZLE",
+                  title: "Substituição de Bico (Nozzle) (500h)",
+                  interval: 500,
+                  desc: "Substituir bico 0.4mm de latão/aço, inspecionar tubo PTFE interno e coolers.",
+                  icon: AlertTriangle,
+                },
+                {
+                  id: "REVISION",
+                  title: "Revisão Geral e Fiação (1000h)",
+                  interval: 1000,
+                  desc: "Lubrificar guias lineares, inspecionar fadiga dos cabos elétricos e correias.",
+                  icon: Clock,
+                }
+              ];
+
+              return (
+                <div key={printer.id} className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-xl flex flex-col relative overflow-hidden">
+                  {/* Printer Header */}
+                  <div className="flex justify-between items-start mb-6 border-b border-white/5 pb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-white uppercase tracking-tight">{printer.name}</h3>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">{printer.model} • {printer.type}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Uso Acumulado</span>
+                      <span className="text-lg font-black text-cyan-400 font-mono">{printer.totalHours.toFixed(1)} h</span>
+                    </div>
+                  </div>
+
+                  {/* Checkpoint list */}
+                  <div className="space-y-5 flex-1">
+                    {checkpoints.map(cp => {
+                      const currentVal = printer.totalHours % cp.interval;
+                      const percent = Math.min(100, Math.round((currentVal / cp.interval) * 100));
+                      
+                      let statusColor = "text-emerald-400";
+                      let barColor = "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]";
+                      let statusLabel = "Funcionamento OK";
+
+                      if (percent >= 80 && percent < 95) {
+                        statusColor = "text-amber-400";
+                        barColor = "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]";
+                        statusLabel = "Atenção: Manutenção Próxima";
+                      } else if (percent >= 95) {
+                        statusColor = "text-red-400";
+                        barColor = "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]";
+                        statusLabel = "Crítico: Manutenção Recomendada";
+                      }
+
+                      return (
+                        <div key={cp.id} className="bg-[#14161b]/60 border border-white/5 p-5 rounded-2xl space-y-4">
+                          <div className="flex justify-between items-start gap-4">
+                            <div className="flex gap-3">
+                              <div className={cn(
+                                "p-2.5 rounded-xl border shrink-0 mt-0.5",
+                                percent >= 95 ? "bg-red-500/10 border-red-500/20 text-red-500" :
+                                percent >= 80 ? "bg-amber-500/10 border-amber-500/20 text-amber-500" :
+                                "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                              )}>
+                                <cp.icon className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-black text-white uppercase tracking-wider">{cp.title}</h4>
+                                <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{cp.desc}</p>
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block font-mono">Ciclo</span>
+                              <span className="text-xs font-bold text-white font-mono">{Math.floor(currentVal)} / {cp.interval}h</span>
+                            </div>
+                          </div>
+
+                          {/* Progress Bar */}
+                          <div className="space-y-2">
+                            <div className="w-full h-1.5 bg-[#14161b] border border-white/5 rounded-full overflow-hidden">
+                              <div className={cn("h-full transition-all duration-500 rounded-full", barColor)} style={{ width: `${percent}%` }}></div>
+                            </div>
+                            <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+                              <span className={statusColor}>{statusLabel}</span>
+                              <span className="text-slate-500 font-mono">{percent}%</span>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex justify-end pt-1">
+                            <button
+                              onClick={() => {
+                                setMaintPrinterId(printer.id);
+                                setMaintForm({
+                                  description: `Manutenção Preventiva: ${cp.title}`,
+                                  cost: 0,
+                                  date: new Date().toISOString().split('T')[0]
+                                });
+                                setShowMaintModal(true);
+                              }}
+                              className={cn(
+                                "px-3 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                                percent >= 95 ? "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500 hover:text-black hover:border-transparent" :
+                                percent >= 80 ? "bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-black hover:border-transparent" :
+                                "bg-[#14161b] border-white/5 text-slate-400 hover:text-white hover:border-white/10"
+                              )}
+                            >
+                              Registrar Preventiva
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )
       )}
