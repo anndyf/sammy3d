@@ -59,6 +59,7 @@ export default function OrdersPage() {
   const [cart, setCart] = useState<{productId?: string; customName?: string; quantity: number; price: number, sku?: string, calculatedCost?: number}[]>([]);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState("1");
+  const [customPrice, setCustomPrice] = useState("");
 
   // STATE PARA VISUALIZAÇÃO E EDIÇÃO DO PEDIDO
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -67,6 +68,7 @@ export default function OrdersPage() {
   const [editCustomerName, setEditCustomerName] = useState("");
   const [editChannel, setEditChannel] = useState("");
   const [editStatus, setEditStatus] = useState("");
+  const [editPaymentStatus, setEditPaymentStatus] = useState("");
 
   const subtotal = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
 
@@ -112,19 +114,31 @@ export default function OrdersPage() {
 
   useEffect(() => { fetchData(); }, []);
 
+  const handleProductChange = (productId: string) => {
+    setSelectedProduct(productId);
+    const p = products.find(prod => prod.id === productId);
+    if (p) {
+      setCustomPrice(p.sellingPrice.toString());
+    } else {
+      setCustomPrice("");
+    }
+  };
+
   const handleAddToCart = () => {
     const p = products.find(prod => prod.id === selectedProduct);
     if (p) {
+      const finalPrice = customPrice !== "" ? Number(customPrice) : p.sellingPrice;
       setCart([...cart, { 
         productId: p.id, 
         customName: p.name,
         quantity: Number(selectedQuantity), 
-        price: p.sellingPrice, 
+        price: finalPrice, 
         sku: p.sku,
         calculatedCost: p.calculatedCost || 0
       }]);
       setSelectedProduct("");
       setSelectedQuantity("1");
+      setCustomPrice("");
     }
   };
 
@@ -139,11 +153,12 @@ export default function OrdersPage() {
     if (activeCart.length === 0 && selectedProduct) {
       const p = products.find(prod => prod.id === selectedProduct);
       if (p) {
+        const finalPrice = customPrice !== "" ? Number(customPrice) : p.sellingPrice;
         activeCart.push({
           productId: p.id,
           customName: p.name,
           quantity: Number(selectedQuantity),
-          price: p.sellingPrice,
+          price: finalPrice,
           sku: p.sku,
           calculatedCost: p.calculatedCost || 0
         });
@@ -297,6 +312,7 @@ export default function OrdersPage() {
     setEditCustomerName(order.customerName);
     setEditChannel(order.channel);
     setEditStatus(order.status);
+    setEditPaymentStatus(order.paymentStatus || 'UNPAID');
     setIsEditOpen(true);
   };
 
@@ -310,7 +326,8 @@ export default function OrdersPage() {
         body: JSON.stringify({
           customerName: editCustomerName,
           channel: editChannel,
-          status: editStatus
+          status: editStatus,
+          paymentStatus: editPaymentStatus
         })
       });
       if (res.ok) {
