@@ -36,12 +36,14 @@ export default function CatalogPage() {
   const [composition, setComposition] = useState<ProductComposition[]>([]);
   const [compSearch, setCompSearch] = useState("");
 
-  const defaultTaxonomy = ["ARTICULADOS", "SENSORIAIS", "CHAVEIROS", "FIDGETS", "PLACAS", "FLEXIVEIS", "MULTICOLOR", "PINTADO", "INDUSTRIAL"];
-  const [availableCategories, setAvailableCategories] = useState(defaultTaxonomy);
+  const defaultCategories = ["ARTICULADOS", "SENSORIAIS", "CHAVEIROS", "FIDGETS", "PLACAS", "FLEXIVEIS", "MULTICOLOR", "PINTADO", "INDUSTRIAL", "MOLDE"];
+  const defaultSubcategories = ["VELA", "SILICONE", "ARTICULADOS", "SENSORIAIS", "CHAVEIROS", "FIDGETS", "PLACAS", "FLEXIVEIS", "MULTICOLOR", "PINTADO", "INDUSTRIAL"];
+
+  const [availableCategories, setAvailableCategories] = useState(defaultCategories);
   const [newCatInput, setNewCatInput] = useState("");
   const [isAddingCat, setIsAddingCat] = useState(false);
 
-  const [availableSubcategories, setAvailableSubcategories] = useState(defaultTaxonomy);
+  const [availableSubcategories, setAvailableSubcategories] = useState(defaultSubcategories);
   const [newSubcatInput, setNewSubcatInput] = useState("");
   const [isAddingSubcat, setIsAddingSubcat] = useState(false);
 
