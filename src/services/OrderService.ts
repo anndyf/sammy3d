@@ -38,7 +38,7 @@ export class OrderService {
     const { 
       customerName, customerContact, status, type, totalAmount, 
       discountAmount, deadline, notes, weightGrams, materialId, 
-      paymentStatus, items, saleChannel 
+      paymentStatus, items, saleChannel, printerId 
     } = body;
 
     const deadlineDate = deadline ? new Date(deadline) : null;
@@ -93,6 +93,7 @@ export class OrderService {
           weightGrams: weightGrams ? Number(weightGrams) : null,
           materialId: materialId ? String(materialId) : null,
           paymentStatus: String(paymentStatus || 'UNPAID'),
+          printerId: printerId ? String(printerId) : null,
         }
       });
 
@@ -165,7 +166,7 @@ export class OrderService {
    * Atualiza status/pagamento do pedido.
    */
   static async update(id: string, body: any) {
-    const { status, paymentStatus, saleChannel } = body;
+    const { status, paymentStatus, saleChannel, printerId } = body;
     const oldOrder = await prisma.order.findUnique({ where: { id } });
     if (!oldOrder) throw new Error('Pedido não encontrado');
 
@@ -175,6 +176,7 @@ export class OrderService {
         data: {
           ...(status && { status }),
           ...(paymentStatus && { paymentStatus }),
+          ...(printerId !== undefined && { printerId: printerId ? String(printerId) : null }),
         }
       });
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Cpu, Upload, FileCode2, Clock, Box, DollarSign, Activity, AlertTriangle, CheckCircle2, ChevronRight, Wand2, Sparkles, Layers } from "lucide-react";
+import { Cpu, Upload, FileCode2, Clock, Box, DollarSign, Activity, AlertTriangle, CheckCircle2, ChevronRight, Wand2, Sparkles, Layers, Printer } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function GCodeAnalyzerPage() {
@@ -13,9 +13,12 @@ export default function GCodeAnalyzerPage() {
   const [results, setResults] = useState<any>(null);
   const [materials, setMaterials] = useState<any[]>([]);
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>("avg");
+  const [printers, setPrinters] = useState<any[]>([]);
+  const [selectedPrinterId, setSelectedPrinterId] = useState<string>("avg");
 
   useEffect(() => {
     fetchMaterials();
+    fetchPrinters();
   }, []);
 
   const fetchMaterials = async () => {
@@ -26,6 +29,16 @@ export default function GCodeAnalyzerPage() {
       if (Array.isArray(list)) setMaterials(list);
     } catch (err) {
       console.error("Erro ao carregar materiais", err);
+    }
+  };
+
+  const fetchPrinters = async () => {
+    try {
+      const res = await fetch('/api/printers');
+      const data = await res.json();
+      if (Array.isArray(data)) setPrinters(data);
+    } catch (err) {
+      console.error("Erro ao carregar impressoras", err);
     }
   };
 
@@ -58,12 +71,12 @@ export default function GCodeAnalyzerPage() {
     }
   };
 
-  // Re-analisar se o material mudar
+  // Re-analisar se o material ou impressora mudar
   useEffect(() => {
     if (file) {
       analyzeFile(file);
     }
-  }, [selectedMaterialId]);
+  }, [selectedMaterialId, selectedPrinterId]);
 
   const analyzeFile = async (targetFile: File) => {
     setFile(targetFile);
@@ -74,6 +87,7 @@ export default function GCodeAnalyzerPage() {
       const formData = new FormData();
       formData.append('file', targetFile);
       formData.append('materialId', selectedMaterialId);
+      formData.append('printerId', selectedPrinterId);
 
       const res = await fetch('/api/intelligence/analyze', {
         method: 'POST',
@@ -133,21 +147,41 @@ export default function GCodeAnalyzerPage() {
              </div>
           </div>
 
-          {/* MATERIAL SELECTOR */}
-          <div className="flex items-center gap-3 bg-[#1a1d24] border border-white/5 p-2 rounded-xl">
-             <Layers className="h-4 w-4 text-slate-500 ml-2" />
-             <select 
-               value={selectedMaterialId}
-               onChange={(e) => setSelectedMaterialId(e.target.value)}
-               className="bg-transparent text-xs font-bold text-white outline-none border-none pr-8 cursor-pointer"
-             >
-               <option value="avg" className="bg-[#1a1d24]">Custo Médio (Filamentos)</option>
-               {materials.map(m => (
-                 <option key={m.id} value={m.id} className="bg-[#1a1d24]">
-                   {m.name} ({m.color}) - R$ {m.costPerUnit.toFixed(2)}/{m.unitType}
-                 </option>
-               ))}
-             </select>
+          {/* SELECTORS */}
+          <div className="flex flex-wrap items-center gap-3">
+             {/* PRINTER SELECTOR */}
+             <div className="flex items-center gap-3 bg-[#1a1d24] border border-white/5 p-2 rounded-xl">
+                <Printer className="h-4 w-4 text-cyan-400 ml-2" />
+                <select 
+                  value={selectedPrinterId}
+                  onChange={(e) => setSelectedPrinterId(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-white outline-none border-none pr-8 cursor-pointer"
+                >
+                  <option value="avg" className="bg-[#1a1d24]">Custo Médio (Impressoras)</option>
+                  {printers.map(p => (
+                    <option key={p.id} value={p.id} className="bg-[#1a1d24]">
+                      {p.name} ({p.model})
+                    </option>
+                  ))}
+                </select>
+             </div>
+
+             {/* MATERIAL SELECTOR */}
+             <div className="flex items-center gap-3 bg-[#1a1d24] border border-white/5 p-2 rounded-xl">
+                <Layers className="h-4 w-4 text-slate-500 ml-2" />
+                <select 
+                  value={selectedMaterialId}
+                  onChange={(e) => setSelectedMaterialId(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-white outline-none border-none pr-8 cursor-pointer"
+                >
+                  <option value="avg" className="bg-[#1a1d24]">Custo Médio (Filamentos)</option>
+                  {materials.map(m => (
+                    <option key={m.id} value={m.id} className="bg-[#1a1d24]">
+                      {m.name} ({m.color}) - R$ {m.costPerUnit.toFixed(2)}/{m.unitType}
+                    </option>
+                  ))}
+                </select>
+             </div>
           </div>
        </div>
 

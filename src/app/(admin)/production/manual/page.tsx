@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react";
-import { KanbanSquare, Plus, MoreHorizontal, Clock, Box, Play, CheckCircle2, Search, Filter, Trash2, ArrowRight, Calendar, RotateCcw, AlertCircle, BellRing } from "lucide-react";
+import { KanbanSquare, Plus, MoreHorizontal, Clock, Box, Play, CheckCircle2, Search, Filter, Trash2, ArrowRight, Calendar, RotateCcw, AlertCircle, BellRing, Printer } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Order {
@@ -13,6 +13,7 @@ interface Order {
   deadline?: string;
   createdAt: string;
   type: string;
+  printerId?: string;
 }
 
 interface KanbanColumn {
@@ -32,8 +33,19 @@ const FINISHED_COLUMN: KanbanColumn = { id: "FINISHED", title: "Concluído", col
 
 export default function ProductionKanbanPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [printers, setPrinters] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const fetchPrinters = useCallback(async () => {
+    try {
+      const res = await fetch('/api/printers');
+      const data = await res.json();
+      if (Array.isArray(data)) setPrinters(data);
+    } catch (err) {
+      console.error("Erro ao carregar impressoras", err);
+    }
+  }, []);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -51,7 +63,8 @@ export default function ProductionKanbanPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    fetchPrinters();
+  }, [fetchOrders, fetchPrinters]);
 
   const updateStatus = async (id: string, newStatus: string) => {
     try {
@@ -59,6 +72,19 @@ export default function ProductionKanbanPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) fetchOrders();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const assignPrinter = async (id: string, printerId: string) => {
+    try {
+      const res = await fetch(`/api/orders/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ printerId: printerId || null })
       });
       if (res.ok) fetchOrders();
     } catch (err) {
@@ -219,6 +245,23 @@ export default function ProductionKanbanPage() {
                                    {line}
                                 </div>
                               ))}
+                              
+                              {/* SELETOR DE IMPRESSORA NO CARD */}
+                              <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
+                                 <Printer className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                                 <select
+                                   value={item.printerId || ""}
+                                   onChange={(e) => assignPrinter(item.id, e.target.value)}
+                                   className="bg-transparent text-[10px] font-black uppercase text-slate-300 outline-none border-none cursor-pointer w-full"
+                                 >
+                                   <option value="" className="bg-[#14161b] text-slate-500">Sem Impressora</option>
+                                   {printers.map(p => (
+                                     <option key={p.id} value={p.id} className="bg-[#14161b] text-white">
+                                       {p.name} ({p.model})
+                                     </option>
+                                   ))}
+                                 </select>
+                              </div>
                            </div>
 
                            <div className="flex items-center gap-3 mb-6">
@@ -295,6 +338,12 @@ export default function ProductionKanbanPage() {
                     </div>
                     <h4 className="text-xs font-black text-white mb-2 leading-tight uppercase truncate">{item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto'}</h4>
                     <p className="text-[10px] text-slate-500 uppercase font-black">{item.customerName}</p>
+                    {item.printerId && (
+                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[9px] font-black text-cyan-400 uppercase tracking-wider">
+                        <Printer className="h-3 w-3" />
+                        {printers.find(p => p.id === item.printerId)?.name || 'Impressora'}
+                      </div>
+                    )}
                  </div>
                ))}
             </div>

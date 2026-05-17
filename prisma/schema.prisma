@@ -95,6 +95,8 @@ model Order {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   items           OrderItem[]
+  printerId       String?
+  printer         Printer?    @relation(fields: [printerId], references: [id])
 }
 
 model OrderItem {
@@ -136,6 +138,7 @@ model Printer {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   maintenances Maintenance[]
+  orders       Order[]
 }
 
 model Maintenance {

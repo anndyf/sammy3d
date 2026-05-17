@@ -6,6 +6,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const materialId = formData.get('materialId') as string;
+    const printerId = formData.get('printerId') as string;
 
     if (!file) {
       return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
@@ -27,7 +28,25 @@ export async function POST(request: Request) {
       costPerGram = avg > 10 ? avg / 1000 : avg;
     }
 
-    const machineStats = { powerW: 300, depreciationH: 0.50 };
+    // 2. CONFIGURAÇÕES DA IMPRESSORA
+    let powerW = 350;
+    let depreciationH = 0.18;
+
+    if (printerId && printerId !== 'avg') {
+      const printer = await prisma.printer.findUnique({ where: { id: printerId } });
+      if (printer) {
+        powerW = printer.powerW;
+        depreciationH = printer.depreciation;
+      }
+    } else {
+      const avgPrinter = await prisma.printer.aggregate({
+        _avg: { powerW: true, depreciation: true }
+      });
+      powerW = avgPrinter._avg.powerW || 300;
+      depreciationH = avgPrinter._avg.depreciation || 0.18;
+    }
+
+    const machineStats = { powerW, depreciationH };
     const content = await file.text();
     const lines = content.split('\n');
 
