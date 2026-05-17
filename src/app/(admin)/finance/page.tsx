@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react";
-import { Wallet, Calendar, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Filter, Printer, Search, Plus, Trash2, MoreVertical, X } from "lucide-react";
+import { Wallet, Calendar, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Filter, Printer, Search, Plus, Trash2, MoreVertical, X, AlertCircle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Transaction {
@@ -21,6 +21,7 @@ export default function FinancePage() {
     summary: { totalIncome: 0, totalExpense: 0, balance: 0 }
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [status, setStatus] = useState<{type: 'success' | 'error' | 'loading' | '', message: string}>({type: '', message: ''});
   const [newTransaction, setNewTransaction] = useState({
     description: "",
     amount: "",
@@ -33,11 +34,12 @@ export default function FinancePage() {
       setLoading(true);
       const res = await fetch('/api/finance');
       const json = await res.json();
-      if (json.data) {
-        setData(json.data);
+      const financeData = json.data || json;
+      if (financeData && Array.isArray(financeData.transactions)) {
+        setData(financeData);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao buscar dados financeiros:", err);
     } finally {
       setLoading(false);
     }
@@ -49,38 +51,89 @@ export default function FinancePage() {
 
   const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
+    const showStatus = (type: 'success' | 'error', message: string) => {
+      setStatus({ type, message });
+      setTimeout(() => setStatus({ type: '', message: '' }), 4000);
+    };
+
     try {
+      setStatus({ type: 'loading', message: '📡 Transmitindo dados para o banco...' });
+      
+      const rawAmount = String(newTransaction.amount).trim().replace(',', '.');
+      const parsedAmount = parseFloat(rawAmount);
+
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        showStatus('error', '❌ Insira um valor numérico válido maior que zero.');
+        return;
+      }
+
       const res = await fetch('/api/finance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newTransaction,
-          amount: parseFloat(newTransaction.amount)
+          amount: parsedAmount
         })
       });
 
+      const result = await res.json();
+
       if (res.ok) {
+        showStatus('success', '✅ Lançamento registrado com sucesso!');
         setIsModalOpen(false);
         setNewTransaction({ description: "", amount: "", type: "EXPENSE", category: "Outros" });
         fetchFinance();
+      } else {
+        showStatus('error', `❌ Erro: ${result.error || 'Falha no servidor'}`);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("POST Transaction Error:", err);
+      showStatus('error', `❌ Falha na conexão: ${err.message}`);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Excluir lançamento permanentemente?")) return;
+    const showStatus = (type: 'success' | 'error', message: string) => {
+      setStatus({ type, message });
+      setTimeout(() => setStatus({ type: '', message: '' }), 4000);
+    };
+
     try {
+      setStatus({ type: 'loading', message: '📡 Excluindo lançamento...' });
       const res = await fetch(`/api/finance/${id}`, { method: 'DELETE' });
-      if (res.ok) fetchFinance();
-    } catch (err) {
-      console.error(err);
+      
+      if (res.ok) {
+        showStatus('success', '✅ Lançamento excluído com sucesso!');
+        fetchFinance();
+      } else {
+        const result = await res.json();
+        showStatus('error', `❌ Erro: ${result.error || 'Falha ao excluir'}`);
+      }
+    } catch (err: any) {
+      console.error("DELETE Transaction Error:", err);
+      showStatus('error', `❌ Falha na conexão: ${err.message}`);
     }
   };
 
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
+      
+      {/* STATUS NOTIFICATION BAR */}
+      {status.message && (
+        <div 
+          className={cn(
+            "fixed top-4 left-1/2 -translate-x-1/2 z-[1000] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500 border backdrop-blur-md",
+            status.type === 'success' ? "bg-emerald-500/90 text-white border-emerald-400" : 
+            status.type === 'error' ? "bg-red-500/90 text-white border-red-400" : 
+            "bg-blue-500/90 text-white border-blue-400"
+          )}
+        >
+           {status.type === 'loading' ? <Sparkles className="h-4 w-4 animate-spin" /> : <AlertCircle className="h-4 w-4" />}
+           <span className="text-[13px] font-bold tracking-tight">{status.message}</span>
+        </div>
+      )}
+
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-2 mt-2">
          <div className="flex items-center gap-4">
