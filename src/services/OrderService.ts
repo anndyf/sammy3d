@@ -144,7 +144,8 @@ export class OrderService {
       }
 
       // 3. Financeiro
-      if (paymentStatus === 'PAID') {
+      const isPaidNow = paymentStatus === 'PAID' || (finalStatus === 'FINISHED' || finalStatus === 'READY' || finalStatus === 'SHIPPED');
+      if (isPaidNow) {
         const configs = await ConfigService.list();
         const netAmount = calcNetMarketplace(Number(totalAmount), saleChannel || '', configs);
         await tx.transaction.create({
@@ -183,23 +184,51 @@ export class OrderService {
         }
       });
 
-      // Lógica de transição financeira
-      if (paymentStatus === 'PAID' && oldOrder.paymentStatus !== 'PAID') {
+      // Lógica de transição financeira automática robusta
+      const isPaidNow = updatedOrder.paymentStatus === 'PAID' || (updatedOrder.status === 'FINISHED' || updatedOrder.status === 'READY' || updatedOrder.status === 'SHIPPED');
+      const wasPaidBefore = oldOrder.paymentStatus === 'PAID' || (oldOrder.status === 'FINISHED' || oldOrder.status === 'READY' || oldOrder.status === 'SHIPPED');
+
+      if (isPaidNow && !wasPaidBefore) {
         const configs = await ConfigService.list();
         const netAmount = calcNetMarketplace(updatedOrder.totalAmount, saleChannel || '', configs);
-        await tx.transaction.create({
-          data: {
-            type: 'INCOME',
-            category: 'VENDA_DIRETA',
-            amount: Number(netAmount.toFixed(2)),
-            description: `[AUTOMAÇÃO] Liquidação: ${updatedOrder.customerName} [ID: ${id}]`,
-            date: new Date()
-          }
+        
+        // Evitar duplicados: checar se transação já existe
+        const existingTx = await tx.transaction.findFirst({
+          where: { description: { contains: `[ID: ${id}]` } }
         });
-      } else if (paymentStatus === 'UNPAID' && oldOrder.paymentStatus === 'PAID') {
+        
+        if (!existingTx) {
+          await tx.transaction.create({
+            data: {
+              type: 'INCOME',
+              category: 'VENDA_DIRETA',
+              amount: Number(netAmount.toFixed(2)),
+              description: `[AUTOMAÇÃO] Liquidação: ${updatedOrder.customerName} [ID: ${id}]`,
+              date: new Date()
+            }
+          });
+        }
+        
+        // Sincronizar o status de pagamento como PAID se ainda não estiver
+        if (updatedOrder.paymentStatus !== 'PAID') {
+          await tx.order.update({
+            where: { id },
+            data: { paymentStatus: 'PAID' }
+          });
+        }
+      } else if (!isPaidNow && wasPaidBefore) {
+        // Se foi estornado ou mudado para não pago, remover receitas vinculadas a este ID
         await tx.transaction.deleteMany({
           where: { description: { contains: `[ID: ${id}]` } }
         });
+
+        // Sincronizar o status de pagamento como PENDING se foi retirado do PAID
+        if (updatedOrder.paymentStatus === 'PAID') {
+          await tx.order.update({
+            where: { id },
+            data: { paymentStatus: 'PENDING' }
+          });
+        }
       }
 
       return updatedOrder;
