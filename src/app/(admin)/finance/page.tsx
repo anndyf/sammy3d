@@ -16,6 +16,8 @@ interface Transaction {
 
 export default function FinancePage() {
   const [loading, setLoading] = useState(true);
+  const [activeChannelTab, setActiveChannelTab] = useState<'geral' | 'shopee' | 'ml' | 'direta'>('geral');
+  const [orders, setOrders] = useState<any[]>([]);
   const [data, setData] = useState<{ transactions: Transaction[], summary: any }>({
     transactions: [],
     summary: { totalIncome: 0, totalExpense: 0, balance: 0 }
@@ -32,11 +34,23 @@ export default function FinancePage() {
   const fetchFinance = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/finance');
-      const json = await res.json();
-      const financeData = json.data || json;
+      const [resF, resO] = await Promise.all([
+        fetch('/api/finance'),
+        fetch('/api/orders?limit=1000')
+      ]);
+      const jsonF = await resF.json();
+      const jsonO = await resO.json();
+      
+      const financeData = jsonF.data || jsonF;
       if (financeData && Array.isArray(financeData.transactions)) {
         setData(financeData);
+      }
+      
+      const ordersData = jsonO.data || jsonO;
+      if (ordersData && Array.isArray(ordersData)) {
+        setOrders(ordersData);
+      } else if (ordersData && Array.isArray(ordersData.data)) {
+        setOrders(ordersData.data);
       }
     } catch (err) {
       console.error("Erro ao buscar dados financeiros:", err);
@@ -116,6 +130,80 @@ export default function FinancePage() {
     }
   };
 
+  // Filtrar pedidos pagos ou concluidos
+  const paidOrders = orders.filter(o => 
+    o.paymentStatus === 'PAID' || 
+    o.status === 'FINISHED' || 
+    o.status === 'READY' || 
+    o.status === 'SHIPPED'
+  );
+
+  const getChannelStats = (filteredOrders: any[], channelType: 'shopee' | 'ml' | 'direta') => {
+    let grossRevenue = 0;
+    let marketplaceFees = 0;
+    let productionCost = 0;
+
+    filteredOrders.forEach(o => {
+      grossRevenue += o.totalAmount;
+      
+      // Calcular taxa do marketplace
+      if (channelType === 'shopee') {
+        if (o.netRevenue !== null && o.netRevenue !== undefined) {
+          marketplaceFees += (o.totalAmount - o.netRevenue);
+        } else {
+          marketplaceFees += (o.totalAmount * 0.27);
+        }
+      } else if (channelType === 'ml') {
+        if (o.netRevenue !== null && o.netRevenue !== undefined) {
+          marketplaceFees += (o.totalAmount - o.netRevenue);
+        } else {
+          let mlTax = 0;
+          if (o.items && Array.isArray(o.items)) {
+            o.items.forEach((item: any) => {
+              const fixedFee = item.price < 79 ? 6.00 * item.quantity : 0;
+              mlTax += (item.price * item.quantity) * 0.12 + fixedFee;
+            });
+          }
+          marketplaceFees += mlTax;
+        }
+      } else {
+        marketplaceFees += 0;
+      }
+
+      // Calcular custo de produção com base em peças
+      if (o.items && Array.isArray(o.items)) {
+        o.items.forEach((item: any) => {
+          productionCost += (item.quantity * (item.product?.calculatedCost || 0));
+        });
+      }
+    });
+
+    const netProfit = grossRevenue - marketplaceFees - productionCost;
+
+    return {
+      grossRevenue,
+      marketplaceFees,
+      productionCost,
+      netProfit
+    };
+  };
+
+  const shopeeOrders = paidOrders.filter(o => o.channel === 'Shoppe');
+  const mlOrders = paidOrders.filter(o => o.channel === 'Mercado Livre');
+  const directaOrders = paidOrders.filter(o => o.channel === 'Venda Direta' || !o.channel);
+
+  const shopeeStats = getChannelStats(shopeeOrders, 'shopee');
+  const mlStats = getChannelStats(mlOrders, 'ml');
+  const directaStats = getChannelStats(directaOrders, 'direta');
+
+  const filteredTransactions = data.transactions.filter(t => {
+    if (activeChannelTab === 'geral') return true;
+    if (activeChannelTab === 'shopee') return t.description.toLowerCase().includes('shoppe') || t.description.toLowerCase().includes('shopee');
+    if (activeChannelTab === 'ml') return t.description.toLowerCase().includes('mercado livre') || t.description.toLowerCase().includes('ml');
+    if (activeChannelTab === 'direta') return t.description.toLowerCase().includes('direta');
+    return true;
+  });
+
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
       
@@ -156,7 +244,48 @@ export default function FinancePage() {
          </div>
       </div>
 
+      {/* TABS DE FLUXO E CANAIS */}
+      <div className="flex items-center gap-2 bg-[#1a1d24]/50 p-2 rounded-2xl w-fit border border-white/5 mb-4">
+         <button 
+           onClick={() => setActiveChannelTab('geral')}
+           className={cn(
+             "px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all",
+             activeChannelTab === 'geral' ? "bg-[#1e293b] text-cyan-400 border border-cyan-500/20 shadow-lg" : "text-slate-500 hover:text-white"
+           )}
+         >
+            Fluxo Geral
+         </button>
+         <button 
+           onClick={() => setActiveChannelTab('shopee')}
+           className={cn(
+             "px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all",
+             activeChannelTab === 'shopee' ? "bg-[#1e293b] text-amber-500 border border-amber-500/20 shadow-lg" : "text-slate-500 hover:text-white"
+           )}
+         >
+            Vendas Shopee
+         </button>
+         <button 
+           onClick={() => setActiveChannelTab('ml')}
+           className={cn(
+             "px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all",
+             activeChannelTab === 'ml' ? "bg-[#1e293b] text-yellow-400 border border-yellow-500/20 shadow-lg" : "text-slate-500 hover:text-white"
+           )}
+         >
+            Mercado Livre
+         </button>
+         <button 
+           onClick={() => setActiveChannelTab('direta')}
+           className={cn(
+             "px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all",
+             activeChannelTab === 'direta' ? "bg-[#1e293b] text-emerald-400 border border-emerald-500/20 shadow-lg" : "text-slate-500 hover:text-white"
+           )}
+         >
+            Venda Direta
+         </button>
+      </div>
+
       {/* SUMMARY CARDS */}
+      {activeChannelTab === 'geral' && (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
@@ -196,6 +325,85 @@ export default function FinancePage() {
             </div>
          </div>
       </div>
+      )}
+
+      {/* CHANNEL BREAKDOWN CARDS */}
+      {activeChannelTab !== 'geral' && (
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            
+            {/* CARD 1: RECEITA BRUTA */}
+            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+               <div>
+                  <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">RECEITA BRUTA</h3>
+                  <p className="text-2xl font-black text-white font-mono tracking-tighter">
+                     R$ {activeChannelTab === 'shopee' ? shopeeStats.grossRevenue.toFixed(2) : 
+                         activeChannelTab === 'ml' ? mlStats.grossRevenue.toFixed(2) : 
+                         directaStats.grossRevenue.toFixed(2)}
+                  </p>
+               </div>
+               <p className="text-[9px] font-bold text-slate-500 mt-4 uppercase">Faturamento total do canal</p>
+            </div>
+
+            {/* CARD 2: TAXAS DO MARKETPLACE */}
+            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+               <div>
+                  <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">TAXAS DO MARKETPLACE</h3>
+                  <p className="text-2xl font-black text-red-400 font-mono tracking-tighter">
+                     R$ {activeChannelTab === 'shopee' ? shopeeStats.marketplaceFees.toFixed(2) : 
+                         activeChannelTab === 'ml' ? mlStats.marketplaceFees.toFixed(2) : 
+                         directaStats.marketplaceFees.toFixed(2)}
+                  </p>
+               </div>
+               <p className="text-[9px] font-bold text-slate-500 mt-4 uppercase">Comissões e taxas fixas retidas</p>
+            </div>
+
+            {/* CARD 3: CUSTO DE PRODUÇÃO */}
+            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+               <div>
+                  <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">CUSTO DE PRODUÇÃO</h3>
+                  <p className="text-2xl font-black text-orange-400/80 font-mono tracking-tighter">
+                     R$ {activeChannelTab === 'shopee' ? shopeeStats.productionCost.toFixed(2) : 
+                         activeChannelTab === 'ml' ? mlStats.productionCost.toFixed(2) : 
+                         directaStats.productionCost.toFixed(2)}
+                  </p>
+               </div>
+               <p className="text-[9px] font-bold text-slate-500 mt-4 uppercase">Custo de material + adicionais</p>
+            </div>
+
+            {/* CARD 4: LUCRO LÍQUIDO REAL */}
+            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+               <div className={cn(
+                 "absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl transition-colors",
+                 activeChannelTab === 'shopee' ? "bg-amber-500/10 group-hover:bg-amber-500/20" :
+                 activeChannelTab === 'ml' ? "bg-yellow-500/10 group-hover:bg-yellow-500/20" :
+                 "bg-emerald-500/10 group-hover:bg-emerald-500/20"
+               )}></div>
+               <div>
+                  <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">LUCRO LÍQUIDO REAL</h3>
+                  <p className={cn(
+                    "text-2xl font-black font-mono tracking-tighter",
+                    (activeChannelTab === 'shopee' ? shopeeStats.netProfit : 
+                     activeChannelTab === 'ml' ? mlStats.netProfit : 
+                     directaStats.netProfit) >= 0 ? "text-cyan-400" : "text-red-400"
+                  )}>
+                     R$ {activeChannelTab === 'shopee' ? shopeeStats.netProfit.toFixed(2) : 
+                         activeChannelTab === 'ml' ? mlStats.netProfit.toFixed(2) : 
+                         directaStats.netProfit.toFixed(2)}
+                  </p>
+               </div>
+               <p className="text-[9px] font-bold text-slate-500 mt-4 uppercase flex items-center gap-1.5">
+                  <span className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    (activeChannelTab === 'shopee' ? shopeeStats.netProfit : 
+                     activeChannelTab === 'ml' ? mlStats.netProfit : 
+                     directaStats.netProfit) >= 0 ? "bg-cyan-400" : "bg-red-400"
+                  )}></span>
+                  Resultado líquido final
+               </p>
+            </div>
+            
+         </div>
+      )}
 
       {/* ACTIONS */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -229,11 +437,11 @@ export default function FinancePage() {
               <div className="py-20 text-center animate-pulse">
                 <p className="text-xs text-slate-500 font-black uppercase tracking-widest">Sincronizando com o banco de dados...</p>
               </div>
-            ) : data.transactions.length === 0 ? (
+            ) : filteredTransactions.length === 0 ? (
               <div className="py-20 text-center">
                 <p className="text-xs text-slate-600 font-black uppercase tracking-widest">Nenhum lançamento encontrado</p>
               </div>
-            ) : data.transactions.map(t => (
+            ) : filteredTransactions.map(t => (
               <div key={t.id} className="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-white/5 transition-all group">
                  <div className="col-span-2">
                     <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
