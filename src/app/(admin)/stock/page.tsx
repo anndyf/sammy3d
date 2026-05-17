@@ -18,6 +18,7 @@ export default function StockPage() {
   const [color, setColor] = useState("");
   const [costPerUnit, setCostPerUnit] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
+  const [remainingAmount, setRemainingAmount] = useState("");
   const [unitType, setUnitType] = useState("g");
   const [recordExpense, setRecordExpense] = useState(false);
   const [amountPaid, setAmountPaid] = useState("");
@@ -40,6 +41,7 @@ export default function StockPage() {
     setColor(m.color || "");
     setCostPerUnit(m.costPerUnit.toString());
     setTotalAmount(m.totalAmount.toString());
+    setRemainingAmount(m.remainingAmount.toString());
     setUnitType(m.unitType);
     setIsAddingMode(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -61,12 +63,12 @@ export default function StockPage() {
           unitType,
           recordExpense,
           amountPaid: parseFloat(amountPaid || costPerUnit),
-          remainingAmount: editingMaterial ? editingMaterial.remainingAmount : parseFloat(totalAmount)
+          remainingAmount: parseFloat(remainingAmount || totalAmount)
         })
       });
       if (res.ok) {
         setIsAddingMode(false); setEditingMaterial(null);
-        setName(""); setType("FILAMENT"); setColor(""); setCostPerUnit(""); setTotalAmount(""); setUnitType("g");
+        setName(""); setType("FILAMENT"); setColor(""); setCostPerUnit(""); setTotalAmount(""); setRemainingAmount(""); setUnitType("g");
         setRecordExpense(false); setAmountPaid("");
         fetchData();
       } else {
@@ -113,7 +115,10 @@ export default function StockPage() {
             <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Inventário de Insumos</h1>
          </div>
          <button 
-           onClick={() => setIsAddingMode(!isAddingMode)}
+           onClick={() => {
+             setName(""); setType("FILAMENT"); setColor(""); setCostPerUnit(""); setTotalAmount("1000"); setRemainingAmount("");
+             setIsAddingMode(!isAddingMode);
+           }}
            className="bg-cyan-500 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg uppercase tracking-widest"
          >
            {isAddingMode ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -169,14 +174,18 @@ export default function StockPage() {
                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Variante / Cor</label>
                       <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-all" value={color} onChange={e=>setColor(e.target.value)} placeholder="ex: VOOLT3D - PETG" />
                    </div>
-                   <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Custo Médio (Rolo)</label>
-                      <input type="number" step="0.01" min="0" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-all" required value={costPerUnit} onChange={e=>setCostPerUnit(e.target.value)} placeholder="ex: 96.00" />
-                   </div>
-                   <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Estoque (Gramas)</label>
-                      <input type="number" min="0" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-all" required value={totalAmount} onChange={e=>setTotalAmount(e.target.value)} placeholder="ex: 4000" />
-                   </div>
+                    <div className="space-y-1.5 flex flex-col">
+                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Custo do Rolo (R$)</label>
+                       <input type="number" step="0.01" min="0" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-all" required value={costPerUnit} onChange={e=>setCostPerUnit(e.target.value)} placeholder="ex: 98.00" />
+                    </div>
+                    <div className="space-y-1.5 flex flex-col">
+                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Peso do Rolo / Unidade (g)</label>
+                       <input type="number" min="1" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-all" required value={totalAmount} onChange={e=>setTotalAmount(e.target.value)} placeholder="ex: 1000" />
+                    </div>
+                    <div className="space-y-1.5 flex flex-col">
+                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pl-1">Estoque Atual Total (g)</label>
+                       <input type="number" min="0" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-all" required value={remainingAmount} onChange={e=>setRemainingAmount(e.target.value)} placeholder="ex: 4000" />
+                    </div>
                 </div>
 
                 <div className="flex justify-end pt-4 gap-4">
