@@ -46,9 +46,9 @@ export function calcCostPerGram(costPerUnit: number, totalAmount: number, unitTy
  * Calcula o valor líquido após taxas de marketplace.
  */
 export function calcNetMarketplace(grossAmount: number, channel: string, configs?: Record<string, string>): number {
-  if (channel === 'SHOPEE') {
-    const fee = parseFloat(configs?.marketplaces_shopee_fee || "14") / 100;
-    const fixed = parseFloat(configs?.marketplaces_shopee_fixed || "5");
+  if (channel === 'SHOPEE' || channel === 'Shoppe') {
+    const fee = parseFloat(configs?.marketplaces_shopee_fee || "27") / 100;
+    const fixed = parseFloat(configs?.marketplaces_shopee_fixed || "0");
     return grossAmount * (1 - fee) - fixed;
   }
   

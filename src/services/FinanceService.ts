@@ -31,7 +31,7 @@ export class FinanceService {
         let netAmount = order.totalAmount;
         // Se a venda veio da Shopee ou ML, deduzir a respectiva taxa de marketplace
         if (order.channel === 'SHOPEE' || order.channel === 'Shoppe') {
-          netAmount = order.totalAmount * 0.80 - 4.00;
+          netAmount = order.totalAmount * 0.73;
         } else if (order.channel === 'ML' || order.channel === 'Mercado Livre') {
           const fixedFee = order.totalAmount < 79 ? 6.00 : 0;
           netAmount = order.totalAmount * 0.88 - fixedFee;
