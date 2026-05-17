@@ -42,6 +42,7 @@ interface Order {
   createdAt: string; 
   items: OrderItem[]; 
   paymentStatus?: string;
+  netRevenue?: number;
 }
 
 export default function OrdersPage() {
@@ -60,6 +61,7 @@ export default function OrdersPage() {
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState("1");
   const [customPrice, setCustomPrice] = useState("");
+  const [netRevenue, setNetRevenue] = useState("");
 
   // STATE PARA VISUALIZAÇÃO E EDIÇÃO DO PEDIDO
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -70,6 +72,7 @@ export default function OrdersPage() {
   const [editStatus, setEditStatus] = useState("");
   const [editPaymentStatus, setEditPaymentStatus] = useState("");
   const [editTotalAmount, setEditTotalAmount] = useState("");
+  const [editNetRevenue, setEditNetRevenue] = useState("");
 
   const subtotal = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
 
@@ -194,7 +197,8 @@ export default function OrdersPage() {
             customName: item.customName,
             quantity: item.quantity,
             price: item.price
-          }))
+          })),
+          netRevenue: netRevenue !== "" ? Number(netRevenue) : null
         })
       });
 
@@ -203,6 +207,7 @@ export default function OrdersPage() {
         setCustomerName("Eu");
         setChannel("Shoppe");
         setOrderNumber("");
+        setNetRevenue("");
         setIsAdding(false);
         fetchData();
       } else {
@@ -315,6 +320,7 @@ export default function OrdersPage() {
     setEditStatus(order.status || "PENDING");
     setEditPaymentStatus(order.paymentStatus || 'UNPAID');
     setEditTotalAmount((order.totalAmount || 0).toString());
+    setEditNetRevenue(order.netRevenue !== null && order.netRevenue !== undefined ? order.netRevenue.toString() : "");
     setIsEditOpen(true);
   };
 
@@ -335,7 +341,8 @@ export default function OrdersPage() {
           channel: editChannel,
           status: editStatus,
           paymentStatus: editPaymentStatus,
-          totalAmount: Number(editTotalAmount)
+          totalAmount: Number(editTotalAmount),
+          netRevenue: editNetRevenue !== "" ? Number(editNetRevenue) : null
         })
       });
       if (res.ok) {

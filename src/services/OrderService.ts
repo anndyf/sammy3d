@@ -38,7 +38,7 @@ export class OrderService {
     const { 
       customerName, customerContact, status, type, totalAmount, 
       discountAmount, deadline, notes, weightGrams, materialId, 
-      paymentStatus, items, saleChannel, printerId 
+      paymentStatus, items, saleChannel, printerId, netRevenue
     } = body;
 
     const deadlineDate = deadline ? new Date(deadline) : null;
@@ -98,7 +98,8 @@ export class OrderService {
           materialId: materialId ? String(materialId) : null,
           paymentStatus: String(paymentStatus || 'UNPAID'),
           printerId: printerId ? String(printerId) : null,
-          channel: dbChannel
+          channel: dbChannel,
+          netRevenue: netRevenue !== undefined && netRevenue !== null ? Number(netRevenue) : null
         }
       });
 
@@ -152,7 +153,9 @@ export class OrderService {
       const isPaidNow = paymentStatus === 'PAID' || (finalStatus === 'FINISHED' || finalStatus === 'READY' || finalStatus === 'SHIPPED');
       if (isPaidNow) {
         const configs = await ConfigService.list();
-        const netAmount = calcNetMarketplace(Number(totalAmount), saleChannel || '', configs);
+        const netAmount = netRevenue !== undefined && netRevenue !== null
+          ? Number(netRevenue)
+          : calcNetMarketplace(Number(totalAmount), saleChannel || '', configs);
         await tx.transaction.create({
           data: {
             type: 'INCOME',
@@ -172,7 +175,7 @@ export class OrderService {
    * Atualiza status/pagamento do pedido.
    */
   static async update(id: string, body: any) {
-    const { status, paymentStatus, saleChannel, channel, totalAmount, printerId, startDate, productionDays, deadline } = body;
+    const { status, paymentStatus, saleChannel, channel, totalAmount, netRevenue, printerId, startDate, productionDays, deadline } = body;
     const oldOrder = await prisma.order.findUnique({ where: { id } });
     if (!oldOrder) throw new Error('Pedido não encontrado');
 
@@ -184,6 +187,7 @@ export class OrderService {
           ...(paymentStatus && { paymentStatus }),
           ...(channel && { channel }),
           ...(totalAmount !== undefined && { totalAmount: Number(totalAmount) }),
+          ...(netRevenue !== undefined && { netRevenue: netRevenue !== null ? Number(netRevenue) : null }),
           ...(printerId !== undefined && { printerId: printerId ? String(printerId) : null }),
           ...(startDate !== undefined && { startDate: startDate ? new Date(startDate) : null }),
           ...(productionDays !== undefined && { productionDays: productionDays !== null ? Number(productionDays) : null }),
@@ -198,7 +202,9 @@ export class OrderService {
       if (isPaidNow) {
         const configs = await ConfigService.list();
         const activeChannel = updatedOrder.channel || saleChannel || '';
-        const netAmount = calcNetMarketplace(updatedOrder.totalAmount, activeChannel, configs);
+        const netAmount = updatedOrder.netRevenue !== null && updatedOrder.netRevenue !== undefined
+          ? updatedOrder.netRevenue
+          : calcNetMarketplace(updatedOrder.totalAmount, activeChannel, configs);
         
         // Evitar duplicados: checar se transação já existe
         const existingTx = await tx.transaction.findFirst({
