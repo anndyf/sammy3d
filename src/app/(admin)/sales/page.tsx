@@ -60,6 +60,14 @@ export default function OrdersPage() {
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState("1");
 
+  // STATE PARA VISUALIZAÇÃO E EDIÇÃO DO PEDIDO
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editCustomerName, setEditCustomerName] = useState("");
+  const [editChannel, setEditChannel] = useState("");
+  const [editStatus, setEditStatus] = useState("");
+
   const subtotal = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
 
   let marketplaceTax = 0;
@@ -188,6 +196,131 @@ export default function OrdersPage() {
     } catch (e) {
       console.error(e);
       alert("Erro de conexão ao criar pedido.");
+    }
+  };
+
+  const handleDispatchOrder = async (id: string) => {
+    if (!confirm("Confirmar expedição e saída deste pedido? Isso registrará o pagamento como PAGO e gerará a receita no financeiro!")) return;
+    try {
+      const res = await fetch('/api/orders/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'FINISHED', paymentStatus: 'PAID' })
+      });
+      if (res.ok) {
+        fetchData();
+      } else {
+        alert("Erro ao despachar pedido.");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este pedido permanentemente? Isso também removerá qualquer receita gerada por ele no financeiro!")) return;
+    try {
+      const res = await fetch('/api/orders/' + id, { method: 'DELETE' });
+      if (res.ok) {
+        fetchData();
+      } else {
+        alert("Erro ao excluir pedido.");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handlePrintOrder = (order: Order) => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      const itemsHtml = order.items.map(function(item) {
+        return "<tr>" +
+          "<td>" + (item.customName || 'Produto') + "</td>" +
+          "<td>" + item.quantity + "</td>" +
+          "<td>R$ " + item.price.toFixed(2) + "</td>" +
+          "<td>R$ " + (item.price * item.quantity).toFixed(2) + "</td>" +
+        "</tr>";
+      }).join("");
+
+      printWindow.document.write(
+        "<html>" +
+          "<head>" +
+            "<title>Ordem de Serviço #" + order.id + "</title>" +
+            "<style>" +
+              "body { font-family: sans-serif; padding: 40px; color: #333; }" +
+              "h1 { border-bottom: 2px solid #000; padding-bottom: 10px; }" +
+              "table { width: 100%; border-collapse: collapse; margin-top: 20px; }" +
+              "th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }" +
+              "th { background-color: #f5f5f5; }" +
+              ".footer { margin-top: 40px; font-weight: bold; text-align: right; font-size: 1.2rem; }" +
+            "</style>" +
+          "</head>" +
+          "<body>" +
+            "<h1>Ordem de Serviço - Sammy3D</h1>" +
+            "<p><strong>Pedido ID:</strong> " + order.id + "</p>" +
+            "<p><strong>Cliente:</strong> " + order.customerName + "</p>" +
+            "<p><strong>Canal de Venda:</strong> " + order.channel + "</p>" +
+            "<p><strong>Data:</strong> " + new Date(order.createdAt).toLocaleDateString('pt-BR') + "</p>" +
+            "<p><strong>Status:</strong> " + order.status + "</p>" +
+            
+            "<table>" +
+              "<thead>" +
+                "<tr>" +
+                  "<th>Item</th>" +
+                  "<th>Qtd</th>" +
+                  "<th>Preço</th>" +
+                  "<th>Subtotal</th>" +
+                "</tr>" +
+              "</thead>" +
+              "<tbody>" +
+                itemsHtml +
+              "</tbody>" +
+            "</table>" +
+            
+            "<div class='footer'>" +
+              "Total: R$ " + order.totalAmount.toFixed(2) +
+            "</div>" +
+            
+            "<script>" +
+              "window.onload = function() { window.print(); window.close(); }" +
+            "</script>" +
+          "</body>" +
+        "</html>"
+      );
+      printWindow.document.close();
+    }
+  };
+
+  const handleOpenEdit = (order: Order) => {
+    setSelectedOrder(order);
+    setEditCustomerName(order.customerName);
+    setEditChannel(order.channel);
+    setEditStatus(order.status);
+    setIsEditOpen(true);
+  };
+
+  const handleUpdateOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedOrder) return;
+    try {
+      const res = await fetch('/api/orders/' + selectedOrder.id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: editCustomerName,
+          channel: editChannel,
+          status: editStatus
+        })
+      });
+      if (res.ok) {
+        setIsEditOpen(false);
+        fetchData();
+      } else {
+        alert("Erro ao salvar alterações do pedido.");
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -546,6 +679,121 @@ export default function OrdersPage() {
            </div>
          )}
       </div>
+
+      {/* DETALHES DO PEDIDO MODAL */}
+      {isViewOpen && selectedOrder && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsViewOpen(false)} />
+           <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500">
+              <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+                 <div>
+                    <h2 className="text-2xl font-black text-white uppercase tracking-tight">Detalhes do Pedido</h2>
+                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">ID: {selectedOrder.id}</p>
+                 </div>
+                 <button onClick={() => setIsViewOpen(false)} className="p-2 text-slate-500 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
+              </div>
+
+              <div className="space-y-6">
+                 <div className="grid grid-cols-2 gap-6">
+                    <div>
+                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Cliente</span>
+                       <span className="text-md font-bold text-white uppercase">{selectedOrder.customerName}</span>
+                    </div>
+                    <div>
+                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Canal de Venda</span>
+                       <span className="text-md font-bold text-cyan-400 uppercase">{selectedOrder.channel}</span>
+                    </div>
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-6">
+                    <div>
+                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Status Operacional</span>
+                       <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-white/5 border border-white/5 text-slate-300">
+                          {selectedOrder.status}
+                       </span>
+                    </div>
+                    <div>
+                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Status de Pagamento</span>
+                       <span className={cn(
+                          "inline-flex items-center px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                          selectedOrder.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
+                       )}>
+                          {selectedOrder.paymentStatus === 'PAID' ? 'Pago' : 'Pendente'}
+                       </span>
+                    </div>
+                 </div>
+
+                 <div className="border-t border-white/5 pt-6">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Itens do Pedido</span>
+                    <div className="space-y-3 max-h-60 overflow-y-auto">
+                       {selectedOrder.items.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center bg-[#14161b] border border-white/5 p-4 rounded-xl">
+                             <div>
+                                <h4 className="text-xs font-bold text-white uppercase">{item.customName || 'Produto'}</h4>
+                                <span className="text-[9px] font-bold text-slate-600">Qtd: {item.quantity} x R$ {item.price.toFixed(2)}</span>
+                             </div>
+                             <span className="text-xs font-bold text-cyan-400 font-mono">R$ {(item.price * item.quantity).toFixed(2)}</span>
+                          </div>
+                       ))}
+                    </div>
+                 </div>
+
+                 <div className="border-t border-white/5 pt-6 flex justify-between items-end">
+                    <div>
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Valor do Pedido</p>
+                       <h3 className="text-xl font-black text-white uppercase">Total Geral</h3>
+                    </div>
+                    <p className="text-3xl font-black text-emerald-400 font-mono">R$ {selectedOrder.totalAmount.toFixed(2)}</p>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* EDITAR PEDIDO MODAL */}
+      {isEditOpen && selectedOrder && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsEditOpen(false)} />
+           <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
+              <div className="flex items-center justify-between mb-8">
+                 <h2 className="text-xl font-black text-white uppercase tracking-tight">Editar Pedido</h2>
+                 <button onClick={() => setIsEditOpen(false)} className="p-2 text-slate-500 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
+              </div>
+
+              <form onSubmit={handleUpdateOrder} className="space-y-6">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Nome do Cliente</label>
+                    <input required type="text" className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-sm font-bold text-white outline-none focus:border-cyan-500" value={editCustomerName} onChange={e=>setEditCustomerName(e.target.value)} />
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Canal de Venda</label>
+                       <select className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-cyan-500 appearance-none" value={editChannel} onChange={e=>setEditChannel(e.target.value)}>
+                          <option value="Shoppe">Shopee</option>
+                          <option value="Mercado Livre">Mercado Livre</option>
+                          <option value="Venda Direta">Venda Direta</option>
+                       </select>
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Status Operacional</label>
+                       <select className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-cyan-500 appearance-none" value={editStatus} onChange={e=>setEditStatus(e.target.value)}>
+                          <option value="PENDING">Pendente</option>
+                          <option value="PICKING">Separação</option>
+                          <option value="PRINTING">Imprimindo</option>
+                          <option value="READY">Pronto</option>
+                          <option value="FINISHED">Concluído</option>
+                       </select>
+                    </div>
+                 </div>
+
+                 <button type="submit" className="w-full bg-cyan-400 text-black h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-cyan-300 transition-all shadow-xl shadow-cyan-400/10 mt-4">
+                    Salvar Alterações
+                 </button>
+              </form>
+           </div>
+        </div>
+      )}
 
     </div>
   );
