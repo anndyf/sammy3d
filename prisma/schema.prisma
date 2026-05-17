@@ -154,3 +154,17 @@ model Maintenance {
   printer     Printer  @relation(fields: [printerId], references: [id], onDelete: Cascade)
 }
 
+
+model StockHistory {
+  id          String   @id @default(cuid())
+  productId   String
+  productName String
+  actionType  String   // "REPLENISH", "SALE", "MANUAL"
+  previousQty Int
+  newQty      Int
+  difference  Int
+  materialId  String?
+  materialName String?
+  notes       String?
+  createdAt   DateTime @default(now())
+}

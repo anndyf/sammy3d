@@ -124,26 +124,40 @@ export class OrderService {
             });
 
             if (product) {
+              const qty = Number(item.quantity) || 1;
+              const prev = product.stockQuantity;
+              
               // Se tiver estoque do KIT pronto, tira do KIT
-              if (product.stockQuantity >= Number(item.quantity)) {
+              if (product.stockQuantity >= qty) {
+                const nextStock = prev - qty;
                 await tx.product.update({
                   where: { id: product.id },
-                  data: { stockQuantity: { decrement: Number(item.quantity) } }
+                  data: { stockQuantity: nextStock }
                 });
+                await OrderService.logStockChange(tx, product.id, "SALE", prev, nextStock, -qty, null, `Venda: Pedido [ID: ${order.id}]`);
               } else if (product.components && product.components.length > 0) {
                 // Se não tem KIT mas tem COMPONENTES, tira dos COMPONENTES
                 for (const comp of product.components) {
-                  await tx.product.update({
-                    where: { id: comp.componentId },
-                    data: { stockQuantity: { decrement: comp.quantity * Number(item.quantity) } }
-                  });
+                  const compProd = await tx.product.findUnique({ where: { id: comp.componentId } });
+                  if (compProd) {
+                    const compPrev = compProd.stockQuantity;
+                    const compDeduct = comp.quantity * qty;
+                    const compNext = compPrev - compDeduct;
+                    await tx.product.update({
+                      where: { id: compProd.id },
+                      data: { stockQuantity: compNext }
+                    });
+                    await OrderService.logStockChange(tx, compProd.id, "SALE", compPrev, compNext, -compDeduct, null, `Venda de Kit: Pedido [ID: ${order.id}]`);
+                  }
                 }
               } else {
                 // Se não tem nem KIT nem COMPONENTES (ficou negativo)
+                const nextStock = prev - qty;
                 await tx.product.update({
                   where: { id: product.id },
-                  data: { stockQuantity: { decrement: Number(item.quantity) } }
+                  data: { stockQuantity: nextStock }
                 });
+                await OrderService.logStockChange(tx, product.id, "SALE", prev, nextStock, -qty, null, `Venda (Estoque Insuficiente): Pedido [ID: ${order.id}]`);
               }
             }
           }
@@ -298,5 +312,30 @@ export class OrderService {
       prisma.orderItem.deleteMany({ where: { orderId: id } }),
       prisma.order.delete({ where: { id } }),
     ]);
+  }
+
+  static async logStockChange(tx: any, productId: string, actionType: string, previousQty: number, newQty: number, difference: number, materialId?: string | null, notes?: string | null) {
+    const product = await tx.product.findUnique({ where: { id: productId } });
+    if (!product) return;
+    
+    let matName: string | null = null;
+    if (materialId) {
+      const mat = await tx.material.findUnique({ where: { id: materialId } });
+      if (mat) matName = mat.name;
+    }
+
+    await tx.stockHistory.create({
+      data: {
+        productId,
+        productName: product.name,
+        actionType,
+        previousQty,
+        newQty,
+        difference,
+        materialId: materialId || null,
+        materialName: matName || null,
+        notes: notes || null
+      }
+    });
   }
 }

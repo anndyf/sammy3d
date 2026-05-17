@@ -10,6 +10,13 @@ interface Product { id: string; name: string; description?: string; imageUrl?: s
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [replenishingProduct, setReplenishingProduct] = useState<Product | null>(null);
+  const [replenishAmount, setReplenishAmount] = useState("1");
+  const [replenishMaterialId, setReplenishMaterialId] = useState("");
+  const [replenishNotes, setReplenishNotes] = useState("");
+  const [historyProduct, setHistoryProduct] = useState<Product | null>(null);
+  const [stockHistoryList, setStockHistoryList] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,6 +88,58 @@ export default function CatalogPage() {
       setSku(generateSKU(name, category));
     }
   }, [name, category]);
+
+  const fetchStockHistory = async (productId: string) => {
+    try {
+      setLoadingHistory(true);
+      const res = await fetch(`/api/products/history?productId=${productId}`);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setStockHistoryList(data);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar histórico de estoque:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const handleReplenish = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!replenishingProduct) return;
+    
+    const showStatus = (type: 'success' | 'error', message: string) => {
+      setStatus({ type, message });
+      setTimeout(() => setStatus({ type: '', message: '' }), 4000);
+    };
+
+    try {
+      setStatus({ type: 'loading', message: '📡 Transmitindo abastecimento para a nuvem...' });
+      const res = await fetch(`/api/products/${replenishingProduct.id}/replenish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: parseInt(replenishAmount),
+          materialId: replenishMaterialId || replenishingProduct.materialId,
+          notes: replenishNotes || "Reabastecimento manual"
+        })
+      });
+
+      if (res.ok) {
+        showStatus('success', '✅ Estoque abastecido e insumo deduzido com sucesso!');
+        setReplenishingProduct(null);
+        setReplenishAmount("1");
+        setReplenishNotes("");
+        fetchData();
+      } else {
+        const err = await res.json();
+        showStatus('error', `❌ Erro: ${err.error || 'Falha ao reabastecer'}`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      showStatus('error', `❌ Falha na conexão: ${err.message}`);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -793,6 +852,144 @@ export default function CatalogPage() {
             </div>
          </div>
        )}
-    </div>
+ 
+      {/* MODAL REABASTECER */}
+      {replenishingProduct && (
+         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setReplenishingProduct(null)} />
+            <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
+               
+               <div className="flex items-center justify-between mb-8">
+                  <div>
+                     <h2 className="text-lg font-black text-white uppercase tracking-tight">Reabastecer Estoque</h2>
+                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">{replenishingProduct.name}</p>
+                  </div>
+                  <button onClick={() => setReplenishingProduct(null)} className="p-2 text-slate-500 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
+               </div>
+
+               <form onSubmit={handleReplenish} className="space-y-6">
+                  
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Quantidade a Adicionar</label>
+                     <input 
+                       required 
+                       type="number" 
+                       min="1" 
+                       className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xl font-black text-white outline-none focus:border-cyan-500" 
+                       value={replenishAmount} 
+                       onChange={e => setReplenishAmount(e.target.value)} 
+                     />
+                  </div>
+
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Insumo Utilizado (Filamento)</label>
+                     <div className="relative">
+                        <select 
+                          className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-cyan-500 appearance-none cursor-pointer"
+                          value={replenishMaterialId}
+                          onChange={e => setReplenishMaterialId(e.target.value)}
+                        >
+                           {materials.map(mat => (
+                              <option key={mat.id} value={mat.id}>{mat.name} ({mat.color || 'Sem cor'}) - {mat.remainingAmount.toFixed(2)}{mat.unitType} restando</option>
+                           ))}
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
+                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Observações (Opcional)</label>
+                     <textarea 
+                       className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-sm font-bold text-white outline-none focus:border-cyan-500 h-24 resize-none"
+                       placeholder="Motivo do reabastecimento ou detalhes da produção..."
+                       value={replenishNotes}
+                       onChange={e => setReplenishNotes(e.target.value)}
+                     />
+                  </div>
+
+                  <button type="submit" className="w-full bg-cyan-500 text-black h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-xl shadow-cyan-500/10 mt-4">
+                     Confirmar Reabastecimento
+                  </button>
+               </form>
+            </div>
+         </div>
+      )}
+
+      {/* MODAL HISTÓRICO DE ESTOQUE */}
+      {historyProduct && (
+         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setHistoryProduct(null)} />
+            <div className="relative bg-[#1a1d24] border border-white/10 rounded-[3rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 flex flex-col max-h-[85vh]">
+               
+               <div className="flex items-center justify-between mb-8">
+                  <div>
+                     <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                        <Activity className="h-5 w-5 text-cyan-400" /> Histórico de Estoque
+                     </h2>
+                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">{historyProduct.name}</p>
+                  </div>
+                  <button onClick={() => setHistoryProduct(null)} className="p-2 text-slate-500 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
+               </div>
+
+               <div className="overflow-y-auto flex-1 pr-2 space-y-4 divide-y divide-white/5">
+                  {loadingHistory ? (
+                     <div className="py-12 text-center text-xs text-slate-500 font-mono animate-pulse">CARREGANDO HISTÓRICO...</div>
+                  ) : stockHistoryList.length === 0 ? (
+                     <div className="py-12 text-center text-xs text-slate-600 font-mono">NENHUM HISTÓRICO REGISTRADO AINDA.</div>
+                  ) : (
+                     stockHistoryList.map(item => (
+                        <div key={item.id} className="pt-4 first:pt-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                           <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-3">
+                                 <span className={cn(
+                                   "inline-flex items-center px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border",
+                                   item.actionType === 'REPLENISH' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                   item.actionType === 'SALE' ? "bg-red-500/10 text-red-400 border-red-500/20" :
+                                   "bg-slate-500/10 text-slate-400 border-slate-500/20"
+                                 )}>
+                                    {item.actionType === 'REPLENISH' ? 'Abastecimento' : 
+                                     item.actionType === 'SALE' ? 'Venda' : 'Ajuste'}
+                                 </span>
+                                 <span className="text-[10px] font-mono text-slate-500">
+                                    {new Date(item.createdAt).toLocaleString()}
+                                 </span>
+                              </div>
+                              <p className="text-xs text-slate-300 font-bold mt-1">{item.notes || 'Sem observações'}</p>
+                              {item.materialName && (
+                                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">
+                                    Insumo: {item.materialName}
+                                 </span>
+                              )}
+                           </div>
+
+                           <div className="flex items-center gap-6 text-right">
+                              <div>
+                                 <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">ESTOQUE ANTES</p>
+                                 <p className="text-xs font-mono font-bold text-slate-400">{item.previousQty} un</p>
+                              </div>
+                              <div>
+                                 <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">DIFERENÇA</p>
+                                 <p className={cn(
+                                   "text-xs font-mono font-black",
+                                   item.difference > 0 ? "text-emerald-400" : "text-red-400"
+                                 )}>
+                                    {item.difference > 0 ? `+${item.difference}` : item.difference} un
+                                 </p>
+                              </div>
+                              <div>
+                                 <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">ESTOQUE ATUAL</p>
+                                 <p className="text-sm font-mono font-black text-white">{item.newQty} un</p>
+                              </div>
+                           </div>
+                        </div>
+                     ))
+                  )}
+               </div>
+
+            </div>
+         </div>
+      )}
+
+   </div>
   );
 }
