@@ -310,11 +310,11 @@ export default function OrdersPage() {
 
   const handleOpenEdit = (order: Order) => {
     setSelectedOrder(order);
-    setEditCustomerName(order.customerName);
-    setEditChannel(order.channel);
-    setEditStatus(order.status);
+    setEditCustomerName(order.customerName || "");
+    setEditChannel(order.channel || "Venda Direta");
+    setEditStatus(order.status || "PENDING");
     setEditPaymentStatus(order.paymentStatus || 'UNPAID');
-    setEditTotalAmount(order.totalAmount.toString());
+    setEditTotalAmount((order.totalAmount || 0).toString());
     setIsEditOpen(true);
   };
 
