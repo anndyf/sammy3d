@@ -502,6 +502,12 @@ export default function CatalogPage() {
                             </div>
 
                             <div className="col-span-1 flex items-center justify-end gap-2">
+                               <button onClick={() => { setReplenishingProduct(prod); setReplenishMaterialId(prod.materialId); }} className="p-1.5 text-amber-500 hover:bg-amber-500/10 rounded-md transition-colors animate-pulse" title="Reabastecer Estoque">
+                                  <Package className="h-4 w-4" />
+                               </button>
+                               <button onClick={() => { setHistoryProduct(prod); fetchStockHistory(prod.id); }} className="p-1.5 text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors" title="Histórico de Estoque">
+                                  <Activity className="h-4 w-4" />
+                               </button>
                                <button onClick={() => setViewingProduct(prod)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-md transition-colors" title="Ver Detalhes">
                                   <Info className="h-4 w-4" />
                                </button>
