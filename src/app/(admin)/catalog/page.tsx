@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Tag, Box, DollarSign, Clock, Settings2, Trash2, Edit3, Eye, Image as ImageIcon, ChevronDown, ChevronUp, AlertCircle, ShoppingCart, ArrowRight, Share2, MoreHorizontal, LayoutGrid, List, X, ExternalLink, Globe, Monitor, Smartphone, MessageCircle, Calculator, Sparkles, Package, Info, Activity, UploadCloud, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Material { id: string; name: string; color?: string; costPerUnit: number; totalAmount: number; unitType: string; }
+interface Material { id: string; name: string; color?: string; costPerUnit: number; totalAmount: number; remainingAmount: number; unitType: string; }
 interface ProductComposition { componentId: string; quantity: number; component?: Product; }
 interface Product { id: string; name: string; description?: string; imageUrl?: string; productionTime: number; weightGrams: number; additionalCost: number; materialId: string; category: string; subcategory?: string; sku?: string; shopeeUrl?: string; calculatedCost: number; sellingPrice: number; stockQuantity: number; material: Material; parentId?: string | null; variations?: Product[]; components?: ProductComposition[]; }
 
@@ -532,8 +532,66 @@ export default function CatalogPage() {
                             <input type="number" step="0.01" className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" required value={sellingPrice} onChange={e=>setSellingPrice(e.target.value)} />
                          </div>
                          <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Estoque Inicial</label>
+                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Estoque Inicial (Produzido)</label>
                             <input type="number" className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" value={stockQuantity} onChange={e=>setStockQuantity(e.target.value)} />
+                         </div>
+                      </div>
+
+                      {/* PRODUÇÃO 3D: FILAMENTO E PESO */}
+                      <div className="space-y-4 pt-4 border-t border-white/5">
+                         <h4 className="text-[11px] font-black text-cyan-400 uppercase tracking-widest ml-1">Especificações da Impressão (Ficha Técnica)</h4>
+                         <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                               <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Filamento Utilizado</label>
+                               <select 
+                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 transition-all"
+                                 required
+                                 value={materialId}
+                                 onChange={e=>setMaterialId(e.target.value)}
+                               >
+                                  <option value="">Selecione um Insumo...</option>
+                                  {materials.map(m => (
+                                    <option key={m.id} value={m.id}>
+                                      {m.name} {m.color ? `(${m.color})` : ''} - {m.remainingAmount.toFixed(0)}{m.unitType} restando
+                                    </option>
+                                  ))}
+                               </select>
+                            </div>
+                            <div className="space-y-2">
+                               <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Peso da Peça (g)</label>
+                               <input 
+                                 type="number" 
+                                 step="0.1" 
+                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" 
+                                 required 
+                                 placeholder="Ex: 150" 
+                                 value={weightGrams} 
+                                 onChange={e=>setWeightGrams(e.target.value)} 
+                               />
+                            </div>
+                         </div>
+
+                         <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                               <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Tempo de Impressão (Horas)</label>
+                               <input 
+                                 type="number" 
+                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" 
+                                 placeholder="Horas" 
+                                 value={hours} 
+                                 onChange={e=>setHours(e.target.value)} 
+                               />
+                            </div>
+                            <div className="space-y-2">
+                               <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Tempo de Impressão (Minutos)</label>
+                               <input 
+                                 type="number" 
+                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" 
+                                 placeholder="Minutos" 
+                                 value={minutes} 
+                                 onChange={e=>setMinutes(e.target.value)} 
+                               />
+                            </div>
                          </div>
                       </div>
 
