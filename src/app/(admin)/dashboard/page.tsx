@@ -204,19 +204,6 @@ export default function Dashboard() {
             maio de 2026
             <Calendar className="h-4 w-4 ml-2 text-slate-500" />
           </button>
-          
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all text-sm font-bold text-red-400">
-            <AlertTriangle className="h-4 w-4" />
-            Registrar Falha
-          </button>
-          
-          <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest leading-none">VENCE EM 6 DIAS</span>
-              <span className="text-[12px] font-bold text-amber-400 leading-none mt-1">21/05/2026</span>
-            </div>
-          </div>
         </div>
       </div>
 
