@@ -125,8 +125,51 @@ export default function OrdersPage() {
   };
 
   const handleCreateOrder = async () => {
-    // Logic to save order
-    setIsAdding(false);
+    if (cart.length === 0) {
+      alert("Por favor, adicione pelo menos um produto ao carrinho antes de criar o pedido.");
+      return;
+    }
+
+    let saleChannel: 'DIRECT' | 'SHOPEE' | 'ML' = 'DIRECT';
+    if (channel === "Shoppe") saleChannel = 'SHOPEE';
+    if (channel === "Mercado Livre") saleChannel = 'ML';
+
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: customerName || "Anônimo",
+          status: "PENDING",
+          type: "CATALOG",
+          totalAmount: subtotal,
+          paymentStatus: 'PAID', // Venda de marketplace/direta gerada pela tela de Novo Pedido já entra como Paga/Receptada
+          discountAmount: 0,
+          saleChannel,
+          items: cart.map(item => ({
+            productId: item.productId,
+            customName: item.customName,
+            quantity: item.quantity,
+            price: item.price
+          }))
+        })
+      });
+
+      if (response.ok) {
+        setCart([]);
+        setCustomerName("Eu");
+        setChannel("Shoppe");
+        setOrderNumber("");
+        setIsAdding(false);
+        fetchData();
+      } else {
+        const errData = await response.json();
+        alert("Erro ao criar pedido: " + (errData.error || response.statusText));
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erro de conexão ao criar pedido.");
+    }
   };
 
   if (isAdding) {
