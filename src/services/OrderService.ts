@@ -153,9 +153,27 @@ export class OrderService {
       const isPaidNow = paymentStatus === 'PAID' || (finalStatus === 'FINISHED' || finalStatus === 'READY' || finalStatus === 'SHIPPED');
       if (isPaidNow) {
         const configs = await ConfigService.list();
-        const netAmount = netRevenue !== undefined && netRevenue !== null
-          ? Number(netRevenue)
-          : calcNetMarketplace(Number(totalAmount), saleChannel || '', configs);
+        let netAmount = 0;
+        if (saleChannel === 'SHOPEE' || saleChannel === 'ML') {
+          netAmount = netRevenue !== undefined && netRevenue !== null
+            ? Number(netRevenue)
+            : calcNetMarketplace(Number(totalAmount), saleChannel || '', configs);
+        } else {
+          // Venda Direta: descontar os custos de impressao
+          let productionCost = 0;
+          if (Array.isArray(items)) {
+            for (const item of items) {
+              if (item.productId) {
+                const prod = await tx.product.findUnique({ where: { id: item.productId } });
+                if (prod) {
+                  productionCost += (Number(item.quantity) || 1) * (prod.calculatedCost || 0);
+                }
+              }
+            }
+          }
+          netAmount = Number(totalAmount) - productionCost;
+        }
+
         await tx.transaction.create({
           data: {
             type: 'INCOME',
@@ -202,9 +220,25 @@ export class OrderService {
       if (isPaidNow) {
         const configs = await ConfigService.list();
         const activeChannel = updatedOrder.channel || saleChannel || '';
-        const netAmount = updatedOrder.netRevenue !== null && updatedOrder.netRevenue !== undefined
-          ? updatedOrder.netRevenue
-          : calcNetMarketplace(updatedOrder.totalAmount, activeChannel, configs);
+        let netAmount = 0;
+        
+        if (activeChannel === 'Shoppe' || activeChannel === 'Mercado Livre' || activeChannel === 'SHOPEE' || activeChannel === 'ML') {
+          const apiChan = (activeChannel === 'Shoppe' || activeChannel === 'SHOPEE') ? 'SHOPEE' : 'ML';
+          netAmount = updatedOrder.netRevenue !== null && updatedOrder.netRevenue !== undefined
+            ? updatedOrder.netRevenue
+            : calcNetMarketplace(updatedOrder.totalAmount, apiChan, configs);
+        } else {
+          // Venda Direta: descontar os custos de impressao
+          let productionCost = 0;
+          const dbItems = await tx.orderItem.findMany({
+            where: { orderId: id },
+            include: { product: true }
+          });
+          dbItems.forEach(item => {
+            productionCost += (item.quantity) * (item.product?.calculatedCost || 0);
+          });
+          netAmount = updatedOrder.totalAmount - productionCost;
+        }
         
         // Evitar duplicados: checar se transação já existe
         const existingTx = await tx.transaction.findFirst({
