@@ -665,22 +665,42 @@ export default function OrdersPage() {
                  </div>
 
                  <div className="flex items-center gap-3">
-                    <button className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-sm">
-                       <Eye className="h-5 w-5" />
-                    </button>
-                    <button className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-white transition-all shadow-sm">
-                       <Printer className="h-5 w-5" />
-                    </button>
-                    <button className="flex items-center gap-2 bg-[#10b981] text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#059669] transition-all shadow-[0_5px_15px_rgba(16,185,129,0.2)] active:scale-95">
-                       <Truck className="h-4 w-4" /> Saída
-                    </button>
-                    <button className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all shadow-sm">
-                       <Trash2 className="h-5 w-5" />
-                    </button>
-                    <button className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-700 hover:text-white transition-all shadow-sm">
-                       <Edit3 className="h-5 w-5" />
-                    </button>
-                 </div>
+                     <button 
+                       onClick={() => handleOpenView(order)}
+                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-sm"
+                       title="Visualizar Pedido"
+                     >
+                        <Eye className="h-5 w-5" />
+                     </button>
+                     <button 
+                       onClick={() => handlePrintOrder(order)}
+                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-white transition-all shadow-sm"
+                       title="Imprimir Pedido"
+                     >
+                        <Printer className="h-5 w-5" />
+                     </button>
+                     <button 
+                       onClick={() => handleDispatchOrder(order.id)}
+                       className="flex items-center gap-2 bg-[#10b981] text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#059669] transition-all shadow-[0_5px_15px_rgba(16,185,129,0.2)] active:scale-95"
+                       title="Dar Saída"
+                     >
+                        <Truck className="h-4 w-4" /> Saída
+                     </button>
+                     <button 
+                       onClick={() => handleDeleteOrder(order.id)}
+                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all shadow-sm"
+                       title="Excluir Pedido"
+                     >
+                        <Trash2 className="h-5 w-5" />
+                     </button>
+                     <button 
+                       onClick={() => handleOpenEdit(order)}
+                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-700 hover:text-white transition-all shadow-sm"
+                       title="Editar Pedido"
+                     >
+                        <Edit3 className="h-5 w-5" />
+                     </button>
+                  </div>
               </div>
 
               {/* FOOTER OF ITEM CARD */}
