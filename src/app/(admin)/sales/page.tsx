@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Product { id: string; name: string; sellingPrice: number; imageUrl?: string; sku?: string; }
+interface Product { id: string; name: string; sellingPrice: number; imageUrl?: string; sku?: string; calculatedCost?: number; }
 interface OrderItem { id: string; productId?: string; customName?: string; quantity: number; price: number; product?: Product; }
 interface Order { 
   id: string; 
@@ -56,11 +56,26 @@ export default function OrdersPage() {
   const [customerName, setCustomerName] = useState("Eu");
   const [channel, setChannel] = useState("Shoppe");
   const [orderNumber, setOrderNumber] = useState("123");
-  const [cart, setCart] = useState<{productId?: string; customName?: string; quantity: number; price: number, sku?: string}[]>([
-    { productId: 'p1', customName: 'Kit - Capela Arredondada - 12cm', quantity: 1, price: 49.99, sku: 'MOL-ARR-12' }
-  ]);
+  const [cart, setCart] = useState<{productId?: string; customName?: string; quantity: number; price: number, sku?: string, calculatedCost?: number}[]>([]);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState("1");
+
+  const subtotal = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
+
+  let marketplaceTax = 0;
+  if (channel === "Shoppe") {
+    cart.forEach(item => {
+      marketplaceTax += (item.price * item.quantity) * 0.20 + (4.00 * item.quantity);
+    });
+  } else if (channel === "Mercado Livre") {
+    cart.forEach(item => {
+      const fixedFee = item.price < 79 ? 6.00 * item.quantity : 0;
+      marketplaceTax += (item.price * item.quantity) * 0.12 + fixedFee;
+    });
+  }
+
+  const productionCost = cart.reduce((acc, c) => acc + ((c.calculatedCost || 0) * c.quantity), 0);
+  const netProfit = Math.max(0, subtotal - marketplaceTax - productionCost);
 
   const fetchData = async () => {
     try {
@@ -92,7 +107,14 @@ export default function OrdersPage() {
   const handleAddToCart = () => {
     const p = products.find(prod => prod.id === selectedProduct);
     if (p) {
-      setCart([...cart, { productId: p.id, quantity: Number(selectedQuantity), price: p.sellingPrice, sku: p.sku }]);
+      setCart([...cart, { 
+        productId: p.id, 
+        customName: p.name,
+        quantity: Number(selectedQuantity), 
+        price: p.sellingPrice, 
+        sku: p.sku,
+        calculatedCost: p.calculatedCost || 0
+      }]);
       setSelectedProduct("");
       setSelectedQuantity("1");
     }
@@ -282,15 +304,15 @@ export default function OrdersPage() {
                  <div className="space-y-5 relative z-10">
                     <div className="flex justify-between items-center">
                        <span className="text-[12px] font-bold text-slate-500">Subtotal (Venda)</span>
-                       <span className="text-sm font-black text-white font-mono">R$ {cart.reduce((acc,c)=>acc+(c.price*c.quantity),0).toFixed(2)}</span>
+                       <span className="text-sm font-black text-white font-mono">R$ {subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                        <span className="text-[12px] font-bold text-red-500/80">(-) Taxas Marketplace</span>
-                       <span className="text-sm font-black text-red-500/80 font-mono">- R$ 14.00</span>
+                       <span className="text-sm font-black text-red-500/80 font-mono">- R$ {marketplaceTax.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                        <span className="text-[12px] font-bold text-slate-600">(-) Custo Prod. (Peça)</span>
-                       <span className="text-sm font-black text-slate-600 font-mono">- R$ 0.00</span>
+                       <span className="text-sm font-black text-slate-600 font-mono">- R$ {productionCost.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                        <span className="text-[12px] font-bold text-orange-500/80">(-) Custos Extras</span>
@@ -303,7 +325,7 @@ export default function OrdersPage() {
                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Lucro Estimado</p>
                        <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Lucro Líquido</h3>
                     </div>
-                    <p className="text-3xl font-black text-emerald-400 font-mono drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">R$ 35.99</p>
+                    <p className="text-3xl font-black text-emerald-400 font-mono drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">R$ {netProfit.toFixed(2)}</p>
                  </div>
 
                  <button 
