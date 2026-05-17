@@ -430,6 +430,22 @@ export default function OrdersPage() {
                              />
                           </div>
                        </div>
+
+                        {channel !== "Venda Direta" && (
+                           <div className="space-y-2 col-span-1 md:col-span-2 animate-in slide-in-from-top-2 duration-300">
+                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Receita Líquida do Marketplace (Opcional - R$)</label>
+                              <div className="relative">
+                                 <input 
+                                   type="number" 
+                                   step="0.01"
+                                   className="w-full h-14 bg-[#14161b] border border-cyan-500/20 rounded-2xl px-5 text-sm text-cyan-400 font-mono font-bold outline-none focus:border-cyan-500/50 transition-all shadow-inner" 
+                                   placeholder="Deixe em branco para calcular automaticamente"
+                                   value={netRevenue}
+                                   onChange={e=>setNetRevenue(e.target.value)}
+                                 />
+                              </div>
+                           </div>
+                        )}
                     </div>
                  </div>
               </div>
