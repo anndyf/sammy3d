@@ -125,7 +125,24 @@ export default function OrdersPage() {
   };
 
   const handleCreateOrder = async () => {
-    if (cart.length === 0) {
+    let activeCart = [...cart];
+    
+    // Auto-adicionar se o usuário selecionou o produto mas esqueceu de clicar no "+"
+    if (activeCart.length === 0 && selectedProduct) {
+      const p = products.find(prod => prod.id === selectedProduct);
+      if (p) {
+        activeCart.push({
+          productId: p.id,
+          customName: p.name,
+          quantity: Number(selectedQuantity),
+          price: p.sellingPrice,
+          sku: p.sku,
+          calculatedCost: p.calculatedCost || 0
+        });
+      }
+    }
+
+    if (activeCart.length === 0) {
       alert("Por favor, adicione pelo menos um produto ao carrinho antes de criar o pedido.");
       return;
     }
@@ -133,6 +150,8 @@ export default function OrdersPage() {
     let saleChannel: 'DIRECT' | 'SHOPEE' | 'ML' = 'DIRECT';
     if (channel === "Shoppe") saleChannel = 'SHOPEE';
     if (channel === "Mercado Livre") saleChannel = 'ML';
+
+    const finalSubtotal = activeCart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
 
     try {
       const response = await fetch('/api/orders', {
@@ -142,11 +161,11 @@ export default function OrdersPage() {
           customerName: customerName || "Anônimo",
           status: "PENDING",
           type: "CATALOG",
-          totalAmount: subtotal,
+          totalAmount: finalSubtotal,
           paymentStatus: 'PAID', // Venda de marketplace/direta gerada pela tela de Novo Pedido já entra como Paga/Receptada
           discountAmount: 0,
           saleChannel,
-          items: cart.map(item => ({
+          items: activeCart.map(item => ({
             productId: item.productId,
             customName: item.customName,
             quantity: item.quantity,
