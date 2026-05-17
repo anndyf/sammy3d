@@ -69,6 +69,7 @@ export default function OrdersPage() {
   const [editChannel, setEditChannel] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [editPaymentStatus, setEditPaymentStatus] = useState("");
+  const [editTotalAmount, setEditTotalAmount] = useState("");
 
   const subtotal = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
 
@@ -313,6 +314,7 @@ export default function OrdersPage() {
     setEditChannel(order.channel);
     setEditStatus(order.status);
     setEditPaymentStatus(order.paymentStatus || 'UNPAID');
+    setEditTotalAmount(order.totalAmount.toString());
     setIsEditOpen(true);
   };
 
@@ -327,7 +329,8 @@ export default function OrdersPage() {
           customerName: editCustomerName,
           channel: editChannel,
           status: editStatus,
-          paymentStatus: editPaymentStatus
+          paymentStatus: editPaymentStatus,
+          totalAmount: Number(editTotalAmount)
         })
       });
       if (res.ok) {

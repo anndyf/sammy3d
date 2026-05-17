@@ -172,7 +172,7 @@ export class OrderService {
    * Atualiza status/pagamento do pedido.
    */
   static async update(id: string, body: any) {
-    const { status, paymentStatus, saleChannel, channel, printerId, startDate, productionDays, deadline } = body;
+    const { status, paymentStatus, saleChannel, channel, totalAmount, printerId, startDate, productionDays, deadline } = body;
     const oldOrder = await prisma.order.findUnique({ where: { id } });
     if (!oldOrder) throw new Error('Pedido não encontrado');
 
@@ -183,6 +183,7 @@ export class OrderService {
           ...(status && { status }),
           ...(paymentStatus && { paymentStatus }),
           ...(channel && { channel }),
+          ...(totalAmount !== undefined && { totalAmount: Number(totalAmount) }),
           ...(printerId !== undefined && { printerId: printerId ? String(printerId) : null }),
           ...(startDate !== undefined && { startDate: startDate ? new Date(startDate) : null }),
           ...(productionDays !== undefined && { productionDays: productionDays !== null ? Number(productionDays) : null }),
@@ -194,22 +195,31 @@ export class OrderService {
       const isPaidNow = updatedOrder.paymentStatus === 'PAID' || (updatedOrder.status === 'FINISHED' || updatedOrder.status === 'READY' || updatedOrder.status === 'SHIPPED');
       const wasPaidBefore = oldOrder.paymentStatus === 'PAID' || (oldOrder.status === 'FINISHED' || oldOrder.status === 'READY' || oldOrder.status === 'SHIPPED');
 
-      if (isPaidNow && !wasPaidBefore) {
+      if (isPaidNow) {
         const configs = await ConfigService.list();
-        const netAmount = calcNetMarketplace(updatedOrder.totalAmount, saleChannel || '', configs);
+        const activeChannel = updatedOrder.channel || saleChannel || '';
+        const netAmount = calcNetMarketplace(updatedOrder.totalAmount, activeChannel, configs);
         
         // Evitar duplicados: checar se transação já existe
         const existingTx = await tx.transaction.findFirst({
           where: { description: { contains: `[ID: ${id}]` } }
         });
         
-        if (!existingTx) {
+        if (existingTx) {
+          await tx.transaction.update({
+            where: { id: existingTx.id },
+            data: {
+              amount: Number(netAmount.toFixed(2)),
+              description: `[AUTOMAÇÃO] Venda (${activeChannel || 'DIRETA'}): ${updatedOrder.customerName} [ID: ${id}]`
+            }
+          });
+        } else {
           await tx.transaction.create({
             data: {
               type: 'INCOME',
               category: 'VENDA_DIRETA',
               amount: Number(netAmount.toFixed(2)),
-              description: `[AUTOMAÇÃO] Liquidação: ${updatedOrder.customerName} [ID: ${id}]`,
+              description: `[AUTOMAÇÃO] Venda (${activeChannel || 'DIRETA'}): ${updatedOrder.customerName} [ID: ${id}]`,
               date: new Date()
             }
           });
