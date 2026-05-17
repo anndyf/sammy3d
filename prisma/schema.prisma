@@ -97,6 +97,8 @@ model Order {
   items           OrderItem[]
   printerId       String?
   printer         Printer?    @relation(fields: [printerId], references: [id])
+  startDate       DateTime?
+  productionDays  Int?
 }
 
 model OrderItem {

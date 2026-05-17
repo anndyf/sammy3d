@@ -14,6 +14,8 @@ interface Order {
   createdAt: string;
   type: string;
   printerId?: string;
+  startDate?: string;
+  productionDays?: number;
 }
 
 interface KanbanColumn {
@@ -101,11 +103,27 @@ export default function ProductionKanbanPage() {
       const res = await fetch(`/api/orders/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deadline: deadlineDate.toISOString() })
+        body: JSON.stringify({ 
+          productionDays: days,
+          deadline: deadlineDate.toISOString() 
+        })
       });
       if (res.ok) fetchOrders();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const updatePlanning = async (id: string, fields: { startDate?: string | null, productionDays?: number | null, deadline?: string | null }) => {
+    try {
+      const res = await fetch(`/api/orders/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields)
+      });
+      if (res.ok) fetchOrders();
+    } catch (err) {
+      console.error("Erro ao planejar:", err);
     }
   };
 
@@ -234,74 +252,190 @@ export default function ProductionKanbanPage() {
                                 </div>
                               )}
                            </div>
-                           
-                           <h4 className="text-sm font-black text-white mb-3 leading-tight uppercase group-hover:text-cyan-400 transition-colors">
-                              {item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto Customizado'}
-                           </h4>
-                         
-                           <div className="space-y-2 mb-6 bg-black/20 p-4 rounded-2xl border border-white/5">
-                              {item.notes?.split('\n').filter(l => l.includes('⚙️') || l.includes('⚖️') || l.includes('⏳')).map((line, idx) => (
-                                <div key={idx} className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                   {line}
-                                </div>
-                              ))}
-                              
-                              {/* SELETOR DE IMPRESSORA NO CARD */}
-                              <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
-                                 <Printer className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-                                 <select
-                                   value={item.printerId || ""}
-                                   onChange={(e) => assignPrinter(item.id, e.target.value)}
-                                   className="bg-transparent text-[10px] font-black uppercase text-slate-300 outline-none border-none cursor-pointer w-full"
-                                 >
-                                   <option value="" className="bg-[#14161b] text-slate-500">Sem Impressora</option>
-                                   {printers.map(p => (
-                                     <option key={p.id} value={p.id} className="bg-[#14161b] text-white">
-                                       {p.name} ({p.model})
-                                     </option>
-                                   ))}
-                                 </select>
+
+                           <h4 className="text-sm font-black text-white mb-2 leading-tight uppercase group-hover:text-cyan-400 transition-colors">
+                               {item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto Customizado'}
+                            </h4>
+
+                            {item.startDate && (
+                              <div className="flex items-center gap-1.5 text-[9px] font-black text-cyan-400 uppercase tracking-wider bg-cyan-400/5 border border-cyan-400/10 px-2.5 py-1 rounded-xl mb-3 w-fit">
+                                 <Calendar className="h-3 w-3 shrink-0" />
+                                 Agendado: {new Date(item.startDate).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                               </div>
-                           </div>
-
-                           <div className="flex items-center gap-3 mb-6">
-                              <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-black text-[10px] border border-indigo-500/20">{item.customerName.substring(0,2).toUpperCase()}</div>
-                              <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">{item.customerName}</span>
-                           </div>
-
-                           <div className="pt-6 border-t border-white/5 space-y-4">
-                              <div className="flex flex-wrap gap-2">
-                                 {[2, 3, 5, 7].map(days => (
-                                   <button 
-                                     key={days}
-                                     onClick={() => updateDeadline(item.id, days, item.createdAt)}
-                                     className="text-[9px] font-black px-2 py-1.5 rounded-lg bg-white/5 text-slate-500 border border-white/5 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/20 transition-all"
-                                   >
-                                     +{days} DIAS
-                                   </button>
-                                 ))}
-                              </div>
-
-                              <div className="flex items-center justify-between">
-                                 <div className="flex items-center gap-2">
-                                    <Calendar className="h-3.5 w-3.5 text-slate-600" />
-                                    <span className={cn(
-                                      "text-[10px] font-black uppercase",
-                                      dlStatus?.type === 'danger' ? "text-red-400" : "text-slate-500"
-                                    )}>
-                                       {item.deadline ? new Date(item.deadline).toLocaleDateString('pt-BR') : 'Definir Prazo'}
-                                    </span>
+                            )}
+                          
+                            <div className="space-y-2 mb-4 bg-black/20 p-4 rounded-2xl border border-white/5">
+                               {item.notes?.split('\n').filter(l => l.includes('⚙️') || l.includes('⚖️') || l.includes('⏳')).map((line, idx) => (
+                                 <div key={idx} className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                    {line}
                                  </div>
-                                 
-                                 <button 
-                                   onClick={() => updateStatus(item.id, getNextStatus(col.id)!)}
-                                   className="h-10 px-4 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-black transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
-                                 >
-                                    Próximo <ArrowRight className="h-3.5 w-3.5" />
-                                 </button>
-                              </div>
-                           </div>
-                        </div>
+                               ))}
+                               
+                               {/* SELETOR DE IMPRESSORA NO CARD */}
+                               <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
+                                  <Printer className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                                  <select
+                                    value={item.printerId || ""}
+                                    onChange={(e) => assignPrinter(item.id, e.target.value)}
+                                    className="bg-transparent text-[10px] font-black uppercase text-slate-300 outline-none border-none cursor-pointer w-full"
+                                  >
+                                    <option value="" className="bg-[#14161b] text-slate-500">Sem Impressora</option>
+                                    {printers.map(p => (
+                                      <option key={p.id} value={p.id} className="bg-[#14161b] text-white">
+                                        {p.name} ({p.model})
+                                      </option>
+                                    ))}
+                                  </select>
+                               </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 mb-4">
+                               <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-black text-[10px] border border-indigo-500/20">{item.customerName.substring(0,2).toUpperCase()}</div>
+                               <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">{item.customerName}</span>
+                            </div>
+
+                            {/* PLANILHA DE AGENDAMENTO E PRODUÇÃO */}
+                            <div className="pt-4 border-t border-white/5 space-y-3">
+                               <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                                 Planejamento e Agenda
+                               </div>
+
+                               <div className="grid grid-cols-2 gap-3">
+                                  {/* Programar Início (startDate) */}
+                                  <div className="space-y-1">
+                                     <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block">Agendar Início</label>
+                                     <input 
+                                       type="datetime-local" 
+                                       value={item.startDate ? new Date(new Date(item.startDate).getTime() - new Date().getTimezoneOffset()*60000).toISOString().slice(0, 16) : ""}
+                                       onChange={(e) => {
+                                         const val = e.target.value;
+                                         if (!val) {
+                                           updatePlanning(item.id, { startDate: null });
+                                         } else {
+                                           const selectedDate = new Date(val);
+                                           const days = item.productionDays || 0;
+                                           const newDeadline = new Date(selectedDate);
+                                           newDeadline.setDate(newDeadline.getDate() + days);
+                                           updatePlanning(item.id, { 
+                                             startDate: selectedDate.toISOString(),
+                                             ...(days > 0 && { deadline: newDeadline.toISOString() })
+                                           });
+                                         }
+                                       }}
+                                       className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-cyan-400 outline-none focus:border-cyan-500 cursor-pointer"
+                                     />
+                                  </div>
+
+                                  {/* Dias de Produção */}
+                                  <div className="space-y-1">
+                                     <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block">Dias Produção</label>
+                                     <div className="flex items-center gap-1">
+                                        <button 
+                                          type="button"
+                                          onClick={() => {
+                                            const currentDays = item.productionDays || 0;
+                                            if (currentDays > 1) {
+                                              const newDays = currentDays - 1;
+                                              const baseDate = item.startDate ? new Date(item.startDate) : new Date(item.createdAt);
+                                              const newDeadline = new Date(baseDate);
+                                              newDeadline.setDate(newDeadline.getDate() + newDays);
+                                              updatePlanning(item.id, { 
+                                                productionDays: newDays,
+                                                deadline: newDeadline.toISOString()
+                                              });
+                                            }
+                                          }}
+                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
+                                        >
+                                          -
+                                        </button>
+                                        <input 
+                                          type="number" 
+                                          min="1"
+                                          value={item.productionDays || ""}
+                                          placeholder="Dias"
+                                          onChange={(e) => {
+                                            const val = parseInt(e.target.value, 10);
+                                            if (!isNaN(val) && val >= 1) {
+                                              const baseDate = item.startDate ? new Date(item.startDate) : new Date(item.createdAt);
+                                              const newDeadline = new Date(baseDate);
+                                              newDeadline.setDate(newDeadline.getDate() + val);
+                                              updatePlanning(item.id, { 
+                                                productionDays: val,
+                                                deadline: newDeadline.toISOString()
+                                              });
+                                            } else if (e.target.value === "") {
+                                              updatePlanning(item.id, { productionDays: null });
+                                            }
+                                          }}
+                                          className="w-10 bg-black/40 border border-white/5 rounded-lg py-1 text-center font-mono text-[9px] text-white outline-none focus:border-cyan-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        />
+                                        <button 
+                                          type="button"
+                                          onClick={() => {
+                                            const currentDays = item.productionDays || 0;
+                                            const newDays = currentDays + 1;
+                                            const baseDate = item.startDate ? new Date(item.startDate) : new Date(item.createdAt);
+                                            const newDeadline = new Date(baseDate);
+                                            newDeadline.setDate(newDeadline.getDate() + newDays);
+                                            updatePlanning(item.id, { 
+                                              productionDays: newDays,
+                                              deadline: newDeadline.toISOString()
+                                            });
+                                          }}
+                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
+                                        >
+                                          +
+                                        </button>
+                                     </div>
+                                  </div>
+                               </div>
+
+                               {/* Prazo Final (Deadline) */}
+                               <div className="space-y-1">
+                                  <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block">Prazo Final</label>
+                                  <input 
+                                    type="date"
+                                    value={item.deadline ? item.deadline.substring(0, 10) : ""}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      if (!val) {
+                                        updatePlanning(item.id, { deadline: null });
+                                      } else {
+                                        const newDeadline = new Date(val + "T12:00:00");
+                                        let daysField = {};
+                                        if (item.startDate) {
+                                          const diffTime = newDeadline.getTime() - new Date(item.startDate).getTime();
+                                          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                          if (diffDays > 0) {
+                                            daysField = { productionDays: diffDays };
+                                          }
+                                        }
+                                        updatePlanning(item.id, { 
+                                          deadline: newDeadline.toISOString(),
+                                          ...daysField
+                                        });
+                                      }
+                                    }}
+                                    className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-slate-300 outline-none focus:border-cyan-500 cursor-pointer"
+                                  />
+                               </div>
+
+                               <div className="flex items-center justify-between pt-2">
+                                  <div className="flex items-center gap-1 text-[8px] font-black text-slate-500 uppercase">
+                                     <Clock className="h-3 w-3 text-slate-600" />
+                                     <span>Criado: {new Date(item.createdAt).toLocaleDateString('pt-BR')}</span>
+                                  </div>
+                                  
+                                  <button 
+                                    onClick={() => updateStatus(item.id, getNextStatus(col.id)!)}
+                                    className="h-9 px-3 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-black transition-all flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest"
+                                  >
+                                     Próximo <ArrowRight className="h-3 w-3" />
+                                  </button>
+                               </div>
+                            </div>
+                         </div>
                       );
                     })}
                  </div>
