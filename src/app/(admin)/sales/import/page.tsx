@@ -596,7 +596,12 @@ export default function ShopeeImporterPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             customerName: order.buyer,
-            status: "FINISHED",
+            status: (order.status.toLowerCase().includes('concluído') || 
+                     order.status.toLowerCase().includes('concluido') || 
+                     order.status.toLowerCase().includes('completed') || 
+                     order.status.toLowerCase().includes('finished')) 
+                      ? 'FINISHED' 
+                      : 'PENDING',
             type: "CATALOG",
             totalAmount: order.totalAmount,
             paymentStatus: 'PAID',

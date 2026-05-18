@@ -170,7 +170,10 @@ export class OrderService {
       }
 
       // 3. Financeiro
-      const isPaidNow = paymentStatus === 'PAID' || (finalStatus === 'FINISHED' || finalStatus === 'READY' || finalStatus === 'SHIPPED');
+      let isPaidNow = paymentStatus === 'PAID' || (finalStatus === 'FINISHED' || finalStatus === 'READY' || finalStatus === 'SHIPPED');
+      if (saleChannel === 'SHOPEE' || saleChannel === 'ML') {
+        isPaidNow = finalStatus === 'FINISHED';
+      }
       if (isPaidNow) {
         const configs = await ConfigService.list();
         let netAmount = 0;
@@ -234,8 +237,18 @@ export class OrderService {
       });
 
       // Lógica de transição financeira automática robusta
-      const isPaidNow = updatedOrder.paymentStatus === 'PAID' || (updatedOrder.status === 'FINISHED' || updatedOrder.status === 'READY' || updatedOrder.status === 'SHIPPED');
-      const wasPaidBefore = oldOrder.paymentStatus === 'PAID' || (oldOrder.status === 'FINISHED' || oldOrder.status === 'READY' || oldOrder.status === 'SHIPPED');
+      const activeChannel = updatedOrder.channel || saleChannel || oldOrder.channel || '';
+      const isMarketplace = activeChannel === 'Shoppe' || activeChannel === 'Mercado Livre' || activeChannel === 'SHOPEE' || activeChannel === 'ML';
+
+      let isPaidNow = updatedOrder.paymentStatus === 'PAID' || (updatedOrder.status === 'FINISHED' || updatedOrder.status === 'READY' || updatedOrder.status === 'SHIPPED');
+      if (isMarketplace) {
+        isPaidNow = updatedOrder.status === 'FINISHED';
+      }
+
+      let wasPaidBefore = oldOrder.paymentStatus === 'PAID' || (oldOrder.status === 'FINISHED' || oldOrder.status === 'READY' || oldOrder.status === 'SHIPPED');
+      if (isMarketplace) {
+        wasPaidBefore = oldOrder.status === 'FINISHED';
+      }
 
       if (isPaidNow) {
         const configs = await ConfigService.list();
