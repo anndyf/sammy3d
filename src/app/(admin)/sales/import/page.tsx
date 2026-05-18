@@ -596,12 +596,19 @@ export default function ShopeeImporterPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             customerName: order.buyer,
-            status: (order.status.toLowerCase().includes('concluído') || 
-                     order.status.toLowerCase().includes('concluido') || 
-                     order.status.toLowerCase().includes('completed') || 
-                     order.status.toLowerCase().includes('finished')) 
-                      ? 'FINISHED' 
-                      : 'PENDING',
+            status: (() => {
+              const s = order.status.toLowerCase();
+              if (s.includes('concluído') || s.includes('concluido') || s.includes('completed') || s.includes('finished')) {
+                return 'FINISHED';
+              }
+              if (s.includes('enviado') || s.includes('enviada') || s.includes('shipped') || s.includes('postado')) {
+                return 'SHIPPED';
+              }
+              if (s.includes('entregue') || s.includes('delivered') || s.includes('recebido')) {
+                return 'READY';
+              }
+              return 'PENDING';
+            })(),
             type: "CATALOG",
             totalAmount: order.totalAmount,
             paymentStatus: 'PAID',
