@@ -129,7 +129,20 @@ export default function ShopeeImporterPage() {
         price = parseFloat(cleanPrice) || 0;
       }
       
-      const buyer = getKeyValue(item, ['comprador', 'buyer', 'nome do usuário', 'usuário', 'nome do comprador']);
+      // Procura primeiro pelo nome completo do comprador (evitando o ID/nome de usuário)
+      const buyerKey = keys.find(k => {
+        const lowerKey = k.toLowerCase();
+        return (lowerKey.includes('nome do comprador') || lowerKey.includes('destinatário') || lowerKey.includes('destinatario') || lowerKey.includes('recipient name') || lowerKey.includes('nome completo')) &&
+               !lowerKey.includes('usuário') && !lowerKey.includes('usuario') && !lowerKey.includes('username');
+      }) || keys.find(k => {
+        const lowerKey = k.toLowerCase();
+        return lowerKey.includes('comprador') && !lowerKey.includes('usuário') && !lowerKey.includes('usuario') && !lowerKey.includes('username');
+      }) || keys.find(k => {
+        const lowerKey = k.toLowerCase();
+        return lowerKey.includes('buyer') && !lowerKey.includes('username') && !lowerKey.includes('id');
+      });
+      
+      const buyer = buyerKey ? item[buyerKey] : getKeyValue(item, ['nome do usuário', 'usuário', 'buyer']);
       const sku = getKeyValue(item, ['sku', 'referência', 'sku do produto', 'código de referência']);
       const status = getKeyValue(item, ['status', 'status do pedido']);
       
@@ -192,7 +205,27 @@ export default function ShopeeImporterPage() {
     const productNameIdx = headers.findIndex(h => h.includes('produto') || h.includes('product name') || h.includes('nome do produto') || h.includes('nome do item'));
     const qtyIdx = headers.findIndex(h => h.includes('quantidade') || h.includes('qtd') || h.includes('quantity') || h.includes('qte'));
     const priceIdx = headers.findIndex(h => h.includes('preço') || h.includes('price') || h.includes('unit price') || h.includes('preço acordado') || h.includes('preço unitário'));
-    const buyerIdx = headers.findIndex(h => h.includes('comprador') || h.includes('buyer') || h.includes('nome do usuário') || h.includes('usuário') || h.includes('nome do comprador'));
+    // Procura primeiro pelo nome completo do comprador (evitando o ID/nome de usuário)
+    let buyerIdx = headers.findIndex(h => {
+      const lower = h.toLowerCase();
+      return (lower.includes('nome do comprador') || lower.includes('destinatário') || lower.includes('destinatario') || lower.includes('recipient name') || lower.includes('nome completo')) &&
+             !lower.includes('usuário') && !lower.includes('usuario') && !lower.includes('username');
+    });
+    if (buyerIdx === -1) {
+      buyerIdx = headers.findIndex(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('comprador') && !lower.includes('usuário') && !lower.includes('usuario') && !lower.includes('username');
+      });
+    }
+    if (buyerIdx === -1) {
+      buyerIdx = headers.findIndex(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('buyer') && !lower.includes('username') && !lower.includes('id');
+      });
+    }
+    if (buyerIdx === -1) {
+      buyerIdx = headers.findIndex(h => h.includes('usuário') || h.includes('usuario') || h.includes('username') || h.includes('buyer'));
+    }
     const skuIdx = headers.findIndex(h => h.includes('sku') || h.includes('referência') || h.includes('sku do produto') || h.includes('código de referência'));
     const statusIdx = headers.findIndex(h => h.includes('status') || h.includes('status do pedido'));
     const netRevenueIdx = headers.findIndex(h => h.includes('receita estimada') || h.includes('valor a receber') || h.includes('net') || h.includes('receita líquida') || h.includes('payout') || h.includes('total estimado'));
