@@ -1,7 +1,28 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react";
-import { Wallet, Calendar, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Filter, Printer, Search, Plus, Trash2, MoreVertical, X, AlertCircle, Sparkles } from "lucide-react";
+import { 
+  Wallet, 
+  Calendar, 
+  ChevronLeft, 
+  ChevronRight, 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  Filter, 
+  Printer, 
+  Search, 
+  Plus, 
+  Trash2, 
+  MoreVertical, 
+  X, 
+  AlertCircle, 
+  Sparkles,
+  Lock,
+  Unlock,
+  Loader2,
+  Clock,
+  ExternalLink
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Transaction {
@@ -16,7 +37,7 @@ interface Transaction {
 
 export default function FinancePage() {
   const [loading, setLoading] = useState(true);
-  const [activeChannelTab, setActiveChannelTab] = useState<'geral' | 'shopee' | 'ml' | 'direta'>('geral');
+  const [activeChannelTab, setActiveChannelTab] = useState<'geral' | 'shopee' | 'ml' | 'direta' | 'liberar'>('geral');
   const [orders, setOrders] = useState<any[]>([]);
   const [data, setData] = useState<{ transactions: Transaction[], summary: any }>({
     transactions: [],
@@ -30,6 +51,8 @@ export default function FinancePage() {
     type: "EXPENSE" as 'INCOME' | 'EXPENSE',
     category: "Outros"
   });
+
+  const [releasingOrderId, setReleasingOrderId] = useState<string | null>(null);
 
   const fetchFinance = useCallback(async () => {
     try {
@@ -130,13 +153,67 @@ export default function FinancePage() {
     }
   };
 
-  // Filtrar pedidos pagos ou concluidos
+  // Liberação manual e imediata de saldos pendentes diretamente na tela financeira
+  const handleReleaseOrder = async (orderId: string) => {
+    const showStatus = (type: 'success' | 'error', message: string) => {
+      setStatus({ type, message });
+      setTimeout(() => setStatus({ type: '', message: '' }), 4000);
+    };
+
+    try {
+      setReleasingOrderId(orderId);
+      setStatus({ type: 'loading', message: '📡 Atualizando pedido e liberando caixa...' });
+      
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'FINISHED' })
+      });
+
+      if (res.ok) {
+        showStatus('success', '✅ Receita do pedido liberada no caixa com sucesso!');
+        fetchFinance();
+      } else {
+        const result = await res.json();
+        showStatus('error', `❌ Erro ao liberar: ${result.error || 'Falha ao atualizar'}`);
+      }
+    } catch (err: any) {
+      console.error("Release Order Error:", err);
+      showStatus('error', `❌ Falha na conexão: ${err.message}`);
+    } finally {
+      setReleasingOrderId(null);
+    }
+  };
+
+  // Filtrar pedidos pagos ou concluidos para a parte do caixa
   const paidOrders = orders.filter(o => 
     o.paymentStatus === 'PAID' || 
     o.status === 'FINISHED' || 
     o.status === 'READY' || 
     o.status === 'SHIPPED'
   );
+
+  // Filtrar pedidos em andamento da Shopee/Mercado Livre (Valores a Liberar)
+  const pendingReleaseOrders = orders.filter(o => 
+    (o.channel === 'Shoppe' || o.channel === 'Mercado Livre') && 
+    o.status !== 'FINISHED' && 
+    o.status !== 'CANCELED'
+  );
+
+  // Calcula a receita líquida acumulada dos pedidos pendentes a liberar
+  const totalPendingRelease = pendingReleaseOrders.reduce((acc, o) => {
+    if (o.netRevenue !== null && o.netRevenue !== undefined && o.netRevenue > 0) {
+      return acc + o.netRevenue;
+    } else {
+      // Fallback de cálculo estimado caso não exista netRevenue gravado
+      const isShopee = o.channel === 'Shoppe';
+      if (isShopee) {
+        return acc + (o.totalAmount * 0.73); // 27% taxas padrão estimadas
+      } else {
+        return acc + (o.totalAmount * 0.88); // 12% taxas padrão ML
+      }
+    }
+  }, 0);
 
   const getChannelStats = (filteredOrders: any[], channelType: 'shopee' | 'ml' | 'direta') => {
     let grossRevenue = 0;
@@ -205,7 +282,7 @@ export default function FinancePage() {
   });
 
   return (
-    <div className="space-y-6 pb-20 animate-fade-in">
+    <div className="space-y-6 pb-20 animate-fade-in text-white">
       
       {/* STATUS NOTIFICATION BAR */}
       {status.message && (
@@ -214,11 +291,11 @@ export default function FinancePage() {
             "fixed top-4 left-1/2 -translate-x-1/2 z-[1000] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500 border backdrop-blur-md",
             status.type === 'success' ? "bg-emerald-500/90 text-white border-emerald-400" : 
             status.type === 'error' ? "bg-red-500/90 text-white border-red-400" : 
-            "bg-blue-500/90 text-white border-blue-400"
+            "bg-blue-500/95 text-white border-blue-400"
           )}
         >
-           {status.type === 'loading' ? <Sparkles className="h-4 w-4 animate-spin" /> : <AlertCircle className="h-4 w-4" />}
-           <span className="text-[13px] font-bold tracking-tight">{status.message}</span>
+           {status.type === 'loading' ? <Loader2 className="h-4.5 w-4.5 animate-spin text-white" /> : <AlertCircle className="h-4.5 w-4.5" />}
+           <span className="text-[12px] font-black uppercase tracking-wider">{status.message}</span>
         </div>
       )}
 
@@ -229,8 +306,8 @@ export default function FinancePage() {
                <Wallet className="h-6 w-6 text-emerald-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Fluxo de Caixa</h1>
-              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Gestão financeira em tempo real</p>
+              <h1 className="text-2xl font-black tracking-tight text-white uppercase italic">Fluxo de Caixa</h1>
+              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Gestão financeira e controle de repasses em tempo real</p>
             </div>
          </div>
          
@@ -245,7 +322,7 @@ export default function FinancePage() {
       </div>
 
       {/* TABS DE FLUXO E CANAIS */}
-      <div className="flex items-center gap-2 bg-[#1a1d24]/50 p-2 rounded-2xl w-fit border border-white/5 mb-4">
+      <div className="flex flex-wrap items-center gap-2 bg-[#1a1d24]/50 p-2 rounded-2xl w-fit border border-white/5 mb-4">
          <button 
            onClick={() => setActiveChannelTab('geral')}
            className={cn(
@@ -282,16 +359,35 @@ export default function FinancePage() {
          >
             Venda Direta
          </button>
+         
+         {/* TAB DE VALORES A LIBERAR SOLICITADA PELO USUÁRIO */}
+         <button 
+           onClick={() => setActiveChannelTab('liberar')}
+           className={cn(
+             "px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all relative overflow-hidden",
+             activeChannelTab === 'liberar' ? "bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-lg font-black" : "text-slate-500 hover:text-white"
+           )}
+         >
+            <Lock className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+            A Liberar
+            {pendingReleaseOrders.length > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 text-[8px] font-black bg-amber-500 text-black rounded-full animate-bounce">
+                 {pendingReleaseOrders.length}
+              </span>
+            )}
+         </button>
       </div>
 
-      {/* SUMMARY CARDS */}
+      {/* SUMMARY CARDS INCLUINDO CARD DE VALORES A LIBERAR */}
       {activeChannelTab === 'geral' && (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+         
+         {/* CARD 1: SALDO DISPONÍVEL */}
          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
             <div>
-               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">SALDO REALIZADO</h3>
-               <p className={cn("text-4xl font-black font-mono tracking-tighter", data.summary.balance >= 0 ? "text-white" : "text-red-400")}>
+               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">SALDO REALIZADO (CAIXA)</h3>
+               <p className={cn("text-3xl font-black font-mono tracking-tighter", data.summary.balance >= 0 ? "text-white" : "text-red-400")}>
                   R$ {data.summary.balance.toFixed(2)}
                </p>
             </div>
@@ -301,6 +397,7 @@ export default function FinancePage() {
             </p>
          </div>
 
+         {/* CARD 2: RECEITAS REALIZADAS */}
          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute right-8 top-8 p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20 text-cyan-400 group-hover:rotate-12 transition-all">
                <ArrowUpRight className="h-6 w-6" />
@@ -311,8 +408,10 @@ export default function FinancePage() {
                   R$ {data.summary.totalIncome.toFixed(2)}
                </p>
             </div>
+            <p className="text-[10px] text-slate-500 font-bold mt-6 uppercase">Total efetivamente recebido</p>
          </div>
 
+         {/* CARD 3: DESPESAS ACUMULADAS */}
          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute right-8 top-8 p-3 bg-red-500/10 rounded-xl border border-red-500/20 text-red-400 group-hover:rotate-12 transition-all">
                <ArrowDownRight className="h-6 w-6" />
@@ -323,15 +422,38 @@ export default function FinancePage() {
                   R$ {data.summary.totalExpense.toFixed(2)}
                </p>
             </div>
+            <p className="text-[10px] text-slate-500 font-bold mt-6 uppercase">Total gasto no período</p>
          </div>
+
+         {/* CARD 4: VALORES A LIBERAR (ESTOQUE EM TRÂNSITO) */}
+         <div 
+           onClick={() => setActiveChannelTab('liberar')}
+           className="bg-[#1a1d24] border border-amber-500/10 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group cursor-pointer hover:border-amber-500/30 transition-all"
+         >
+            <div className="absolute right-8 top-8 p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-500 group-hover:scale-105 transition-all">
+               <Lock className="h-6 w-6 text-amber-400 animate-pulse" />
+            </div>
+            <div>
+               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                  VALORES A LIBERAR (EM TRÂNSITO)
+               </h3>
+               <p className="text-3xl font-black text-amber-500 font-mono tracking-tighter">
+                  R$ {totalPendingRelease.toFixed(2)}
+               </p>
+            </div>
+            <p className="text-[10px] font-bold text-slate-500 mt-6 flex items-center gap-2 uppercase">
+               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+               {pendingReleaseOrders.length} pedidos pendentes no marketplace
+            </p>
+         </div>
+
       </div>
       )}
 
       {/* CHANNEL BREAKDOWN CARDS */}
-      {activeChannelTab !== 'geral' && (
-         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {activeChannelTab !== 'geral' && activeChannelTab !== 'liberar' && (
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-in fade-in duration-300">
             
-            {/* CARD 1: RECEITA BRUTA */}
             <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div>
                   <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">RECEITA BRUTA</h3>
@@ -344,7 +466,6 @@ export default function FinancePage() {
                <p className="text-[9px] font-bold text-slate-500 mt-4 uppercase">Faturamento total do canal</p>
             </div>
 
-            {/* CARD 2: TAXAS DO MARKETPLACE */}
             <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div>
                   <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">TAXAS DO MARKETPLACE</h3>
@@ -357,7 +478,6 @@ export default function FinancePage() {
                <p className="text-[9px] font-bold text-slate-500 mt-4 uppercase">Comissões e taxas fixas retidas</p>
             </div>
 
-            {/* CARD 3: CUSTO DE PRODUÇÃO */}
             <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div>
                   <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">CUSTO DE PRODUÇÃO</h3>
@@ -370,7 +490,6 @@ export default function FinancePage() {
                <p className="text-[9px] font-bold text-slate-500 mt-4 uppercase">Custo de material + adicionais</p>
             </div>
 
-            {/* CARD 4: LUCRO LÍQUIDO REAL */}
             <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div className={cn(
                  "absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl transition-colors",
@@ -405,80 +524,198 @@ export default function FinancePage() {
          </div>
       )}
 
-      {/* ACTIONS */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-         <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Pesquisar lançamentos..." 
-              className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-4 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all shadow-sm" 
-            />
-         </div>
-         <button 
-           onClick={() => setIsModalOpen(true)}
-           className="bg-cyan-500 text-black px-8 h-14 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-cyan-400 transition-all flex items-center gap-3 shadow-xl shadow-cyan-500/10"
-         >
-           <Plus className="h-4 w-4" /> Novo Lançamento
-         </button>
-      </div>
-
-      {/* TABLE */}
-      <div className="bg-[#1a1d24] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
-         <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#14161b]/30">
-            <div className="col-span-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">DATA</div>
-            <div className="col-span-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">DESCRIÇÃO / CATEGORIA</div>
-            <div className="col-span-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-center">STATUS</div>
-            <div className="col-span-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-right">VALOR</div>
-         </div>
-
-         <div className="divide-y divide-white/5">
-            {loading ? (
-              <div className="py-20 text-center animate-pulse">
-                <p className="text-xs text-slate-500 font-black uppercase tracking-widest">Sincronizando com o banco de dados...</p>
+      {/* RENDER VIEW DA TAB "A LIBERAR" (PEDIDOS EM TRÂNSITO SOLICITADOS) */}
+      {activeChannelTab === 'liberar' ? (
+        <div className="space-y-6 animate-in fade-in duration-300">
+           
+           <div className="bg-[#1a1d24] border border-amber-500/10 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-amber-500/5 blur-[60px] pointer-events-none" />
+              <div className="space-y-1 relative z-10">
+                 <h2 className="text-xl font-black text-white tracking-tight uppercase flex items-center gap-2">
+                    <Lock className="h-5 w-5 text-amber-500" /> Repasses de Marketplace a Liberar
+                 </h2>
+                 <p className="text-xs text-slate-500 font-bold">
+                    Estes pedidos foram importados da planilha mas estão em andamento. Eles **não** constam no seu caixa até que você os finalize.
+                 </p>
               </div>
-            ) : filteredTransactions.length === 0 ? (
-              <div className="py-20 text-center">
-                <p className="text-xs text-slate-600 font-black uppercase tracking-widest">Nenhum lançamento encontrado</p>
-              </div>
-            ) : filteredTransactions.map(t => (
-              <div key={t.id} className="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-white/5 transition-all group">
-                 <div className="col-span-2">
-                    <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
-                      {new Date(t.date).toLocaleDateString()}
-                    </span>
-                 </div>
-                 
-                 <div className="col-span-5 flex flex-col">
-                    <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors uppercase truncate">
-                      {t.description || 'Lançamento Manual'}
-                    </span>
-                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
-                      {t.category}
-                    </span>
-                 </div>
 
-                 <div className="col-span-3 text-center">
-                    <span className={cn(
-                      "inline-flex items-center px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border",
-                      t.type === 'INCOME' ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
-                    )}>
-                       {t.type === 'INCOME' ? 'Receita' : 'Despesa'}
-                    </span>
-                 </div>
-
-                 <div className="col-span-2 text-right flex items-center justify-end gap-4">
-                    <span className={cn("text-md font-black font-mono", t.type === 'INCOME' ? "text-cyan-400" : "text-red-400")}>
-                       {t.type === 'INCOME' ? "+ " : "- "}R$ {Math.abs(t.amount).toFixed(2)}
-                    </span>
-                    <button onClick={() => handleDelete(t.id)} className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-slate-600 hover:text-red-500 rounded-lg transition-all">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                 </div>
+              <div className="text-left md:text-right relative z-10">
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Saldo Bloqueado Total</span>
+                 <span className="text-3xl font-black text-amber-500 font-mono">R$ {totalPendingRelease.toFixed(2)}</span>
               </div>
-            ))}
-         </div>
-      </div>
+           </div>
+
+           <div className="bg-[#1a1d24] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#14161b]/30 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                 <div className="col-span-2">DATA DE IMPORTAÇÃO</div>
+                 <div className="col-span-4">COMPRADOR / CANAL / PEDIDO</div>
+                 <div className="col-span-2 text-center">STATUS DE PRODUÇÃO</div>
+                 <div className="col-span-2 text-right">VALOR LÍQUIDO</div>
+                 <div className="col-span-2 text-center">AÇÃO</div>
+              </div>
+
+              <div className="divide-y divide-white/5">
+                 {pendingReleaseOrders.length === 0 ? (
+                   <div className="py-20 text-center space-y-2">
+                      <Unlock className="h-8 w-8 text-slate-600 mx-auto" />
+                      <p className="text-xs text-slate-500 font-black uppercase tracking-widest">Nenhum repasse pendente a liberar!</p>
+                      <p className="text-[10px] text-slate-600 font-bold">Todas as vendas importadas já foram faturadas e integradas ao caixa.</p>
+                   </div>
+                 ) : (
+                   pendingReleaseOrders.map((order) => {
+                      const isReleasing = releasingOrderId === order.id;
+                      const isShopee = order.channel === 'Shoppe';
+                      const netVal = order.netRevenue !== null && order.netRevenue !== undefined && order.netRevenue > 0
+                        ? order.netRevenue
+                        : isShopee ? (order.totalAmount * 0.73) : (order.totalAmount * 0.88);
+
+                      return (
+                        <div key={order.id} className="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-white/5 transition-all group">
+                           {/* DATA */}
+                           <div className="col-span-2">
+                              <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
+                                 {new Date(order.createdAt).toLocaleDateString()}
+                              </span>
+                           </div>
+
+                           {/* CLIENTE E CANAL */}
+                           <div className="col-span-4 flex flex-col">
+                              <span className="text-sm font-bold text-white group-hover:text-amber-500 transition-colors uppercase">
+                                 {order.customerName}
+                              </span>
+                              <div className="flex items-center gap-2 mt-1.5">
+                                 <span className={cn(
+                                   "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
+                                   isShopee ? "bg-[#FF4500]/10 text-[#FF4500]" : "bg-yellow-400/10 text-yellow-400"
+                                 )}>
+                                    {order.channel}
+                                 </span>
+                                 <span className="text-[9px] font-mono text-slate-600 font-bold">#{order.id}</span>
+                              </div>
+                           </div>
+
+                           {/* STATUS DA PRODUÇÃO */}
+                           <div className="col-span-2 text-center">
+                              <span className={cn(
+                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border",
+                                order.status === 'READY' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                order.status === 'PICKING' ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" :
+                                "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                              )}>
+                                 <Clock className="h-3 w-3" /> {order.status}
+                              </span>
+                           </div>
+
+                           {/* VALOR LÍQUIDO REAL / EST. */}
+                           <div className="col-span-2 text-right">
+                              <p className="text-sm font-black font-mono text-emerald-400">R$ {netVal.toFixed(2)}</p>
+                              <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
+                                 {order.netRevenue !== null && order.netRevenue !== undefined ? 'Valor real' : 'Valor est.'}
+                              </p>
+                           </div>
+
+                           {/* AÇÃO DE LIBERAÇÃO NO CAIXA */}
+                           <div className="col-span-2 text-center">
+                              <button 
+                                onClick={() => handleReleaseOrder(order.id)}
+                                disabled={isReleasing}
+                                className="bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-1.5 mx-auto shadow-md"
+                              >
+                                 {isReleasing ? (
+                                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                 ) : (
+                                   <>
+                                     <Unlock className="h-3 w-3 text-black" /> Liberar
+                                   </>
+                                 )}
+                              </button>
+                           </div>
+                        </div>
+                      );
+                   })
+                 )}
+              </div>
+           </div>
+        </div>
+      ) : (
+        /* CAIXA DE TRANSAÇÕES GERAL OU DE CANAL */
+        <>
+          {/* ACTIONS */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-in fade-in duration-300">
+             <div className="relative flex-1 group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
+                <input 
+                  type="text" 
+                  placeholder="Pesquisar lançamentos..." 
+                  className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-4 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all shadow-sm" 
+                />
+             </div>
+             <button 
+               onClick={() => setIsModalOpen(true)}
+               className="bg-cyan-500 text-black px-8 h-14 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-cyan-400 transition-all flex items-center gap-3 shadow-xl shadow-cyan-500/10"
+             >
+               <Plus className="h-4 w-4" /> Novo Lançamento
+             </button>
+          </div>
+
+          {/* TABLE */}
+          <div className="bg-[#1a1d24] border border-white/5 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in duration-300">
+             <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#14161b]/30">
+                <div className="col-span-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">DATA</div>
+                <div className="col-span-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">DESCRIÇÃO / CATEGORIA</div>
+                <div className="col-span-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-center">STATUS</div>
+                <div className="col-span-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-right">VALOR</div>
+             </div>
+
+             <div className="divide-y divide-white/5">
+                {loading ? (
+                  <div className="py-20 text-center animate-pulse">
+                    <p className="text-xs text-slate-500 font-black uppercase tracking-widest">Sincronizando com o banco de dados...</p>
+                  </div>
+                ) : filteredTransactions.length === 0 ? (
+                  <div className="py-20 text-center">
+                    <p className="text-xs text-slate-600 font-black uppercase tracking-widest">Nenhum lançamento encontrado</p>
+                  </div>
+                ) : filteredTransactions.map(t => (
+                  <div key={t.id} className="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-white/5 transition-all group">
+                     <div className="col-span-2">
+                        <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
+                          {new Date(t.date).toLocaleDateString()}
+                        </span>
+                     </div>
+                     
+                     <div className="col-span-5 flex flex-col">
+                        <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors uppercase truncate">
+                          {t.description || 'Lançamento Manual'}
+                        </span>
+                        <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
+                          {t.category}
+                        </span>
+                     </div>
+
+                     <div className="col-span-3 text-center">
+                        <span className={cn(
+                          "inline-flex items-center px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border",
+                          t.type === 'INCOME' ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
+                        )}>
+                           {t.type === 'INCOME' ? 'Receita' : 'Despesa'}
+                        </span>
+                     </div>
+
+                     <div className="col-span-2 text-right flex items-center justify-end gap-4">
+                        <span className={cn("text-md font-black font-mono", t.type === 'INCOME' ? "text-cyan-400" : "text-red-400")}>
+                           {t.type === 'INCOME' ? "+ " : "- "}R$ {Math.abs(t.amount).toFixed(2)}
+                        </span>
+                        <button onClick={() => handleDelete(t.id)} className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-slate-600 hover:text-red-500 rounded-lg transition-all">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                     </div>
+                  </div>
+                ))}
+             </div>
+          </div>
+        </>
+      )}
 
       {/* MODAL NOVO LANÇAMENTO */}
       {isModalOpen && (
@@ -522,7 +759,7 @@ export default function FinancePage() {
 
                  <button type="submit" className="w-full bg-cyan-500 text-black h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-xl shadow-cyan-500/10 mt-4">
                     Confirmar Lançamento
-                 </button>
+                  </button>
               </form>
            </div>
         </div>
