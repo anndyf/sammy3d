@@ -404,11 +404,11 @@ export default function CatalogPage() {
              <div className="bg-[#1a1d24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
                 <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#1a1d24]">
                    <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">IMAGEM</div>
-                   <div className="col-span-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">NOME / DESCRIÇÃO</div>
+                   <div className="col-span-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">NOME / DESCRIÇÃO</div>
                    <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">ESTOQUE</div>
                    <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">CUSTO UNIT.</div>
                    <div className="col-span-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">PREÇO VENDA</div>
-                   <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">AÇÕES</div>
+                   <div className="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">AÇÕES</div>
                 </div>
 
                 {products.length > 0 || loading ? (
@@ -430,7 +430,7 @@ export default function CatalogPage() {
                                </div>
                             </div>
                             
-                            <div className="col-span-5">
+                            <div className="col-span-4">
                                <p className="text-sm font-bold text-white truncate">{prod.name || 'Sem Nome'}</p>
                             </div>
 
@@ -489,7 +489,7 @@ export default function CatalogPage() {
                                </p>
                             </div>
 
-                            <div className="col-span-2 flex items-center justify-end gap-3 pr-2">
+                            <div className="col-span-3 flex items-center justify-end gap-3 pr-2">
                                <button onClick={() => { setReplenishingProduct(prod); setReplenishMaterialId(prod.materialId); }} className="p-2 text-amber-500 hover:bg-amber-500/10 rounded-md transition-colors" title="Reabastecer Estoque">
                                   <Package className="h-4 w-4" />
                                </button>
