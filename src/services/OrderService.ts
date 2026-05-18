@@ -147,9 +147,11 @@ export class OrderService {
                       where: { id: compProd.id },
                       data: { stockQuantity: compNext }
                     });
-                    await OrderService.logStockChange(tx, compProd.id, "SALE", compPrev, compNext, -compDeduct, null, `Venda de Kit: Pedido [ID: ${order.id}]`);
+                    await OrderService.logStockChange(tx, compProd.id, "SALE", compPrev, compNext, -compDeduct, null, `Venda de Kit (Componente): Pedido [ID: ${order.id}]`);
                   }
                 }
+                // LOG DO KIT PRINCIPAL
+                await OrderService.logStockChange(tx, product.id, "SALE", prev, prev, -qty, null, `Venda do Kit (Peças deduzidas): Pedido [ID: ${order.id}]`);
               } else {
                 // Se não tem nem KIT nem COMPONENTES (ficou negativo)
                 const nextStock = prev - qty;
