@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import * as XLSX from "xlsx";
 
 interface Product { 
   id: string; 
@@ -73,6 +74,62 @@ export default function ShopeeImporterPage() {
     loadProducts();
   }, []);
 
+  // Normalização e mapeamento para dados vindos de planilhas Excel (XLS/XLSX)
+  const mapExcelDataToRows = (jsonData: any[]): any[] => {
+    if (jsonData.length === 0) return [];
+    
+    const sample = jsonData[0];
+    const keys = Object.keys(sample);
+    
+    const getKeyValue = (obj: any, matches: string[]): any => {
+      const key = keys.find(k => matches.some(m => k.toLowerCase().includes(m)));
+      return key ? obj[key] : undefined;
+    };
+    
+    return jsonData.map(item => {
+      const orderId = getKeyValue(item, ['pedido', 'order id', 'id do pedido', 'nº do pedido']);
+      const productName = getKeyValue(item, ['produto', 'product name', 'nome do produto', 'nome do item']);
+      
+      const qtyVal = getKeyValue(item, ['quantidade', 'qtd', 'quantity', 'qte']);
+      const quantity = typeof qtyVal === 'number' ? qtyVal : parseInt(String(qtyVal || '1').replace(/[^\d]/g, ''), 10) || 1;
+      
+      const priceVal = getKeyValue(item, ['preço', 'price', 'unit price', 'preço acordado', 'preço unitário']);
+      let price = 0;
+      if (typeof priceVal === 'number') {
+        price = priceVal;
+      } else {
+        const cleanPrice = String(priceVal || '0').replace(/[^\d.,]/g, '').replace(',', '.');
+        price = parseFloat(cleanPrice) || 0;
+      }
+      
+      const buyer = getKeyValue(item, ['comprador', 'buyer', 'nome do usuário', 'usuário', 'nome do comprador']);
+      const sku = getKeyValue(item, ['sku', 'referência', 'sku do produto', 'código de referência']);
+      const status = getKeyValue(item, ['status', 'status do pedido']);
+      
+      const netVal = getKeyValue(item, ['receita estimada', 'valor a receber', 'net', 'receita líquida', 'payout', 'total estimado']);
+      let netRevenue = null;
+      if (netVal !== undefined) {
+        if (typeof netVal === 'number') {
+          netRevenue = netVal;
+        } else {
+          const cleanNet = String(netVal || '').replace(/[^\d.,]/g, '').replace(',', '.');
+          netRevenue = parseFloat(cleanNet) || null;
+        }
+      }
+      
+      return {
+        orderId: orderId ? String(orderId) : undefined,
+        productName: productName ? String(productName) : undefined,
+        quantity,
+        price,
+        buyer: buyer ? String(buyer) : undefined,
+        sku: sku ? String(sku) : undefined,
+        status: status ? String(status) : undefined,
+        netRevenue
+      };
+    }).filter(r => r.orderId && r.productName); // Apenas linhas válidas com ID e Produto
+  };
+
   // Helper para parsing de CSV robusto
   const parseCSV = (text: string): any[] => {
     const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
@@ -104,7 +161,6 @@ export default function ShopeeImporterPage() {
 
     const headers = splitCSVLine(header).map(h => h.trim().toLowerCase());
     
-    // Mapeamento de colunas Shopee
     const orderIdIdx = headers.findIndex(h => h.includes('pedido') || h.includes('order id') || h.includes('nº do pedido') || h.includes('id do pedido'));
     const productNameIdx = headers.findIndex(h => h.includes('produto') || h.includes('product name') || h.includes('nome do produto') || h.includes('nome do item'));
     const qtyIdx = headers.findIndex(h => h.includes('quantidade') || h.includes('qtd') || h.includes('quantity') || h.includes('qte'));
@@ -166,13 +222,11 @@ export default function ShopeeImporterPage() {
         };
       }
       
-      // Busca pelo SKU ou Nome no Catálogo
       let matchedProduct = products.find(p => p.sku && row.sku && p.sku.toLowerCase() === row.sku.toLowerCase());
       if (!matchedProduct) {
         matchedProduct = products.find(p => p.name.toLowerCase() === row.productName?.toLowerCase());
       }
       if (!matchedProduct && row.productName) {
-        // Tenta buscar se o nome do produto no catálogo está contido no nome do produto da Shopee
         matchedProduct = products.find(p => row.productName.toLowerCase().includes(p.name.toLowerCase()));
       }
       
@@ -193,7 +247,6 @@ export default function ShopeeImporterPage() {
     const finalOrders = Object.values(ordersMap);
     setParsedOrders(finalOrders);
     
-    // Auto-selecionar pedidos que possuem todos os itens mapeados com sucesso
     const autoSelectIds = finalOrders
       .filter(order => order.items.every(item => item.productId !== undefined))
       .map(o => o.orderId);
@@ -202,20 +255,52 @@ export default function ShopeeImporterPage() {
 
   const handleFile = (file: File) => {
     if (!file) return;
+    
+    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.type.includes('spreadsheet') || file.type.includes('excel');
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      const rows = parseCSV(text);
-      if (rows.length === 0) {
-        alert("Nenhum dado válido encontrado no arquivo. Verifique se as colunas estão corretas.");
-        return;
-      }
-      processImportData(rows);
-    };
-    reader.readAsText(file, "UTF-8");
+    
+    if (isExcel) {
+      reader.onload = (e) => {
+        const data = e.target?.result;
+        if (!data) return;
+        
+        try {
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          
+          const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+          if (!jsonData || jsonData.length === 0) {
+            alert("Nenhum dado válido encontrado na planilha Excel.");
+            return;
+          }
+          
+          const rows = mapExcelDataToRows(jsonData);
+          if (rows.length === 0) {
+            alert("Nenhum pedido válido identificado na planilha. Verifique se as colunas estão corretas.");
+            return;
+          }
+          processImportData(rows);
+        } catch (err: any) {
+          console.error("Erro ao ler planilha Excel:", err);
+          alert("Erro ao ler arquivo Excel: " + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        const rows = parseCSV(text);
+        if (rows.length === 0) {
+          alert("Nenhum dado válido encontrado no arquivo CSV. Verifique se as colunas estão corretas.");
+          return;
+        }
+        processImportData(rows);
+      };
+      reader.readAsText(file, "UTF-8");
+    }
   };
 
-  // Drag handlers
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -241,13 +326,11 @@ export default function ShopeeImporterPage() {
     }
   };
 
-  // Mapeamento manual de item pendente
   const handleMapProduct = (orderIndex: number, itemIndex: number, productId: string) => {
     const updated = [...parsedOrders];
     updated[orderIndex].items[itemIndex].productId = productId;
     setParsedOrders(updated);
 
-    // Se o pedido agora estiver 100% mapeado, seleciona ele automaticamente
     const order = updated[orderIndex];
     if (order.items.every(item => item.productId !== undefined)) {
       if (!selectedOrderIds.includes(order.orderId)) {
@@ -272,7 +355,6 @@ export default function ShopeeImporterPage() {
     }
   };
 
-  // Executa importação sequencial dos pedidos
   const handleImportSelected = async () => {
     if (selectedOrderIds.length === 0) return;
     
@@ -308,7 +390,7 @@ export default function ShopeeImporterPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             customerName: order.buyer,
-            status: "FINISHED", // Vendas importadas entram diretamente como FINALIZADAS
+            status: "FINISHED",
             type: "CATALOG",
             totalAmount: order.totalAmount,
             paymentStatus: 'PAID',
@@ -368,9 +450,9 @@ export default function ShopeeImporterPage() {
             <div>
                <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
                   Importador de Vendas Shopee 
-                  <span className="bg-[#FF4500]/10 text-[#FF4500] text-[10px] font-black tracking-widest px-2.5 py-1 rounded border border-[#FF4500]/20 uppercase">Shopee Oficial</span>
+                  <span className="bg-[#FF4500]/10 text-[#FF4500] text-[10px] font-black tracking-widest px-2.5 py-1 rounded border border-[#FF4500]/20 uppercase">Shopee Excel/CSV</span>
                </h1>
-               <p className="text-xs text-slate-500 mt-1 font-bold">Importe planilhas de pedidos exportadas da Shopee e dê baixa no estoque de forma instantânea.</p>
+               <p className="text-xs text-slate-500 mt-1 font-bold">Importe planilhas de pedidos exportadas da Shopee nos formatos Excel (XLS/XLSX) ou CSV.</p>
             </div>
          </div>
          
@@ -404,20 +486,21 @@ export default function ShopeeImporterPage() {
 
              <h2 className="text-2xl font-black text-white tracking-tight uppercase mb-3">Arraste seu Relatório de Vendas</h2>
              <p className="text-slate-400 font-bold text-sm max-w-md mx-auto mb-10 leading-relaxed">
-                Insira o arquivo <code className="text-[#FF4500] font-mono bg-[#14161b] px-1.5 py-0.5 rounded font-black">.csv</code> exportado da Central do Vendedor da Shopee para iniciarmos o mapeamento automático.
+                Insira o arquivo <code className="text-[#FF4500] font-mono bg-[#14161b] px-1.5 py-0.5 rounded font-black">.xls</code>, <code className="text-[#FF4500] font-mono bg-[#14161b] px-1.5 py-0.5 rounded font-black">.xlsx</code> ou <code className="text-[#FF4500] font-mono bg-[#14161b] px-1.5 py-0.5 rounded font-black">.csv</code> exportado da Central do Vendedor da Shopee para iniciarmos o mapeamento automático.
              </p>
 
              <label className="bg-white text-black px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-[#FF4500] hover:text-white hover:scale-105 transition-all inline-flex items-center gap-3 active:scale-95 cursor-pointer">
                 Selecionar Arquivo
                 <input 
                   type="file" 
-                  accept=".csv,text/csv" 
+                  accept=".csv,text/csv,.xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
                   className="hidden" 
                   onChange={handleFileInputChange}
                 />
              </label>
 
              <div className="mt-12 flex items-center justify-center gap-8 text-slate-500 text-[10px] font-black uppercase tracking-widest border-t border-white/5 pt-8">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4.5 w-4.5 text-[#FF4500]" /> Suporta Excel (.xls, .xlsx) e CSV</span>
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4.5 w-4.5 text-[#FF4500]" /> Baixa Automática de Estoque</span>
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4.5 w-4.5 text-[#FF4500]" /> Lançamento de Receita Líquida</span>
              </div>
@@ -524,7 +607,7 @@ export default function ShopeeImporterPage() {
                                        </>
                                      )}
                                   </div>
-                               </div>
+                                </div>
                             </div>
 
                             {/* ITEMS MAPPING */}
@@ -665,7 +748,7 @@ export default function ShopeeImporterPage() {
               </div>
 
               <div className="space-y-6 text-sm text-slate-400 font-medium leading-relaxed">
-                 <p>Siga o passo a passo abaixo para gerar o arquivo CSV correto para importação no SAMMY3D:</p>
+                 <p>Siga o passo a passo abaixo para gerar o arquivo Excel ou CSV correto para importação no SAMMY3D:</p>
                  
                  <ol className="list-decimal list-inside space-y-4 pl-2">
                     <li>Acesse a sua **Central do Vendedor da Shopee** (seller.shopee.com.br).</li>
@@ -673,15 +756,15 @@ export default function ShopeeImporterPage() {
                     <li>Vá até a aba **Concluído** (ou *A Enviar*, se deseja planejar a produção antes do envio).</li>
                     <li>No canto superior direito da listagem de pedidos, clique no botão **`Exportar`**.</li>
                     <li>Aguarde o processamento e clique em **`Baixar`** para salvar a planilha em seu computador.</li>
-                    <li>Importe o arquivo baixado aqui nesta tela!</li>
+                    <li>Importe o arquivo baixado diretamente nesta tela!</li>
                  </ol>
 
-                 <div className="bg-[#14161b] p-5 rounded-2xl border border-amber-500/10 flex items-start gap-4 mt-6">
-                    <AlertTriangle className="h-6 w-6 text-amber-400 shrink-0 mt-0.5" />
+                 <div className="bg-[#14161b] p-5 rounded-2xl border border-emerald-500/10 flex items-start gap-4 mt-6">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
-                       <h4 className="text-xs font-bold text-white uppercase tracking-wide mb-1">Dica de Ouro</h4>
+                       <h4 className="text-xs font-bold text-white uppercase tracking-wide mb-1">Planilhas XLS/XLSX Nativas</h4>
                        <p className="text-[11px] leading-relaxed">
-                          Caso a planilha venha no formato Excel (`.xlsx`), salve-a como **CSV Separado por Vírgulas (ou Ponto e Vírgula)** antes de arrastar para o sistema.
+                          O SAMMY3D agora lê diretamente arquivos gerados pela Shopee em formato Excel nativo. Você não precisa se preocupar em converter nada. Basta arrastar o arquivo!
                        </p>
                     </div>
                  </div>
