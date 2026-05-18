@@ -38,14 +38,17 @@ export class OrderService {
     const { 
       customerName, customerContact, status, type, totalAmount, 
       discountAmount, deadline, notes, weightGrams, materialId, 
-      paymentStatus, items, saleChannel, printerId, netRevenue
+      paymentStatus, items, saleChannel, printerId, netRevenue,
+      bypassStock
     } = body;
 
     const deadlineDate = deadline ? new Date(deadline) : null;
     let finalStatus = status || 'PENDING';
 
     // Fase de leitura e reserva: Checar estoque (Próprio ou Composição)
-    if (Array.isArray(items) && items.length > 0 && items.some(item => item.productId)) {
+    if (bypassStock) {
+      finalStatus = status || 'FINISHED';
+    } else if (Array.isArray(items) && items.length > 0 && items.some(item => item.productId)) {
       let allReady = true;
       for (const item of items) {
         if (!item.productId) continue;
@@ -117,7 +120,7 @@ export class OrderService {
             }
           });
 
-          if (item.productId) {
+          if (item.productId && !bypassStock) {
             const product = await tx.product.findUnique({ 
               where: { id: item.productId },
               include: { components: true }

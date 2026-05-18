@@ -16,7 +16,8 @@ import {
   X, 
   Box, 
   Info,
-  DollarSign
+  DollarSign,
+  Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -27,6 +28,11 @@ interface Product {
   name: string; 
   sellingPrice: number; 
   sku?: string; 
+}
+
+interface Material {
+  id: string;
+  name: string;
 }
 
 interface ParsedOrderItem {
@@ -48,6 +54,7 @@ interface ParsedOrder {
 
 export default function ShopeeImporterPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [dragActive, setDragActive] = useState(false);
   const [parsedOrders, setParsedOrders] = useState<ParsedOrder[]>([]);
@@ -56,6 +63,11 @@ export default function ShopeeImporterPage() {
   const [importProgress, setImportProgress] = useState<{current: number; total: number; success: number; errors: number}>({current: 0, total: 0, success: 0, errors: 0});
   const [importLogs, setImportLogs] = useState<{orderId: string; status: 'pending' | 'success' | 'error'; message: string}[]>([]);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  
+  // Customizações solicitadas pelo usuário:
+  const [bypassStock, setBypassStock] = useState(true); // Evita baixa de estoque para vendas antigas
+  const [registeringItem, setRegisteringItem] = useState<{oIdx: number; iIdx: number} | null>(null);
+  const [registeringAll, setRegisteringAll] = useState(false);
 
   // Carrega produtos do catálogo para mapeamento
   useEffect(() => {
@@ -72,6 +84,21 @@ export default function ShopeeImporterPage() {
       }
     }
     loadProducts();
+  }, []);
+
+  // Carrega materiais do sistema para cadastros em lote automatizados
+  useEffect(() => {
+    async function loadMaterials() {
+      try {
+        const res = await fetch('/api/materials?limit=100');
+        const json = await res.json();
+        const materialList = Array.isArray(json) ? json : (json?.data ?? []);
+        setMaterials(materialList);
+      } catch (err) {
+        console.error("Erro ao carregar materiais:", err);
+      }
+    }
+    loadMaterials();
   }, []);
 
   // Normalização e mapeamento para dados vindos de planilhas Excel (XLS/XLSX)
@@ -339,6 +366,185 @@ export default function ShopeeImporterPage() {
     }
   };
 
+  // AUTO-CADASTRO INDIVIDUAL DO PRODUTO (Salva no banco baseado nos dados da planilha)
+  const handleAutoRegisterProduct = async (orderIndex: number, itemIndex: number) => {
+    const order = parsedOrders[orderIndex];
+    const item = order.items[itemIndex];
+    
+    if (materials.length === 0) {
+      alert("Nenhum material cadastrado no catálogo. Por favor, cadastre um material primeiro em Catálogo > Materiais para servir de base.");
+      return;
+    }
+    
+    setRegisteringItem({ oIdx: orderIndex, iIdx: itemIndex });
+    
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: item.productName,
+          materialId: materials[0].id, // Associa ao primeiro material padrão
+          sellingPrice: item.price || 0,
+          weightGrams: 0,
+          sku: item.sku || undefined,
+          productionTime: 0,
+          additionalCost: 0,
+          stockQuantity: 0
+        })
+      });
+      
+      if (response.ok) {
+        const createdProduct = await response.json();
+        
+        // Adiciona à lista local de produtos
+        const newProd = {
+          id: createdProduct.id,
+          name: createdProduct.name,
+          sellingPrice: createdProduct.sellingPrice,
+          sku: createdProduct.sku
+        };
+        setProducts(prev => [newProd, ...prev]);
+        
+        // Atualiza todos os itens que possuem o mesmo SKU ou Nome na planilha inteira
+        const updated = parsedOrders.map(o => ({
+          ...o,
+          items: o.items.map(it => {
+            const matchesSku = it.sku && item.sku && it.sku.toLowerCase() === item.sku.toLowerCase();
+            const matchesName = it.productName.toLowerCase() === item.productName.toLowerCase();
+            if (matchesSku || matchesName) {
+              return { ...it, productId: createdProduct.id };
+            }
+            return it;
+          })
+        }));
+        
+        setParsedOrders(updated);
+        
+        // Seleciona automaticamente os pedidos que agora estão 100% mapeados
+        const newSelected = [...selectedOrderIds];
+        updated.forEach(o => {
+          if (o.items.every(it => it.productId !== undefined) && !newSelected.includes(o.orderId)) {
+            newSelected.push(o.orderId);
+          }
+        });
+        setSelectedOrderIds(newSelected);
+      } else {
+        const errData = await response.json();
+        alert(`Erro ao cadastrar produto: ${errData.error || response.statusText}`);
+      }
+    } catch (err: any) {
+      alert(`Falha na conexão: ${err.message}`);
+    } finally {
+      setRegisteringItem(null);
+    }
+  };
+
+  // AUTO-CADASTRO EM LOTE DE TODOS OS PRODUTOS NÃO VINCULADOS
+  const handleAutoRegisterAll = async () => {
+    if (materials.length === 0) {
+      alert("Nenhum material cadastrado no catálogo. Por favor, cadastre um material primeiro em Catálogo > Materiais para servir de base.");
+      return;
+    }
+    
+    setRegisteringAll(true);
+    
+    // Filtra itens únicos sem vínculo
+    const unmappedItems: { productName: string; sku?: string; price: number }[] = [];
+    parsedOrders.forEach(o => {
+      o.items.forEach(it => {
+        if (it.productId === undefined) {
+          const alreadyListed = unmappedItems.some(ui => 
+            (ui.sku && it.sku && ui.sku.toLowerCase() === it.sku.toLowerCase()) || 
+            (ui.productName.toLowerCase() === it.productName.toLowerCase())
+          );
+          if (!alreadyListed) {
+            unmappedItems.push({
+              productName: it.productName,
+              sku: it.sku,
+              price: it.price
+            });
+          }
+        }
+      });
+    });
+    
+    if (unmappedItems.length === 0) {
+      setRegisteringAll(false);
+      return;
+    }
+
+    const createdProductMap: Record<string, string> = {}; 
+    const newProductsList: Product[] = [];
+
+    for (const item of unmappedItems) {
+      try {
+        const response = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: item.productName,
+            materialId: materials[0].id,
+            sellingPrice: item.price || 0,
+            weightGrams: 0,
+            sku: item.sku || undefined,
+            productionTime: 0,
+            additionalCost: 0,
+            stockQuantity: 0
+          })
+        });
+        
+        if (response.ok) {
+          const createdProduct = await response.json();
+          newProductsList.push({
+            id: createdProduct.id,
+            name: createdProduct.name,
+            sellingPrice: createdProduct.sellingPrice,
+            sku: createdProduct.sku
+          });
+          
+          if (item.sku) {
+            createdProductMap[item.sku.toLowerCase()] = createdProduct.id;
+          }
+          createdProductMap[item.productName.toLowerCase()] = createdProduct.id;
+        }
+      } catch (err) {
+        console.error("Erro ao cadastrar em lote:", err);
+      }
+    }
+
+    if (newProductsList.length > 0) {
+      setProducts(prev => [...newProductsList, ...prev]);
+      
+      const updated = parsedOrders.map(o => ({
+        ...o,
+        items: o.items.map(it => {
+          let matchedId = it.productId;
+          if (!matchedId) {
+            if (it.sku && createdProductMap[it.sku.toLowerCase()]) {
+              matchedId = createdProductMap[it.sku.toLowerCase()];
+            } else if (createdProductMap[it.productName.toLowerCase()]) {
+              matchedId = createdProductMap[it.productName.toLowerCase()];
+            }
+          }
+          return { ...it, productId: matchedId };
+        })
+      }));
+      
+      setParsedOrders(updated);
+      
+      const newSelected = [...selectedOrderIds];
+      updated.forEach(o => {
+        if (o.items.every(it => it.productId !== undefined) && !newSelected.includes(o.orderId)) {
+          newSelected.push(o.orderId);
+        }
+      });
+      setSelectedOrderIds(newSelected);
+    }
+    
+    setRegisteringAll(false);
+  };
+
   const toggleSelectOrder = (orderId: string) => {
     if (selectedOrderIds.includes(orderId)) {
       setSelectedOrderIds(selectedOrderIds.filter(id => id !== orderId));
@@ -402,7 +608,8 @@ export default function ShopeeImporterPage() {
               quantity: item.quantity,
               price: item.price
             })),
-            netRevenue: order.netRevenue && order.netRevenue > 0 ? order.netRevenue : null
+            netRevenue: order.netRevenue && order.netRevenue > 0 ? order.netRevenue : null,
+            bypassStock: bypassStock // Passa a instrução de não baixar o estoque
           })
         });
 
@@ -434,6 +641,11 @@ export default function ShopeeImporterPage() {
     setImportingState('idle');
     setImportLogs([]);
   };
+
+  // Verifica se há itens não catalogados
+  const unmappedCount = parsedOrders.reduce((acc, o) => 
+    acc + o.items.filter(it => it.productId === undefined).length, 0
+  );
 
   return (
     <div className="bg-transparent min-h-screen text-white font-sans select-none animate-in fade-in duration-500 pb-20">
@@ -510,20 +722,54 @@ export default function ShopeeImporterPage() {
         /* ORDERS LIST & MAPPER */
         <div className="space-y-8 animate-in fade-in duration-300">
            
-           {/* RESUMO CARD */}
-           <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+           {/* CONFIGURAÇÃO DE ESTOQUE + RESUMO CARD */}
+           <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-2xl flex flex-col xl:flex-row xl:items-center justify-between gap-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-cyan-500/5 blur-[50px] pointer-events-none" />
-              <div>
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Status do Processamento</span>
-                 <h2 className="text-xl font-black text-white tracking-tight uppercase flex items-center gap-2">
-                    {parsedOrders.length} Pedidos Identificados na Planilha
-                 </h2>
-                 <p className="text-xs text-slate-400 font-bold mt-1">
-                    {selectedOrderIds.length} selecionados para importação. Pedidos com itens não vinculados estão bloqueados temporariamente.
-                 </p>
+              
+              <div className="space-y-4">
+                 <div>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Configurações de Importação</span>
+                    <h2 className="text-xl font-black text-white tracking-tight uppercase flex items-center gap-2">
+                       {parsedOrders.length} Pedidos Identificados na Planilha
+                    </h2>
+                 </div>
+
+                 {/* Opção de Evitar Baixa de Estoque solicitada pelo Usuário */}
+                 <div className="flex items-start gap-3 bg-[#14161b] border border-[#FF4500]/15 p-4 rounded-2xl max-w-xl">
+                    <input 
+                      type="checkbox" 
+                      id="bypassStockCheck"
+                      checked={bypassStock}
+                      onChange={(e) => setBypassStock(e.target.checked)}
+                      className="mt-1 h-5 w-5 rounded border-white/10 bg-transparent text-[#FF4500] focus:ring-offset-0 focus:ring-0 checked:bg-[#FF4500] cursor-pointer"
+                    />
+                    <label htmlFor="bypassStockCheck" className="text-xs text-slate-300 font-bold leading-relaxed cursor-pointer select-none">
+                       <span className="text-white block font-black uppercase text-[10px] tracking-wider mb-0.5">Vendas Históricas / Antigas</span>
+                       Não dar baixa de estoque ou de matérias-primas no sistema (os produtos e insumos não serão alterados).
+                    </label>
+                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              {/* Botões de Ação Bulk */}
+              <div className="flex flex-wrap items-center gap-4">
+                 {unmappedCount > 0 && (
+                   <button 
+                     onClick={handleAutoRegisterAll}
+                     disabled={registeringAll || importingState === 'importing'}
+                     className="px-6 py-4 bg-[#14161b] hover:bg-[#20242e] text-amber-500 hover:text-amber-400 border border-amber-500/20 hover:border-amber-500/50 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2"
+                   >
+                      {registeringAll ? (
+                        <>
+                          <Loader2 className="h-4.5 w-4.5 animate-spin" /> Cadastrando...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4" /> Auto-Cadastrar {unmappedCount} Produtos Faltantes
+                        </>
+                      )}
+                   </button>
+                 )}
+
                  <button 
                    onClick={handleReset}
                    disabled={importingState === 'importing'}
@@ -607,13 +853,15 @@ export default function ShopeeImporterPage() {
                                        </>
                                      )}
                                   </div>
-                                </div>
+                               </div>
                             </div>
 
                             {/* ITEMS MAPPING */}
                             <div className="flex-1 max-w-xl space-y-3">
                                {order.items.map((item, iIdx) => {
                                   const isMatched = item.productId !== undefined;
+                                  const isRegisteringThis = registeringItem?.oIdx === oIdx && registeringItem?.iIdx === iIdx;
+                                  
                                   return (
                                     <div key={iIdx} className="bg-[#1a1d24] border border-white/5 px-4 py-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                                        <div className="space-y-0.5">
@@ -629,18 +877,39 @@ export default function ShopeeImporterPage() {
                                                <Check className="h-3.5 w-3.5" /> Mapeado
                                             </span>
                                           ) : (
-                                            <div className="flex items-center gap-2 animate-pulse">
-                                               <AlertTriangle className="h-4 w-4 text-amber-400" />
-                                               <select 
-                                                 onChange={(e) => handleMapProduct(oIdx, iIdx, e.target.value)}
-                                                 className="bg-[#14161b] border border-amber-500/30 text-amber-500 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-xl outline-none focus:border-amber-400 max-w-[200px]"
-                                                 defaultValue=""
+                                            <div className="flex items-center gap-3">
+                                               
+                                               {/* AUTO-CADASTRO DO PRODUTO NATIVO */}
+                                               <button 
+                                                 onClick={() => handleAutoRegisterProduct(oIdx, iIdx)}
+                                                 disabled={isRegisteringThis}
+                                                 className="bg-amber-500/10 hover:bg-amber-500 hover:text-black text-amber-500 text-[9px] font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-amber-500/20 hover:border-transparent transition-all flex items-center gap-1 active:scale-95"
                                                >
-                                                  <option value="" disabled>Vincular Produto...</option>
-                                                  {products.map(p => (
-                                                    <option key={p.id} value={p.id}>{p.name}</option>
-                                                  ))}
-                                               </select>
+                                                  {isRegisteringThis ? (
+                                                    <>
+                                                      <Loader2 className="h-3 w-3 animate-spin" /> Cadastrando...
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <Plus className="h-3 w-3" /> Auto-Cadastrar
+                                                    </>
+                                                  )}
+                                               </button>
+
+                                               {/* VINCULAÇÃO MANUAL */}
+                                               <div className="flex items-center gap-1">
+                                                  <AlertTriangle className="h-4 w-4 text-amber-400" />
+                                                  <select 
+                                                    onChange={(e) => handleMapProduct(oIdx, iIdx, e.target.value)}
+                                                    className="bg-[#14161b] border border-amber-500/30 text-amber-500 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-xl outline-none focus:border-amber-400 max-w-[200px]"
+                                                    defaultValue=""
+                                                  >
+                                                     <option value="" disabled>Vincular manual...</option>
+                                                     {products.map(p => (
+                                                       <option key={p.id} value={p.id}>{p.name}</option>
+                                                     ))}
+                                                  </select>
+                                               </div>
                                             </div>
                                           )}
                                        </div>
@@ -701,7 +970,7 @@ export default function ShopeeImporterPage() {
 
            <h1 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase italic">Importação Concluída!</h1>
            <p className="text-slate-400 max-w-md mx-auto font-bold text-sm leading-relaxed mb-10">
-              Processamos sua planilha da Shopee com sucesso. O estoque dos produtos mapeados foi debitado e as transações financeiras geradas no painel.
+              Processamos sua planilha da Shopee com sucesso. {bypassStock ? "Nenhum estoque foi debitado devido à configuração de vendas históricas." : "O estoque dos produtos mapeados foi devidamente debitado."} As transações financeiras foram geradas no painel.
            </p>
 
            <div className="bg-[#14161b] rounded-2xl p-6 border border-white/5 text-left mb-10 max-h-48 overflow-y-auto space-y-2.5 custom-scrollbar">
