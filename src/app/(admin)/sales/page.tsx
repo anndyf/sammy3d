@@ -462,12 +462,22 @@ export default function OrdersPage() {
                        <select 
                          className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-5 text-sm font-bold text-white outline-none focus:border-cyan-500/50 transition-all appearance-none cursor-pointer" 
                          value={selectedProduct} 
-                         onChange={e=>setSelectedProduct(e.target.value)}
+                         onChange={e=>handleProductChange(e.target.value)}
                        >
                          <option value="">Selecione um produto...</option>
                          {products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
                        </select>
                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600 pointer-events-none" />
+                    </div>
+                    <div className="w-32 relative">
+                       <input 
+                         type="number" 
+                         step="0.01"
+                         placeholder="Preço R$"
+                         className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-4 text-sm font-bold text-white text-center outline-none focus:border-cyan-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                         value={customPrice} 
+                         onChange={e=>setCustomPrice(e.target.value)} 
+                       />
                     </div>
                     <input 
                       type="number" 
