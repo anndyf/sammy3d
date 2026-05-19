@@ -114,7 +114,22 @@ export default function ShopeeImporterPage() {
     };
     
     return jsonData.map(item => {
-      const orderId = getKeyValue(item, ['pedido', 'order id', 'id do pedido', 'nº do pedido']);
+      const orderIdKey = keys.find(k => {
+        const lowerKey = k.toLowerCase();
+        return (lowerKey.includes('nº do pedido') || lowerKey.includes('n° do pedido') || lowerKey.includes('id do pedido') || lowerKey.includes('order id') || lowerKey.includes('pedido')) &&
+               !lowerKey.includes('usuário') && !lowerKey.includes('usuario') && !lowerKey.includes('comprador') && !lowerKey.includes('cliente');
+      }) || keys.find(k => {
+        const lowerKey = k.toLowerCase();
+        return (lowerKey === 'id' || lowerKey === 'order' || lowerKey === 'id_pedido') &&
+               !lowerKey.includes('usuário') && !lowerKey.includes('usuario') && !lowerKey.includes('comprador') && !lowerKey.includes('cliente') && !lowerKey.includes('produto');
+      });
+      
+      let rawOrderId = orderIdKey ? item[orderIdKey] : getKeyValue(item, ['pedido', 'order id', 'id do pedido', 'nº do pedido']);
+      let orderIdStr = rawOrderId ? String(rawOrderId).trim() : '';
+      if (orderIdStr.includes(' ') || orderIdStr.includes('(')) {
+        orderIdStr = orderIdStr.split(/[\s(]/)[0];
+      }
+      const orderId = orderIdStr || undefined;
       const productName = getKeyValue(item, ['produto', 'product name', 'nome do produto', 'nome do item']);
       
       const qtyVal = getKeyValue(item, ['quantidade', 'qtd', 'quantity', 'qte']);
@@ -201,7 +216,18 @@ export default function ShopeeImporterPage() {
 
     const headers = splitCSVLine(header).map(h => h.trim().toLowerCase());
     
-    const orderIdIdx = headers.findIndex(h => h.includes('pedido') || h.includes('order id') || h.includes('nº do pedido') || h.includes('id do pedido'));
+    let orderIdIdx = headers.findIndex(h => {
+      const lower = h.toLowerCase();
+      return (lower.includes('nº do pedido') || lower.includes('n° do pedido') || lower.includes('id do pedido') || lower.includes('order id') || lower.includes('pedido')) &&
+             !lower.includes('usuário') && !lower.includes('usuario') && !lower.includes('comprador') && !lower.includes('cliente');
+    });
+    if (orderIdIdx === -1) {
+      orderIdIdx = headers.findIndex(h => {
+        const lower = h.toLowerCase();
+        return (lower === 'id' || lower === 'order' || lower === 'id_pedido') &&
+               !lower.includes('usuário') && !lower.includes('usuario') && !lower.includes('comprador') && !lower.includes('cliente') && !lower.includes('produto');
+      });
+    }
     const productNameIdx = headers.findIndex(h => h.includes('produto') || h.includes('product name') || h.includes('nome do produto') || h.includes('nome do item'));
     const qtyIdx = headers.findIndex(h => h.includes('quantidade') || h.includes('qtd') || h.includes('quantity') || h.includes('qte'));
     const priceIdx = headers.findIndex(h => h.includes('preço') || h.includes('price') || h.includes('unit price') || h.includes('preço acordado') || h.includes('preço unitário'));
@@ -236,7 +262,13 @@ export default function ShopeeImporterPage() {
       if (values.length < headers.length) continue;
 
       const row: any = {};
-      if (orderIdIdx !== -1) row.orderId = values[orderIdIdx];
+      if (orderIdIdx !== -1) {
+        let orderIdStr = String(values[orderIdIdx] || '').trim();
+        if (orderIdStr.includes(' ') || orderIdStr.includes('(')) {
+          orderIdStr = orderIdStr.split(/[\s(]/)[0];
+        }
+        row.orderId = orderIdStr;
+      }
       if (productNameIdx !== -1) row.productName = values[productNameIdx];
       
       if (qtyIdx !== -1) {
