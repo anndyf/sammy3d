@@ -36,6 +36,7 @@ export class OrderService {
    */
   static async create(body: any) {
     const { 
+      id,
       customerName, customerContact, status, type, totalAmount, 
       discountAmount, deadline, notes, weightGrams, materialId, 
       paymentStatus, items, saleChannel, printerId, netRevenue,
@@ -90,6 +91,7 @@ export class OrderService {
       // 1. Criar o Pedido
       const order = await tx.order.create({
         data: {
+          ...(id && { id: String(id) }),
           customerName: String(customerName),
           customerContact: customerContact ? String(customerContact) : null,
           status: finalStatus,

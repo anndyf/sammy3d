@@ -3,44 +3,66 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
+  
+  /* Sobrescrevendo a paleta padrão de ciano do Tailwind v4 com o Ciano Elétrico da imagem */
+  --color-cyan-50: #e0fbfd;
+  --color-cyan-100: #bbf7fc;
+  --color-cyan-200: #81eff9;
+  --color-cyan-300: #3ee1f4;
+  --color-cyan-400: #00f5ff;
+  --color-cyan-500: #00e5f0;
+  --color-cyan-600: #00b5cc;
+  --color-cyan-700: #008799;
+  --color-cyan-800: #046c7b;
+  --color-cyan-900: #095966;
+  --color-cyan-950: #023842;
+  
+  /* Sobrescrevendo a paleta padrão de slate do Tailwind v4 com tons de petróleo escuro/médio */
+  --color-slate-50: #f0f8fa;
+  --color-slate-100: #e0f0f4;
+  --color-slate-200: #c1e0e8;
+  --color-slate-300: #a2cfdc;
+  --color-slate-400: #8bb5c4;
+  --color-slate-500: #628a97;
+  --color-slate-600: #466774;
+  --color-slate-700: #334d58;
+  --color-slate-800: #21353e;
+  --color-slate-900: #0c2730;
+  --color-slate-950: #081d24;
 }
 
 :root {
-  --vercel-bg: #111114; /* A noticeable dark graphite/slate */
-  --vercel-text-main: #FFFFFF;
-  --vercel-text-muted: #A3A3A3;
-  --vercel-border: #2A2A2A;
-  --vercel-accent: #0070F3;     /* Vercel Blue - pops beautifully on dark */
-  --vercel-accent-bg: rgba(0, 112, 243, 0.15);
+  /* SAMMY3D Premium Dark Petrol / Teal Theme */
+  --bg-admin-layout: #06161b;   /* Fundo geral escuro (estilo aba lateral VS Code) */
+  --bg-card: #081d24;           /* Fundo principal dos cartões / painel central */
+  --bg-input: #0c2730;          /* Fundo de inputs, formulários e abas ativas */
+  --bg-active-tab: #11343f;     /* Fundo de destaque para hovers e elementos selecionados */
   
-  --glow-opacity-top: 0.20;
-  --glow-opacity-bottom: 0.10;
+  --text-main: #f1f5f9;         /* Texto principal claro e limpo */
+  --text-muted: #8bb5c4;        /* Texto secundário/descrições em cinza-petróleo */
+  --text-accent: #00f5ff;       /* Texto ativo / acentos em ciano brilhante */
   
-  --sammy-cyan: #0070F3;
+  --vercel-bg: var(--bg-admin-layout);
+  --vercel-text-main: var(--text-main);
+  --vercel-text-muted: var(--text-muted);
+  --vercel-border: rgba(0, 245, 255, 0.08);
+  --vercel-accent: var(--text-accent);
+  --vercel-accent-bg: rgba(0, 245, 255, 0.1);
+  
+  --glow-opacity-top: 0.18;
+  --glow-opacity-bottom: 0.08;
+  
+  --sammy-cyan: var(--text-accent);
 }
 
 .light {
-  /* Core Color Swaps */
-  --color-white: #0f172a; /* Slate 900 for dark text and dark borders */
-  --color-black: #ffffff; /* Pure white for black backgrounds */
+  /* Mantido compatível com inversão suave de cores se necessário */
+  --color-white: #0f172a;
+  --color-black: #ffffff;
   
-  /* Slate Swaps for Muted Texts and Borders */
-  --color-slate-50: #020617;
-  --color-slate-100: #0f172a;
-  --color-slate-200: #1e293b;
-  --color-slate-300: #334155;
-  --color-slate-400: #475569;
-  --color-slate-500: #64748b;
-  --color-slate-600: #94a3b8;
-  --color-slate-700: #cbd5e1;
-  --color-slate-800: #e2e8f0;
-  --color-slate-900: #f1f5f9;
-  --color-slate-950: #f8fafc;
-
-  /* Global Theme Variables */
-  --vercel-bg: #f8fafc; /* Very light slate background */
+  --vercel-bg: #f8fafc;
   --vercel-text-main: #0f172a;
-  --vercel-text-muted: #475569; /* Slate 600 */
+  --vercel-text-muted: #475569;
   --vercel-border: #e2e8f0;
   
   --glow-opacity-top: 0.03;
@@ -50,8 +72,8 @@
 body {
   background-color: var(--vercel-bg);
   background-image: 
-    radial-gradient(circle at 50% -20%, rgba(0, 112, 243, var(--glow-opacity-top)) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(0, 112, 243, var(--glow-opacity-bottom)) 0%, transparent 40%);
+    radial-gradient(circle at 50% -20%, rgba(0, 245, 255, var(--glow-opacity-top)) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(0, 245, 255, var(--glow-opacity-bottom)) 0%, transparent 40%);
   background-attachment: fixed;
   color: var(--vercel-text-main);
   font-family: 'Inter', sans-serif;
@@ -61,27 +83,61 @@ body {
   min-height: 100vh;
 }
 
-/* VERCEL DARK CORE COMPONENTS */
+/* CORES E OVERRIDES DAS CLASSES UTILITÁRIAS HARDCODED DO TAILWIND */
+.bg-\[\#12151c\] {
+  background-color: var(--bg-admin-layout) !important;
+}
+
+.bg-\[\#1a1d24\] {
+  background-color: var(--bg-card) !important;
+}
+
+.bg-\[\#14161b\] {
+  background-color: var(--bg-input) !important;
+}
+
+.bg-\[\#1e293b\] {
+  background-color: var(--bg-active-tab) !important;
+}
+
+/* Mapeamento de Transparências e Bordas para Ciano Elétrico */
+.border-white\/5 {
+  border-color: rgba(0, 245, 255, 0.08) !important;
+}
+
+.border-white\/10 {
+  border-color: rgba(0, 245, 255, 0.12) !important;
+}
+
+.bg-white\/5 {
+  background-color: rgba(0, 245, 255, 0.04) !important;
+}
+
+.bg-white\/10 {
+  background-color: rgba(0, 245, 255, 0.08) !important;
+}
+
+/* PREMIUM DARK CARD (MAGLO CARD) */
 .maglo-card {
-  background: rgba(24, 24, 27, 0.6);
+  background: rgba(8, 29, 36, 0.6);
   backdrop-filter: blur(16px);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .maglo-card:hover {
   border-color: var(--vercel-accent);
-  box-shadow: 0 0 20px rgba(0, 112, 243, 0.1);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.12);
   transform: translateY(-2px);
 }
 
 .maglo-btn-primary {
-  @apply bg-white text-black px-4 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-2;
+  @apply bg-cyan-400 text-slate-950 px-4 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-2;
 }
 
 .maglo-btn-primary:hover {
-  @apply bg-slate-200 scale-[1.02] shadow-[0_0_15px_rgba(255,255,255,0.3)];
+  @apply bg-cyan-300 scale-[1.02] shadow-[0_0_15px_rgba(0,245,255,0.4)];
 }
 
 .maglo-subtitle {
@@ -92,19 +148,21 @@ body {
   @apply text-3xl font-bold tracking-tight text-white mb-1;
 }
 
-/* CUSTOM SCROLLBAR (DARK STYLE) */
+/* CUSTOM SCROLLBAR (PETROL DARK STYLE) */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #333333;
+  background: var(--bg-input);
   border-radius: 10px;
+  border: 1px solid rgba(0, 245, 255, 0.05);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #444444;
+  background: var(--bg-active-tab);
 }
 
 @media print {
@@ -114,29 +172,50 @@ body {
   }
 }
 
-/* Fix Autofill background and text color */
+/* Correções de campos do Autofill em formulários */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #0a0b0e inset !important;
-    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0 30px var(--bg-input) inset !important;
+    -webkit-text-fill-color: var(--text-main) !important;
     transition: background-color 5000s ease-in-out 0s;
 }
 
+/* ESTILOS DE TEXTO E LEGENDA GERAIS */
 .force-white-text {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
+    color: var(--text-main) !important;
+    -webkit-text-fill-color: var(--text-main) !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #ffffff !important;
+    color: var(--text-main) !important;
 }
 
-label, .text-slate-400, .text-slate-500, .text-slate-600 {
-    color: #94a3b8 !important; /* slate-400 */
+label, .text-slate-400 {
+    color: var(--text-muted) !important;
+}
+
+.text-slate-500 {
+    color: #628a97 !important;
+}
+
+.text-slate-600 {
+    color: #466774 !important;
 }
 
 .text-white {
-    color: #ffffff !important;
+    color: var(--text-main) !important;
 }
+
+/* Inline Code / Badges de Palavras Chave (como Partner ID, Partner Key na imagem) */
+code {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #f59e0b !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+  padding: 0.15rem 0.4rem !important;
+  border-radius: 6px !important;
+  font-family: monospace !important;
+  font-size: 0.88em !important;
+}
+
