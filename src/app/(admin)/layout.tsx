@@ -13,7 +13,7 @@ export default function AdminLayout({
         <Topbar />
         
         {/* MAIN CONTENT AREA */}
-        <main className="flex-1 w-full flex flex-col min-h-[calc(100vh-56px)] px-6 md:px-10 lg:px-12 py-8">
+        <main className="flex-1 w-full flex flex-col min-h-[calc(100vh-56px)] px-4 sm:px-6 md:px-10 lg:px-12 pt-20 pb-32 md:py-8">
            <div className="flex-1 w-full max-w-[1600px] mx-auto animate-in fade-in duration-500">
              {children}
            </div>

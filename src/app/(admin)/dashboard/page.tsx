@@ -69,7 +69,7 @@ export default function Dashboard() {
     return (
       <div className="w-full h-full flex flex-col justify-between">
         <div className="flex-1 relative mt-4">
-          <svg className="w-full h-full overflow-visible" viewBox={`0 0 ${width} ${height}`}>
+          <svg className="w-full h-full overflow-visible" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
             <defs>
               <linearGradient id="profitGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#10b981" stopOpacity="0.15"/>
@@ -87,7 +87,7 @@ export default function Dashboard() {
             {/* Pontos Interativos */}
             {profitPoints.map((p: any, idx: number) => (
               <g key={idx} className="group/dot cursor-pointer">
-                <circle cx={p.x} cy={p.y} r="4.5" fill="#10b981" stroke="#14161b" strokeWidth="2" className="transition-all group-hover/dot:r-6" />
+                <circle cx={p.x} cy={p.y} r="4.5" fill="#10b981" stroke="#14161b" strokeWidth="2" className="transition-all group-hover/dot:r-6" vectorEffect="non-scaling-stroke" />
                 <text x={p.x} y={p.y - 10} textAnchor="middle" fill="#10b981" className="text-[9px] font-mono font-black opacity-0 group-hover/dot:opacity-100 transition-opacity bg-[#14161b] px-1.5 py-0.5 rounded border border-[#10b981]/20">
                   R${points[idx].profit.toFixed(0)}
                 </text>
@@ -194,12 +194,12 @@ export default function Dashboard() {
           </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
-          <button onClick={fetchDashboardData} className="p-3 bg-[#1a1d24] border border-white/10 text-slate-400 rounded-xl hover:text-white transition-all shadow-lg">
+        <div className="flex flex-row items-center gap-3 mt-2 md:mt-0 w-full md:w-auto">
+          <button onClick={fetchDashboardData} className="p-3 bg-[#1a1d24] border border-white/10 text-slate-400 rounded-xl hover:text-white transition-all shadow-lg shrink-0">
              <RotateCcw className="h-4 w-4" />
           </button>
           
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-[#14161b] border border-white/10 rounded-lg hover:bg-white/5 transition-all text-sm font-medium text-slate-300">
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-[#14161b] border border-white/10 rounded-xl md:rounded-lg hover:bg-white/5 transition-all text-sm font-medium text-slate-300">
             <Filter className="h-4 w-4 text-cyan-400" />
             maio de 2026
             <Calendar className="h-4 w-4 ml-2 text-slate-500" />

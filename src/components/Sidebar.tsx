@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { 
   LayoutDashboard, 
   ShoppingCart, 
@@ -22,7 +23,9 @@ import {
   Settings, 
   Crown, 
   HelpCircle, 
-  LogOut
+  LogOut,
+  Menu,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -82,14 +85,134 @@ const sidebarGroups: SidebarGroup[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <>
-      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-[260px] bg-[#1a1d24] flex-col z-50 border-r border-white/5 select-none text-slate-300">
+      {/* MOBILE TOP STICKY HEADER */}
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#06161b]/85 backdrop-blur-lg border-b border-white/5 flex items-center justify-between px-6 z-[990] select-none">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center shadow-[0_0_15px_rgba(0,245,255,0.1)]">
+            <div className="relative w-5 h-5 flex flex-col items-center justify-center">
+              <div className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 bg-cyan-400 rotate-[-15deg] rounded-sm"></div>
+              <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-cyan-400 rotate-[15deg] rounded-sm"></div>
+              <div className="w-full h-full bg-cyan-400 rounded-md relative z-10 flex items-center justify-center border border-black/10">
+                <span className="text-[6px] font-black text-black select-none leading-none">XX</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none mb-0.5">Sammy 3D OS</span>
+            <span className="text-[11px] font-bold text-white leading-none group-hover:text-cyan-400">Painel Operacional</span>
+          </div>
+        </div>
+        <button 
+          onClick={() => setIsDrawerOpen(true)}
+          className="p-2 bg-white/5 border border-white/5 rounded-xl text-slate-400 active:scale-90 transition-transform"
+        >
+          <Menu className="h-5 w-5 text-cyan-400" />
+        </button>
+      </header>
+
+      {/* MOBILE DRAWER OVERLAY BACKDROP */}
+      {isDrawerOpen && (
+        <div 
+          onClick={() => setIsDrawerOpen(false)}
+          className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000] animate-in fade-in duration-300"
+        />
+      )}
+
+      {/* MOBILE DRAWER SIDEBAR PANEL */}
+      <aside 
+        className={cn(
+          "md:hidden fixed top-0 left-0 h-screen w-[280px] bg-[#06161b] border-r border-white/5 z-[1001] flex flex-col transition-transform duration-300 ease-out select-none",
+          isDrawerOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* DRAWER LOGO AREA */}
+        <div className="px-6 py-5 flex items-center justify-between border-b border-white/5 bg-[#041014]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center">
+              <div className="relative w-4 h-4 bg-cyan-400 rounded-md flex items-center justify-center">
+                <span className="text-[5px] font-black text-black leading-none">XX</span>
+              </div>
+            </div>
+            <span className="text-[11px] font-black text-white uppercase tracking-wider">SAMMY3D OS</span>
+          </div>
+          <button 
+            onClick={() => setIsDrawerOpen(false)}
+            className="p-1.5 bg-white/5 border border-white/5 rounded-lg text-slate-400 hover:text-white"
+          >
+            <X className="h-4 w-4 text-cyan-400" />
+          </button>
+        </div>
+
+        {/* DRAWER LINKS NAVIGATION */}
+        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6 custom-scrollbar">
+           {sidebarGroups.map((group, groupIndex) => (
+             <div key={groupIndex} className="space-y-1">
+               {group.title && (
+                 <div className="flex items-center gap-3 px-3 mb-2 mt-4">
+                   <h3 className="text-[9px] font-black text-white uppercase tracking-[0.15em]">{group.title}</h3>
+                   <div className="h-px bg-white/5 flex-1"></div>
+                 </div>
+               )}
+               
+               {group.items.map((item) => {
+                 const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/');
+                 return (
+                   <Link
+                     key={item.href}
+                     href={item.href}
+                     onClick={() => setIsDrawerOpen(false)}
+                     className={cn(
+                       "flex items-center justify-between px-3 py-2 rounded-lg text-[13px] transition-all group active:scale-[0.98]",
+                       isActive 
+                         ? "bg-white/5 text-cyan-400 font-bold border-l-2 border-cyan-400 pl-4 rounded-l-none" 
+                         : "text-slate-400 hover:text-white hover:bg-white/5",
+                       item.isSubItem && "ml-6 border-l border-white/10 rounded-l-none pl-4 py-1.5 text-[12px]"
+                     )}
+                   >
+                     <div className="flex items-center gap-3">
+                       {!item.isSubItem && <item.icon className={cn("h-[18px] w-[18px]", isActive ? "text-cyan-400" : "text-slate-500 group-hover:text-white transition-colors")} />}
+                       <span>{item.label}</span>
+                     </div>
+                     {item.isPro && (
+                       <span className="text-[8px] font-black bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded border border-amber-500/20">PRO</span>
+                     )}
+                   </Link>
+                 );
+               })}
+             </div>
+           ))}
+        </nav>
+
+        {/* DRAWER FOOTER */}
+        <div className="p-4 border-t border-white/5 bg-[#041014]">
+           <div 
+             className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all cursor-pointer group active:scale-95"
+             onClick={async () => {
+                if (confirm("Deseja encerrar a sessão operacional?")) {
+                   await fetch('/api/auth/logout', { method: 'POST' });
+                   window.location.href = '/login';
+                }
+             }}
+           >
+              <div className="flex flex-col">
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Logado como</span>
+                 <span className="text-[11px] font-bold text-white group-hover:text-cyan-400 truncate w-[160px]">andressamirella21@g...</span>
+              </div>
+              <LogOut className="h-4 w-4 text-slate-500 group-hover:text-red-500 transition-all" />
+           </div>
+        </div>
+      </aside>
+
+      {/* DESKTOP SIDEBAR */}
+      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-[260px] bg-[#06161b] flex-col z-50 border-r border-white/5 select-none text-slate-300">
         
         {/* LOGO & TITLE AREA */}
         <div className="px-6 py-8 flex flex-col items-center">
-           <div className="w-20 h-20 rounded-2xl bg-[#1e293b] border-2 border-cyan-500/30 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(34,211,238,0.15)] relative overflow-hidden group">
+           <div className="w-20 h-20 rounded-2xl bg-[#11343f] border-2 border-cyan-500/30 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(0,245,255,0.15)] relative overflow-hidden group">
               {/* Custom CSS Kitty Logo */}
               <div className="relative w-12 h-12 flex flex-col items-center justify-center group-hover:scale-110 transition-transform duration-500">
                  {/* Ears */}
@@ -138,7 +261,7 @@ export function Sidebar() {
                      className={cn(
                        "flex items-center justify-between px-3 py-2 rounded-lg text-[13px] transition-all group",
                        isActive 
-                         ? "bg-white/5 text-cyan-400 font-bold" 
+                         ? "bg-white/5 text-cyan-400 font-bold border-l-2 border-cyan-400 pl-4 rounded-l-none" 
                          : "text-slate-400 hover:text-white hover:bg-white/5",
                        item.isSubItem && "ml-6 border-l border-white/10 rounded-l-none pl-4 py-1.5 text-[12px]"
                      )}
@@ -158,7 +281,7 @@ export function Sidebar() {
         </nav>
 
         {/* PROFILE WITH LOGOUT */}
-        <div className="p-4 border-t border-white/5 bg-[#14161b]">
+        <div className="p-4 border-t border-white/5 bg-[#041014]">
            <div 
              className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all cursor-pointer group"
              onClick={async () => {
@@ -180,16 +303,62 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* MOBILE NAV (simplified) */}
-      <nav className="md:hidden fixed bottom-6 left-6 right-6 h-14 bg-[#1a1d24]/90 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-2xl z-[999] flex items-center justify-around px-2">
-         {sidebarGroups[0].items.slice(0,5).map((item) => {
-           const isActive = pathname === item.href;
-           return (
-             <Link key={item.href} href={item.href} className={cn("p-2 rounded-xl transition-all flex flex-col items-center gap-1", isActive ? "text-cyan-400 bg-white/10" : "text-slate-500")}>
-                <item.icon className="h-5 w-5" />
-             </Link>
-           );
-         })}
+      {/* MOBILE BOTTOM NAV */}
+      <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-[#081d24]/90 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-2xl z-[990] flex items-center justify-around px-2 select-none">
+         {/* ITEM 1: DASHBOARD */}
+         <Link 
+           href="/dashboard" 
+           className={cn(
+             "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
+             pathname === "/dashboard" ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+           )}
+         >
+            <LayoutDashboard className="h-5 w-5" />
+         </Link>
+
+         {/* ITEM 2: VENDAS */}
+         <Link 
+           href="/sales" 
+           className={cn(
+             "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
+             pathname.startsWith("/sales") ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+           )}
+         >
+            <ShoppingCart className="h-5 w-5" />
+         </Link>
+
+         {/* ITEM 3: ANALISADOR GCODE */}
+         <Link 
+           href="/production/smart" 
+           className={cn(
+             "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
+             pathname === "/production/smart" ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+           )}
+         >
+            <Cpu className="h-5 w-5" />
+         </Link>
+
+         {/* ITEM 4: ESTOQUE (FILAMENTOS) */}
+         <Link 
+           href="/stock" 
+           className={cn(
+             "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
+             pathname === "/stock" ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+           )}
+         >
+            <Disc className="h-5 w-5" />
+         </Link>
+
+         {/* ITEM 5: MENU TRIGGER */}
+         <button 
+           onClick={() => setIsDrawerOpen(true)} 
+           className={cn(
+             "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
+             isDrawerOpen ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+           )}
+         >
+            <Menu className="h-5 w-5" />
+         </button>
       </nav>
     </>
   );

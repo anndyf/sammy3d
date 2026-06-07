@@ -118,6 +118,24 @@ export default function OrdersPage() {
 
   useEffect(() => { fetchData(); }, []);
 
+  const handleSyncShopee = async () => {
+    if (!confirm("Deseja sincronizar os pedidos recentes da Shopee? Isso pode levar alguns segundos.")) return;
+    
+    try {
+      const res = await fetch('/api/shopee/sync-history', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || "Sincronização concluída com sucesso!");
+        fetchData();
+      } else {
+        alert("Erro na sincronização: " + (data.error || "Desconhecido"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Falha de conexão ao tentar sincronizar.");
+    }
+  };
+
   const handleProductChange = (productId: string) => {
     setSelectedProduct(productId);
     const p = products.find(prod => prod.id === productId);
@@ -457,8 +475,8 @@ export default function OrdersPage() {
                     <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Adicionar Produtos</h3>
                  </div>
 
-                 <div className="flex gap-4 mb-10">
-                    <div className="flex-1 relative">
+                 <div className="flex flex-col md:flex-row gap-4 mb-10">
+                    <div className="w-full relative">
                        <select 
                          className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-5 text-sm font-bold text-white outline-none focus:border-cyan-500/50 transition-all appearance-none cursor-pointer" 
                          value={selectedProduct} 
@@ -469,26 +487,28 @@ export default function OrdersPage() {
                        </select>
                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600 pointer-events-none" />
                     </div>
-                    <div className="w-32 relative">
+                    <div className="flex gap-4">
+                       <div className="flex-1 relative">
+                          <input 
+                            type="number" 
+                            step="0.01"
+                            placeholder="Preço R$"
+                            className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-4 text-sm font-bold text-white text-center outline-none focus:border-cyan-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                            value={customPrice} 
+                            onChange={e=>setCustomPrice(e.target.value)} 
+                          />
+                       </div>
                        <input 
                          type="number" 
-                         step="0.01"
-                         placeholder="Preço R$"
-                         className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-4 text-sm font-bold text-white text-center outline-none focus:border-cyan-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                         value={customPrice} 
-                         onChange={e=>setCustomPrice(e.target.value)} 
+                         className="w-24 h-14 bg-[#14161b] border border-white/5 rounded-2xl px-4 text-sm font-bold text-white text-center outline-none focus:border-cyan-500/50 transition-all" 
+                         value={selectedQuantity} 
+                         onChange={e=>setSelectedQuantity(e.target.value)} 
                        />
+                       <button 
+                         onClick={handleAddToCart} 
+                         className="w-14 h-14 shrink-0 bg-cyan-500 text-black rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 hover:bg-cyan-400 transition-all active:scale-95 text-2xl font-black"
+                       >+</button>
                     </div>
-                    <input 
-                      type="number" 
-                      className="w-24 h-14 bg-[#14161b] border border-white/5 rounded-2xl px-4 text-sm font-bold text-white text-center outline-none focus:border-cyan-500/50 transition-all" 
-                      value={selectedQuantity} 
-                      onChange={e=>setSelectedQuantity(e.target.value)} 
-                    />
-                    <button 
-                      onClick={handleAddToCart} 
-                      className="w-14 h-14 bg-cyan-500 text-black rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 hover:bg-cyan-400 transition-all active:scale-95 text-2xl font-black"
-                    >+</button>
                  </div>
 
                  <div className="space-y-4">
@@ -504,22 +524,22 @@ export default function OrdersPage() {
                              </div>
                           </div>
                           
-                          <div className="flex items-center gap-10">
-                             <div className="text-center">
+                          <div className="flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-10 mt-4 md:mt-0 bg-[#1a1d24]/50 md:bg-transparent p-3 md:p-0 rounded-xl md:rounded-none">
+                             <div className="text-center flex-1 md:flex-none">
                                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">QTD</p>
                                 <div className="bg-[#1a1d24] px-4 py-1.5 rounded-lg border border-white/5 text-sm font-black text-white">{item.quantity}</div>
                              </div>
-                             <div className="text-center">
+                             <div className="text-center flex-1 md:flex-none">
                                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Preço Unit.</p>
                                 <div className="bg-[#1a1d24] px-4 py-1.5 rounded-lg border border-white/5 text-sm font-black text-white font-mono">R$ {item.price.toFixed(2)}</div>
                              </div>
-                             <div className="text-right">
+                             <div className="text-right flex-[2] md:flex-none">
                                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Total</p>
                                 <p className="text-lg font-black text-cyan-400 font-mono">R$ {(item.price * item.quantity).toFixed(2)}</p>
                              </div>
                              <button 
                                onClick={() => handleRemoveFromCart(idx)}
-                               className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                               className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all self-end md:self-auto"
                              >
                                 <Trash2 className="h-5 w-5" />
                              </button>
@@ -606,32 +626,38 @@ export default function OrdersPage() {
             <h1 className="text-4xl font-black tracking-tight text-white">Pedidos</h1>
          </div>
          
-         <div className="flex items-center gap-3">
-            <div className="relative group">
+         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto">
+            <div className="relative group w-full md:w-auto">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
                <input 
                  type="text" 
                  placeholder="Buscar pedido..." 
-                 className="w-72 bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-sm text-white font-medium outline-none focus:border-cyan-500/30 transition-all shadow-xl" 
+                 className="w-full md:w-72 bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-sm text-white font-medium outline-none focus:border-cyan-500/30 transition-all shadow-xl" 
                  value={searchTerm} 
                  onChange={e=>setSearchTerm(e.target.value)} 
                />
             </div>
-            <div className="relative">
-               <select className="bg-[#1a1d24] border border-white/5 rounded-xl px-5 py-3 text-sm font-bold text-white outline-none appearance-none cursor-pointer pr-10 shadow-xl">
+            <div className="relative w-full md:w-auto">
+               <select className="w-full md:w-auto bg-[#1a1d24] border border-white/5 rounded-xl px-5 py-3 text-sm font-bold text-white outline-none appearance-none cursor-pointer pr-10 shadow-xl">
                   <option>Todos</option>
                   <option>Abertos</option>
                   <option>Finalizados</option>
                </select>
                <Filter className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
             </div>
-            <div className="flex items-center gap-2 bg-[#1a1d24] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 shadow-xl cursor-pointer hover:border-white/10">
+            <div className="hidden md:flex items-center gap-2 bg-[#1a1d24] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-slate-400 shadow-xl cursor-pointer hover:border-white/10">
                <div className="w-4 h-4 border-2 border-white/20 rounded mr-1"></div>
                Selecionar
             </div>
             <button 
+              onClick={handleSyncShopee}
+              className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-orange-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 w-full md:w-auto mt-2 md:mt-0"
+            >
+              <RotateCcw className="h-4 w-4" /> Sync Shopee
+            </button>
+            <button 
               onClick={() => setIsAdding(true)}
-              className="bg-cyan-400 text-black px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-cyan-300 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(34,211,238,0.2)] active:scale-95"
+              className="bg-cyan-400 text-black px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-cyan-300 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(34,211,238,0.2)] active:scale-95 w-full md:w-auto mt-2 md:mt-0"
             >
               <Plus className="h-5 w-5" /> Novo Pedido
             </button>
@@ -639,7 +665,7 @@ export default function OrdersPage() {
       </div>
 
       {/* TABS (Image 1) */}
-      <div className="flex items-center gap-2 bg-[#1a1d24]/50 p-2 rounded-2xl w-fit mb-10 border border-white/5">
+      <div className="flex items-center gap-2 bg-[#1a1d24]/50 p-2 rounded-2xl w-full md:w-fit mb-10 border border-white/5 overflow-x-auto whitespace-nowrap custom-scrollbar">
          <button 
            onClick={() => setActiveTab('vendas')}
            className={cn(
@@ -682,11 +708,20 @@ export default function OrdersPage() {
                     
                     <div className="space-y-1">
                        <div className="flex items-center gap-3">
-                          <h3 className="text-xl font-black text-white tracking-tight">{order.customerName}</h3>
+                          <h3 className="text-xl font-black text-white tracking-tight truncate max-w-[300px] md:max-w-[400px]">
+                            {order.channel?.toUpperCase() === 'SHOPPE' || order.channel?.toUpperCase() === 'SHOPEE' || order.channel?.toUpperCase() === 'MERCADO LIVRE' || order.channel?.toUpperCase() === 'ML'
+                              ? (order.items && order.items.length > 0 
+                                  ? order.items.map(i => i.customName || i.product?.name).filter(Boolean).join(', ') 
+                                  : 'Pedido Marketplace')
+                              : order.customerName}
+                          </h3>
+                          <span className="text-slate-500 text-xs font-medium">
+                            ({order.customerName})
+                          </span>
                           <span className="bg-white/5 text-slate-400 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-white/5">
                              {order.status}
                           </span>
-                          <UserGroupIcon className="h-4 w-4 text-slate-600" />
+                          <UserGroupIcon className="h-4 w-4 text-slate-600 hidden md:block" />
                        </div>
                        <div className="flex items-center gap-3 text-[11px] font-bold">
                           <span className="text-slate-500">{new Date(order.createdAt).toLocaleDateString('pt-BR')}</span>
@@ -697,38 +732,38 @@ export default function OrdersPage() {
                     </div>
                  </div>
 
-                 <div className="flex items-center gap-3">
+                 <div className="flex flex-wrap md:flex-nowrap items-center gap-3 mt-4 md:mt-0">
                      <button 
                        onClick={() => handleOpenView(order)}
-                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-sm"
+                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-sm flex items-center justify-center"
                        title="Visualizar Pedido"
                      >
                         <Eye className="h-5 w-5" />
                      </button>
                      <button 
                        onClick={() => handlePrintOrder(order)}
-                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-white transition-all shadow-sm"
+                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-500 hover:text-white transition-all shadow-sm flex items-center justify-center"
                        title="Imprimir Pedido"
                      >
                         <Printer className="h-5 w-5" />
                      </button>
                      <button 
                        onClick={() => handleDispatchOrder(order.id)}
-                       className="flex items-center gap-2 bg-[#10b981] text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#059669] transition-all shadow-[0_5px_15px_rgba(16,185,129,0.2)] active:scale-95"
+                       className="flex-[2] md:flex-none flex items-center justify-center gap-2 bg-[#10b981] text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#059669] transition-all shadow-[0_5px_15px_rgba(16,185,129,0.2)] active:scale-95"
                        title="Dar Saída"
                      >
                         <Truck className="h-4 w-4" /> Saída
                      </button>
                      <button 
                        onClick={() => handleDeleteOrder(order.id)}
-                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all shadow-sm"
+                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all shadow-sm flex items-center justify-center"
                        title="Excluir Pedido"
                      >
                         <Trash2 className="h-5 w-5" />
                      </button>
                      <button 
                        onClick={() => handleOpenEdit(order)}
-                       className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-700 hover:text-white transition-all shadow-sm"
+                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-700 hover:text-white transition-all shadow-sm flex items-center justify-center"
                        title="Editar Pedido"
                      >
                         <Edit3 className="h-5 w-5" />

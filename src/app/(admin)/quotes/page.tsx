@@ -21,6 +21,7 @@ function QuotesContent() {
   const [notes, setNotes] = useState("");
   const [chargedPrice, setChargedPrice] = useState<string>("");
   const [markupPercent, setMarkupPercent] = useState("150");
+  const [saveToCatalog, setSaveToCatalog] = useState(false);
 
   const [selectedMaterialId, setSelectedMaterialId] = useState("");
   const [weightGrams, setWeightGrams] = useState("");
@@ -118,6 +119,35 @@ function QuotesContent() {
                              `⏳ TEMPO: ${printHours}h ${printMinutes}m\n\n` +
                              `📝 OBSERVAÇÕES:\n${notes}`;
 
+      let productId = null;
+
+      if (saveToCatalog) {
+        const prodRes = await fetch('/api/products', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: projectName,
+            description: formattedNotes,
+            productionTime: (parseInt(printHours) || 0) * 60 + (parseInt(printMinutes) || 0),
+            weightGrams: parseFloat(weightGrams) || 0,
+            materialId: selectedMaterialId,
+            category: 'Personalizado',
+            calculatedCost: metrics.totalCost,
+            sellingPrice: parseFloat(chargedPrice),
+            stockQuantity: 0
+          })
+        });
+
+        if (prodRes.ok) {
+          const prodData = await prodRes.json();
+          productId = prodData.id || prodData.data?.id;
+        } else {
+          const err = await prodRes.json();
+          alert(`Erro ao salvar no catálogo: ${err.error || 'Desconhecido'}`);
+          return;
+        }
+      }
+
       const res = await fetch('/api/orders', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,7 +157,12 @@ function QuotesContent() {
           notes: formattedNotes,
           weightGrams: parseFloat(weightGrams),
           materialId: selectedMaterialId,
-          items: [] 
+          items: productId ? [{
+            productId: productId,
+            quantity: 1,
+            price: parseFloat(chargedPrice),
+            customName: projectName
+          }] : [] 
         })
       });
       if (res.ok) { alert("Pedido enviado para a produção!"); setIsAddingMode(false); }
@@ -261,6 +296,17 @@ function QuotesContent() {
                  </div>
 
                  <div className="space-y-4 pt-4">
+                    <label className="flex items-center justify-between bg-[#14161b] p-4 rounded-xl border border-white/5 cursor-pointer hover:border-cyan-500/30 transition-all">
+                       <div className="flex items-center gap-3">
+                          <Box className="h-4 w-4 text-cyan-400" />
+                          <span className="text-[10px] font-black text-white uppercase tracking-widest">Salvar no Catálogo</span>
+                       </div>
+                       <div className={cn("w-10 h-6 rounded-full p-1 transition-all", saveToCatalog ? "bg-cyan-500" : "bg-white/10")}>
+                          <div className={cn("w-4 h-4 bg-white rounded-full transition-all shadow-sm", saveToCatalog ? "translate-x-4" : "translate-x-0")} />
+                       </div>
+                       <input type="checkbox" className="hidden" checked={saveToCatalog} onChange={e => setSaveToCatalog(e.target.checked)} />
+                    </label>
+
                     <button onClick={generateWhatsAppQuote} className="w-full bg-emerald-500 text-black h-16 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all flex items-center justify-center gap-4">
                        <MessageCircle className="h-5 w-5" /> WhatsApp
                     </button>

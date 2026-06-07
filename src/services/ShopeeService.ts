@@ -281,4 +281,67 @@ export class ShopeeService {
       });
     }
   }
+
+  /**
+   * Sincroniza histórico de pedidos recentes.
+   * @param days Quantidade de dias para trás
+   */
+  public static async syncHistory(days: number = 7): Promise<{synced: number, errors: number}> {
+    const client = await this.getClient();
+    const { accessToken, shopId } = await this.getValidAccessToken();
+
+    const timeTo = Math.floor(Date.now() / 1000);
+    const timeFrom = timeTo - (days * 24 * 60 * 60);
+
+    const apiPath = "/api/v2/order/get_order_list";
+    let cursor = "";
+    let hasMore = true;
+    let synced = 0;
+    let errors = 0;
+
+    while (hasMore) {
+      const params: any = {
+        time_range_field: "create_time",
+        time_from: timeFrom,
+        time_to: timeTo,
+        page_size: 50
+      };
+      if (cursor) {
+        params.cursor = cursor;
+      }
+
+      try {
+        const result = await client.request("GET", apiPath, {
+          accessToken,
+          shopId,
+          params
+        });
+
+        const orderList = result?.response?.order_list || [];
+        
+        for (const order of orderList) {
+          const orderSn = order.order_sn;
+          if (orderSn) {
+            try {
+              // syncOrder faz verificação de duplicidade (atualiza se já existe)
+              await this.syncOrder(orderSn);
+              synced++;
+            } catch (err) {
+              console.error(`Erro ao sincronizar pedido ${orderSn}:`, err);
+              errors++;
+            }
+          }
+        }
+
+        hasMore = result?.response?.has_more || result?.response?.more || false;
+        cursor = result?.response?.next_cursor || "";
+        
+      } catch (err) {
+        console.error("Erro ao buscar lista de pedidos da Shopee:", err);
+        hasMore = false;
+        errors++;
+      }
+    }
+    return { synced, errors };
+  }
 }
