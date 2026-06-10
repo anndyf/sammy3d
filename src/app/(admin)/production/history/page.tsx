@@ -25,11 +25,11 @@ export default function ProductionHistoryPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
          <div className="flex items-center gap-4">
             <div className="p-3 bg-transparent rounded-xl">
-               <History className="h-6 w-6 text-cyan-400" />
+               <History className="h-6 w-6 text-blue-600" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white">Histórico de Produção</h1>
          </div>
-         <button className="bg-[#14161b] border border-white/5 text-slate-400 px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:text-white hover:bg-white/5 transition-all flex items-center gap-2 shadow-sm">
+         <button className="bg-[#14161b] border border-white/5 text-gray-500 px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:text-white hover:bg-white/5 transition-all flex items-center gap-2 shadow-sm">
            <Download className="h-4 w-4" /> Exportar CSV
          </button>
       </div>
@@ -37,21 +37,21 @@ export default function ProductionHistoryPage() {
       {/* STATS ROW */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col gap-1">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><Box className="h-4 w-4 text-cyan-400" /> Material Processado</span>
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2"><Box className="h-4 w-4 text-blue-600" /> Material Processado</span>
             <div className="flex items-baseline gap-2 mt-2">
                <p className="text-3xl font-black text-white font-mono">{(totalProduced / 1000).toFixed(2)}</p>
-               <span className="text-sm font-bold text-slate-500 uppercase">kg</span>
+               <span className="text-sm font-bold text-gray-600 uppercase">kg</span>
             </div>
          </div>
          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col gap-1">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><Target className="h-4 w-4 text-emerald-400" /> Taxa de Sucesso</span>
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2"><Target className="h-4 w-4 text-emerald-400" /> Taxa de Sucesso</span>
             <div className="flex items-baseline gap-2 mt-2">
                <p className="text-3xl font-black text-white font-mono">{successRate.toFixed(1)}</p>
-               <span className="text-sm font-bold text-slate-500 uppercase">%</span>
+               <span className="text-sm font-bold text-gray-600 uppercase">%</span>
             </div>
          </div>
          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col gap-1">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-400" /> Falhas Registradas</span>
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-400" /> Falhas Registradas</span>
             <p className="text-3xl font-black text-white font-mono mt-2">{historyData.filter(d => d.status === 'FAILED').length}</p>
          </div>
       </div>
@@ -59,11 +59,11 @@ export default function ProductionHistoryPage() {
       {/* SEARCH & FILTERS */}
       <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
          <div className="relative w-full max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600" />
             <input 
               type="text" 
               placeholder="Buscar histórico (OS, Produto, Cliente)..." 
-              className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-sm text-white outline-none hover:border-white/10 focus:bg-[#14161b] focus:border-cyan-500 transition-all shadow-sm" 
+              className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-sm text-white outline-none hover:border-white/10 focus:bg-[#14161b] focus:border-blue-600 transition-all shadow-sm" 
               value={searchTerm} 
               onChange={e=>setSearchTerm(e.target.value)}
             />
@@ -71,14 +71,14 @@ export default function ProductionHistoryPage() {
          
          <div className="flex gap-3 w-full md:w-auto">
             <div className="relative w-full md:w-48">
-               <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-               <select className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-10 pr-4 py-3 text-sm font-bold text-white outline-none focus:border-cyan-500 transition-all cursor-pointer appearance-none">
+               <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
+               <select className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-10 pr-4 py-3 text-sm font-bold text-white outline-none focus:border-blue-600 transition-all cursor-pointer appearance-none">
                   <option value="30">Últimos 30 Dias</option>
                   <option value="7">Últimos 7 Dias</option>
                   <option value="all">Todo o Período</option>
                </select>
             </div>
-            <button className="p-3 bg-[#14161b] border border-white/5 text-slate-400 rounded-lg hover:text-white transition-colors shrink-0">
+            <button className="p-3 bg-[#14161b] border border-white/5 text-gray-500 rounded-lg hover:text-white transition-colors shrink-0">
                <Filter className="h-5 w-5" />
             </button>
          </div>
@@ -88,11 +88,11 @@ export default function ProductionHistoryPage() {
       <div className="bg-[#1a1d24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
          {/* Table Header */}
          <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#14161b]">
-            <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">DATA / OS</div>
-            <div className="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">CLIENTE / PROJETO</div>
-            <div className="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">MÁQUINA / MATERIAL</div>
-            <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">TEMPO / PESO</div>
-            <div className="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">RESULTADO</div>
+            <div className="col-span-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">DATA / OS</div>
+            <div className="col-span-3 text-[11px] font-bold text-gray-500 uppercase tracking-widest">CLIENTE / PROJETO</div>
+            <div className="col-span-3 text-[11px] font-bold text-gray-500 uppercase tracking-widest">MÁQUINA / MATERIAL</div>
+            <div className="col-span-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest text-center">TEMPO / PESO</div>
+            <div className="col-span-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest text-right">RESULTADO</div>
          </div>
 
          {/* Table Body */}
@@ -102,28 +102,28 @@ export default function ProductionHistoryPage() {
                  {/* DATE & ID */}
                  <div className="col-span-2 flex flex-col">
                     <span className="text-sm font-bold text-white">{new Date(item.date).toLocaleDateString('pt-BR')}</span>
-                    <span className="text-[10px] font-mono text-slate-500">{item.id}</span>
+                    <span className="text-[10px] font-mono text-gray-600">{item.id}</span>
                  </div>
 
                  {/* CLIENT & PROJECT */}
                  <div className="col-span-3 flex flex-col min-w-0 pr-4">
                     <span className="text-sm font-bold text-white truncate">{item.product}</span>
-                    <span className="text-[11px] text-slate-400 uppercase tracking-widest truncate">{item.client}</span>
+                    <span className="text-[11px] text-gray-500 uppercase tracking-widest truncate">{item.client}</span>
                  </div>
 
                  {/* MACHINE & MATERIAL */}
                  <div className="col-span-3 flex flex-col pr-4">
-                    <span className="text-xs font-bold text-cyan-400 truncate">{item.machine}</span>
+                    <span className="text-xs font-bold text-blue-600 truncate">{item.machine}</span>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                       <Box className="h-3 w-3 text-slate-500" />
-                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">{item.material}</span>
+                       <Box className="h-3 w-3 text-gray-600" />
+                       <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate">{item.material}</span>
                     </div>
                  </div>
 
                  {/* TIME & WEIGHT */}
                  <div className="col-span-2 flex flex-col items-center">
                     <span className="text-sm font-mono font-bold text-white">{item.duration}</span>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.weight}</span>
+                    <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{item.weight}</span>
                  </div>
 
                  {/* STATUS */}
@@ -148,7 +148,7 @@ export default function ProductionHistoryPage() {
                     )}
                     
                     {(item.status === 'FAILED' || item.status === 'WARNING') && item.failReason && (
-                       <span className="text-[9px] text-slate-500 text-right mt-1.5 leading-tight line-clamp-2 max-w-full" title={item.failReason}>
+                       <span className="text-[9px] text-gray-600 text-right mt-1.5 leading-tight line-clamp-2 max-w-full" title={item.failReason}>
                           {item.failReason}
                        </span>
                     )}

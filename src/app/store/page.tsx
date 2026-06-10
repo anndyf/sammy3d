@@ -87,7 +87,7 @@ export default function StorefrontPage() {
                   <Truck className="w-4 h-4" />
                   <span>Entrega Grátis em Alagoinhas-BA</span>
                </div>
-               <div className="hidden md:flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">
+               <div className="hidden md:flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-gray-600">
                   <span>•</span>
                   <span>Produzido Localmente com Tecnologia 3D</span>
                </div>
@@ -111,17 +111,17 @@ export default function StorefrontPage() {
                   <span className="font-medium text-2xl tracking-tighter text-white">sammy<span className="text-[#00D1FF]">3d</span></span>
                </div>
                <nav className="hidden xl:flex items-center gap-8 py-1.5 px-8 bg-white/5 rounded-full border border-white/10">
-                  <span className={cn("text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all", !selectedCategory ? "text-[#00D1FF]" : "text-slate-400 hover:text-white")} onClick={()=>setSelectedCategory(null)}>Explorar Tudo</span>
+                  <span className={cn("text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all", !selectedCategory ? "text-[#00D1FF]" : "text-gray-500 hover:text-white")} onClick={()=>setSelectedCategory(null)}>Explorar Tudo</span>
                   {dynamicCategories.map(cat => (
-                    <span key={cat} className={cn("text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all whitespace-nowrap", selectedCategory === cat ? "text-[#00D1FF]" : "text-slate-400 hover:text-white")} onClick={()=>setSelectedCategory(cat)}>{cat}</span>
+                    <span key={cat} className={cn("text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all whitespace-nowrap", selectedCategory === cat ? "text-[#00D1FF]" : "text-gray-500 hover:text-white")} onClick={()=>setSelectedCategory(cat)}>{cat}</span>
                   ))}
                </nav>
             </div>
 
             <div className="flex-1 max-w-sm hidden md:block">
                <div className="relative group">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#00D1FF] transition-colors" />
-                  <input type="text" placeholder="O que você imagina hoje?..." className="w-full h-12 pl-14 pr-6 bg-white/5 border border-white/10 rounded-full text-sm outline-none focus:bg-white/10 focus:border-[#00D1FF]/50 transition-all font-light tracking-tight text-white placeholder:text-slate-500" />
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-[#00D1FF] transition-colors" />
+                  <input type="text" placeholder="O que você imagina hoje?..." className="w-full h-12 pl-14 pr-6 bg-white/5 border border-white/10 rounded-full text-sm outline-none focus:bg-white/10 focus:border-[#00D1FF]/50 transition-all font-light tracking-tight text-white placeholder:text-gray-600" />
                </div>
             </div>
 
@@ -156,7 +156,7 @@ export default function StorefrontPage() {
                   <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-white leading-[0.9]">
                      O Futuro é <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00D1FF] to-[#FF006E] italic">Impresso 3D</span>.
                   </h2>
-                  <p className="text-xl text-slate-400 font-medium max-w-xl leading-relaxed">
+                  <p className="text-xl text-gray-500 font-medium max-w-xl leading-relaxed">
                      Manufatura aditiva de alta performance na Bahia. Designs exclusivos, resistentes e personalizáveis sob demanda.
                   </p>
                </div>
@@ -180,11 +180,11 @@ export default function StorefrontPage() {
 
          <div className="space-y-32">
             {loading ? (
-              <div className="py-40 text-center text-slate-500 uppercase text-[12px] font-black tracking-[0.6em] animate-pulse">Lendo base de dados industrial...</div>
+              <div className="py-40 text-center text-gray-600 uppercase text-[12px] font-black tracking-[0.6em] animate-pulse">Lendo base de dados industrial...</div>
             ) : Object.keys(displayedProducts).length === 0 ? (
               <div className="py-40 flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-[48px] bg-white/5">
                  <Box className="w-20 h-20 text-slate-700 mb-6" />
-                 <p className="text-slate-500 uppercase text-[12px] tracking-[.3em] font-black">Nenhuma peça em catálogo</p>
+                 <p className="text-gray-600 uppercase text-[12px] tracking-[.3em] font-black">Nenhuma peça em catálogo</p>
               </div>
             ) : (
               Object.entries(displayedProducts).map(([category, items]) => (
@@ -194,7 +194,7 @@ export default function StorefrontPage() {
                          <h3 className="text-5xl font-black tracking-tighter text-white">{category}</h3>
                          <div className="flex items-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-[#00D1FF] animate-pulse"></div>
-                            <p className="text-[11px] text-slate-400 uppercase tracking-[0.3em] font-bold">{items.length} Modelos Verificados</p>
+                            <p className="text-[11px] text-gray-500 uppercase tracking-[0.3em] font-bold">{items.length} Modelos Verificados</p>
                          </div>
                       </div>
                    </div>
@@ -224,14 +224,14 @@ export default function StorefrontPage() {
                            <div className="px-2 flex-1 flex flex-col">
                               <div className="space-y-2 mb-8">
                                  <h4 className="text-xl font-bold text-white tracking-tight leading-tight group-hover:text-[#00D1FF] transition-colors">{p.name}</h4>
-                                 <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black line-clamp-2">
+                                 <p className="text-[10px] text-gray-600 uppercase tracking-widest font-black line-clamp-2">
                                     {p.description || "Design industrial de alta durabilidade."}
                                  </p>
                               </div>
                               
                               <div className="mt-auto flex items-end justify-between">
                                  <div className="flex flex-col">
-                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Investimento</span>
+                                    <span className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-1">Investimento</span>
                                     <p className="text-3xl font-mono font-black text-white tracking-tighter">
                                        <span className="text-sm text-[#00D1FF] mr-1">R$</span>
                                        {p.sellingPrice.toFixed(2)}
@@ -270,17 +270,17 @@ export default function StorefrontPage() {
                     </div>
                     <div>
                        <h2 className="text-xl font-black text-white tracking-tight">Setor de Separação</h2>
-                       <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{cartItems.length} Itens na Fila</p>
+                       <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">{cartItems.length} Itens na Fila</p>
                     </div>
                  </div>
-                 <button onClick={() => setIsCartOpen(false)} className="p-2 text-slate-500 hover:text-white hover:bg-white/10 rounded-lg transition-all"><X className="w-6 h-6" /></button>
+                 <button onClick={() => setIsCartOpen(false)} className="p-2 text-gray-600 hover:text-white hover:bg-white/10 rounded-lg transition-all"><X className="w-6 h-6" /></button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
                  {cartItems.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-50">
                        <Box className="w-16 h-16 text-slate-600" />
-                       <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Nenhuma peça adicionada</p>
+                       <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Nenhuma peça adicionada</p>
                     </div>
                  ) : (
                     cartItems.map(item => (
@@ -294,9 +294,9 @@ export default function StorefrontPage() {
                               
                               <div className="flex items-center gap-4 mt-3">
                                  <div className="flex items-center bg-white/5 rounded-lg border border-white/10">
-                                    <button onClick={() => updateQuantity(item.product.id, -1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white">-</button>
+                                    <button onClick={() => updateQuantity(item.product.id, -1)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-white">-</button>
                                     <span className="w-8 text-center text-[12px] font-black">{item.quantity}</span>
-                                    <button onClick={() => updateQuantity(item.product.id, 1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white">+</button>
+                                    <button onClick={() => updateQuantity(item.product.id, 1)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-white">+</button>
                                  </div>
                                  <button onClick={() => removeFromCart(item.product.id)} className="text-[10px] text-red-500 font-bold uppercase hover:underline">Remover</button>
                               </div>
@@ -308,14 +308,14 @@ export default function StorefrontPage() {
 
               <div className="p-8 border-t border-white/10 bg-black/60 space-y-6">
                  <div className="flex items-center justify-between">
-                    <span className="text-[12px] font-black text-slate-500 uppercase tracking-widest">Estimativa Tática</span>
+                    <span className="text-[12px] font-black text-gray-600 uppercase tracking-widest">Estimativa Tática</span>
                     <span className="text-3xl font-mono font-black text-white tracking-tighter">R$ {cartTotalAmount.toFixed(2)}</span>
                  </div>
                  
                  <button 
                    onClick={checkoutWhatsApp}
                    disabled={cartItems.length === 0}
-                   className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-2xl flex items-center justify-center gap-4 text-[13px] font-black uppercase tracking-widest shadow-[0_0_30px_rgba(16,185,129,0.2)] transition-all"
+                   className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-gray-600 text-white rounded-2xl flex items-center justify-center gap-4 text-[13px] font-black uppercase tracking-widest shadow-[0_0_30px_rgba(16,185,129,0.2)] transition-all"
                  >
                     <MessageCircle className="w-5 h-5" /> Efetivar Via WhatsApp
                  </button>
@@ -334,10 +334,10 @@ export default function StorefrontPage() {
                   </div>
                   <span className="font-black text-3xl tracking-tighter text-white">sammy<span className="text-[#00D1FF]">3d</span></span>
                </div>
-               <p className="text-sm text-slate-500 font-medium max-w-sm leading-relaxed">Infraestrutura digital para manufatura aditiva. <br /> Operando em Alagoinhas-BA.</p>
+               <p className="text-sm text-gray-600 font-medium max-w-sm leading-relaxed">Infraestrutura digital para manufatura aditiva. <br /> Operando em Alagoinhas-BA.</p>
             </div>
             <div className="flex items-center gap-10">
-               <nav className="flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+               <nav className="flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">
                   <span className="hover:text-white cursor-pointer transition-colors">Instagram</span>
                   <span className="hover:text-white cursor-pointer transition-colors">TikTok</span>
                   <span className="hover:text-white cursor-pointer transition-colors">Configurações</span>

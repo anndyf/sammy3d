@@ -184,23 +184,23 @@ function QuotesContent() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 mt-2">
          <div className="flex items-center gap-4">
-            <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 shadow-lg shadow-cyan-500/5">
-               <Calculator className="h-6 w-6 text-cyan-400" />
+            <div className="p-3 bg-blue-600/10 rounded-2xl border border-blue-600/20 shadow-lg shadow-blue-600/5">
+               <Calculator className="h-6 w-6 text-blue-600" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Centro de Precificação</h1>
-              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Gere orçamentos precisos baseados em custos reais</p>
+              <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest">Gere orçamentos precisos baseados em custos reais</p>
             </div>
          </div>
          
          <div className="flex items-center gap-3">
             {!isAddingMode ? (
               <div className="flex bg-[#14161b] border border-white/5 rounded-xl p-1 shadow-inner">
-                 <button onClick={() => setInboxTab('PENDING')} className={cn("px-6 py-2 text-[10px] font-black uppercase rounded-lg transition-all tracking-widest", inboxTab === 'PENDING' ? "bg-cyan-500 text-black shadow-lg" : "text-slate-500 hover:text-white")}>Solicitações</button>
-                 <button onClick={() => setInboxTab('RESPONDED')} className={cn("px-6 py-2 text-[10px] font-black uppercase rounded-lg transition-all tracking-widest", inboxTab === 'RESPONDED' ? "bg-cyan-500 text-black shadow-lg" : "text-slate-500 hover:text-white")}>Atendidos</button>
+                 <button onClick={() => setInboxTab('PENDING')} className={cn("px-6 py-2 text-[10px] font-black uppercase rounded-lg transition-all tracking-widest", inboxTab === 'PENDING' ? "bg-blue-600 text-black shadow-lg" : "text-gray-600 hover:text-white")}>Solicitações</button>
+                 <button onClick={() => setInboxTab('RESPONDED')} className={cn("px-6 py-2 text-[10px] font-black uppercase rounded-lg transition-all tracking-widest", inboxTab === 'RESPONDED' ? "bg-blue-600 text-black shadow-lg" : "text-gray-600 hover:text-white")}>Atendidos</button>
               </div>
             ) : null}
-            <button onClick={() => setIsAddingMode(!isAddingMode)} className={cn("h-11 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border shadow-lg", isAddingMode ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-cyan-500 text-black border-cyan-400")}>
+            <button onClick={() => setIsAddingMode(!isAddingMode)} className={cn("h-11 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border shadow-lg", isAddingMode ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-blue-600 text-black border-blue-600")}>
               {isAddingMode ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
               {isAddingMode ? "Cancelar" : "Novo Orçamento"}
             </button>
@@ -214,62 +214,62 @@ function QuotesContent() {
               <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-10 shadow-2xl space-y-8">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block pl-1">Cliente</label>
-                       <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-white outline-none focus:border-cyan-500 transition-all" value={customerName} onChange={e=>setCustomerName(e.target.value)} />
+                       <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest block pl-1">Cliente</label>
+                       <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-white outline-none focus:border-blue-600 transition-all" value={customerName} onChange={e=>setCustomerName(e.target.value)} />
                     </div>
                     <div className="space-y-3">
-                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block pl-1">Projeto</label>
-                       <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-white outline-none focus:border-cyan-500 transition-all" value={projectName} onChange={e=>setProjectName(e.target.value)} />
+                       <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest block pl-1">Projeto</label>
+                       <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-white outline-none focus:border-blue-600 transition-all" value={projectName} onChange={e=>setProjectName(e.target.value)} />
                     </div>
                  </div>
 
                  <div className="bg-[#14161b] rounded-3xl p-8 border border-white/5 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-inner">
                     <div className="space-y-3">
                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest block pl-1">Filamento</label>
-                       <select className="w-full bg-[#1a1d24] border border-white/10 rounded-2xl px-5 py-4 text-xs font-black text-white outline-none focus:border-cyan-500 appearance-none" value={selectedMaterialId} onChange={e=>setSelectedMaterialId(e.target.value)}>
+                       <select className="w-full bg-[#1a1d24] border border-white/10 rounded-2xl px-5 py-4 text-xs font-black text-white outline-none focus:border-blue-600 appearance-none" value={selectedMaterialId} onChange={e=>setSelectedMaterialId(e.target.value)}>
                           <option value="">SELECIONAR...</option>
                           {materials.map(m => <option key={m.id} value={m.id}>{m.name.toUpperCase()} ({m.color})</option>)}
                        </select>
                     </div>
                     <div className="space-y-3">
                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest block pl-1">Massa (g)</label>
-                       <input type="number" className="w-full bg-[#1a1d24] border border-white/10 rounded-2xl px-5 py-4 text-xl font-black text-cyan-400 text-center outline-none focus:border-cyan-500" value={weightGrams} onChange={e=>setWeightGrams(e.target.value)} />
+                       <input type="number" className="w-full bg-[#1a1d24] border border-white/10 rounded-2xl px-5 py-4 text-xl font-black text-blue-600 text-center outline-none focus:border-blue-600" value={weightGrams} onChange={e=>setWeightGrams(e.target.value)} />
                     </div>
                     <div className="space-y-3">
                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest block pl-1">Tempo (H:M)</label>
                        <div className="flex gap-2">
-                          <input type="number" placeholder="H" className="w-1/2 bg-[#1a1d24] border border-white/10 rounded-2xl py-4 text-xl font-black text-cyan-400 text-center outline-none focus:border-cyan-500" value={printHours} onChange={e=>setPrintHours(e.target.value)} />
-                          <input type="number" placeholder="M" className="w-1/2 bg-[#1a1d24] border border-white/10 rounded-2xl py-4 text-xl font-black text-cyan-400 text-center outline-none focus:border-cyan-500" value={printMinutes} onChange={e=>setPrintMinutes(e.target.value)} />
+                          <input type="number" placeholder="H" className="w-1/2 bg-[#1a1d24] border border-white/10 rounded-2xl py-4 text-xl font-black text-blue-600 text-center outline-none focus:border-blue-600" value={printHours} onChange={e=>setPrintHours(e.target.value)} />
+                          <input type="number" placeholder="M" className="w-1/2 bg-[#1a1d24] border border-white/10 rounded-2xl py-4 text-xl font-black text-blue-600 text-center outline-none focus:border-blue-600" value={printMinutes} onChange={e=>setPrintMinutes(e.target.value)} />
                        </div>
                     </div>
                  </div>
 
                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block pl-1">Observações do Pedido</label>
-                    <textarea className="w-full bg-[#14161b] border border-white/5 rounded-3xl px-6 py-5 text-sm font-bold text-white min-h-[100px] outline-none focus:border-cyan-500 transition-all resize-none" value={notes} onChange={e=>setNotes(e.target.value)} />
+                    <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest block pl-1">Observações do Pedido</label>
+                    <textarea className="w-full bg-[#14161b] border border-white/5 rounded-3xl px-6 py-5 text-sm font-bold text-white min-h-[100px] outline-none focus:border-blue-600 transition-all resize-none" value={notes} onChange={e=>setNotes(e.target.value)} />
                  </div>
 
                  {/* DETALHAMENTO HORIZONTAL (PEDIDO PELO USUÁRIO) */}
                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 pt-6 border-t border-white/5">
                     <div className="bg-[#14161b]/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
-                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Filamento</span>
+                       <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest mb-1">Filamento</span>
                        <span className="text-sm font-black text-white">R$ {metrics.materialCost.toFixed(2)}</span>
                     </div>
                     <div className="bg-[#14161b]/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
-                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Energia</span>
+                       <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest mb-1">Energia</span>
                        <span className="text-sm font-black text-white">R$ {metrics.powerCost.toFixed(2)}</span>
                     </div>
                     <div className="bg-[#14161b]/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
-                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Máquina</span>
+                       <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest mb-1">Máquina</span>
                        <span className="text-sm font-black text-white">R$ {metrics.depreciationCost.toFixed(2)}</span>
                     </div>
                     <div className="bg-[#14161b]/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
-                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Embalagem</span>
+                       <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest mb-1">Embalagem</span>
                        <span className="text-sm font-black text-white">R$ {metrics.packagingCost.toFixed(2)}</span>
                     </div>
-                    <div className="bg-cyan-500/10 p-4 rounded-2xl border border-cyan-500/20 flex flex-col items-center justify-center">
-                       <span className="text-[8px] font-black text-cyan-500 uppercase tracking-widest mb-1">Custo Total</span>
-                       <span className="text-sm font-black text-cyan-400 font-mono">R$ {metrics.totalCost.toFixed(2)}</span>
+                    <div className="bg-blue-600/10 p-4 rounded-2xl border border-blue-600/20 flex flex-col items-center justify-center">
+                       <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-1">Custo Total</span>
+                       <span className="text-sm font-black text-blue-600 font-mono">R$ {metrics.totalCost.toFixed(2)}</span>
                     </div>
                  </div>
               </div>
@@ -279,9 +279,9 @@ function QuotesContent() {
            <div className="lg:col-span-4 space-y-6">
               <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-10 shadow-2xl space-y-10">
                  <div className="bg-[#14161b] p-8 rounded-[1.5rem] border border-white/5 text-center shadow-inner relative group">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">Markup (Lucro %)</p>
+                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mb-4">Markup (Lucro %)</p>
                     <input type="number" className="bg-transparent text-6xl font-black text-white outline-none text-center tracking-tighter w-full" value={markupPercent} onChange={e=>handleMarkupChange(e.target.value)} />
-                    <Sparkles className="absolute top-4 right-4 h-3 w-3 text-cyan-500/30" />
+                    <Sparkles className="absolute top-4 right-4 h-3 w-3 text-blue-600/30" />
                  </div>
 
                  <div className="text-right space-y-2">
@@ -296,12 +296,12 @@ function QuotesContent() {
                  </div>
 
                  <div className="space-y-4 pt-4">
-                    <label className="flex items-center justify-between bg-[#14161b] p-4 rounded-xl border border-white/5 cursor-pointer hover:border-cyan-500/30 transition-all">
+                    <label className="flex items-center justify-between bg-[#14161b] p-4 rounded-xl border border-white/5 cursor-pointer hover:border-blue-600/30 transition-all">
                        <div className="flex items-center gap-3">
-                          <Box className="h-4 w-4 text-cyan-400" />
+                          <Box className="h-4 w-4 text-blue-600" />
                           <span className="text-[10px] font-black text-white uppercase tracking-widest">Salvar no Catálogo</span>
                        </div>
-                       <div className={cn("w-10 h-6 rounded-full p-1 transition-all", saveToCatalog ? "bg-cyan-500" : "bg-white/10")}>
+                       <div className={cn("w-10 h-6 rounded-full p-1 transition-all", saveToCatalog ? "bg-blue-600" : "bg-white/10")}>
                           <div className={cn("w-4 h-4 bg-white rounded-full transition-all shadow-sm", saveToCatalog ? "translate-x-4" : "translate-x-0")} />
                        </div>
                        <input type="checkbox" className="hidden" checked={saveToCatalog} onChange={e => setSaveToCatalog(e.target.checked)} />
@@ -310,7 +310,7 @@ function QuotesContent() {
                     <button onClick={generateWhatsAppQuote} className="w-full bg-emerald-500 text-black h-16 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all flex items-center justify-center gap-4">
                        <MessageCircle className="h-5 w-5" /> WhatsApp
                     </button>
-                    <button onClick={handleApproveToProduction} className="w-full bg-cyan-500 text-black h-20 rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-cyan-400 transition-all flex items-center justify-center gap-4 shadow-2xl shadow-cyan-500/20">
+                    <button onClick={handleApproveToProduction} className="w-full bg-blue-600 text-black h-20 rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-600/20">
                        <CheckCircle2 className="h-6 w-6" /> Produzir Peça
                     </button>
                  </div>
@@ -325,13 +325,13 @@ function QuotesContent() {
                 <p className="text-[11px] font-black text-slate-600 uppercase tracking-[0.4em]">Nenhuma solicitação</p>
               </div>
            ) : filteredRequests.map(req => (
-              <div key={req.id} onClick={() => handleUseRequest(req)} className="bg-[#1a1d24] border border-white/5 rounded-3xl p-8 hover:border-cyan-500 transition-all group cursor-pointer relative">
+              <div key={req.id} onClick={() => handleUseRequest(req)} className="bg-[#1a1d24] border border-white/5 rounded-3xl p-8 hover:border-blue-600 transition-all group cursor-pointer relative">
                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-cyan-500 text-black flex items-center justify-center font-black">{req.clientName.substring(0,2).toUpperCase()}</div>
+                    <div className="w-10 h-10 rounded-xl bg-blue-600 text-black flex items-center justify-center font-black">{req.clientName.substring(0,2).toUpperCase()}</div>
                     <h4 className="text-md font-black text-white uppercase">{req.projectName}</h4>
                  </div>
-                 <p className="text-xs text-slate-500 line-clamp-2 mb-6">{req.description}</p>
-                 <ArrowRight className="h-4 w-4 text-slate-700 absolute bottom-8 right-8 group-hover:text-cyan-400" />
+                 <p className="text-xs text-gray-600 line-clamp-2 mb-6">{req.description}</p>
+                 <ArrowRight className="h-4 w-4 text-slate-700 absolute bottom-8 right-8 group-hover:text-blue-600" />
               </div>
            ))}
         </div>

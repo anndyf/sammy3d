@@ -310,7 +310,7 @@ export function Sidebar() {
            href="/dashboard" 
            className={cn(
              "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
-             pathname === "/dashboard" ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+             pathname === "/dashboard" ? "text-blue-600 bg-blue-600/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-blue-600/20" : "text-gray-600 hover:text-white"
            )}
          >
             <LayoutDashboard className="h-5 w-5" />
@@ -321,7 +321,7 @@ export function Sidebar() {
            href="/sales" 
            className={cn(
              "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
-             pathname.startsWith("/sales") ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+             pathname.startsWith("/sales") ? "text-blue-600 bg-blue-600/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-blue-600/20" : "text-gray-600 hover:text-white"
            )}
          >
             <ShoppingCart className="h-5 w-5" />
@@ -332,7 +332,7 @@ export function Sidebar() {
            href="/production/smart" 
            className={cn(
              "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
-             pathname === "/production/smart" ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+             pathname === "/production/smart" ? "text-blue-600 bg-blue-600/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-blue-600/20" : "text-gray-600 hover:text-white"
            )}
          >
             <Cpu className="h-5 w-5" />
@@ -343,7 +343,7 @@ export function Sidebar() {
            href="/stock" 
            className={cn(
              "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
-             pathname === "/stock" ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+             pathname === "/stock" ? "text-blue-600 bg-blue-600/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-blue-600/20" : "text-gray-600 hover:text-white"
            )}
          >
             <Disc className="h-5 w-5" />
@@ -354,7 +354,7 @@ export function Sidebar() {
            onClick={() => setIsDrawerOpen(true)} 
            className={cn(
              "p-3 rounded-xl transition-all flex items-center justify-center active:scale-90",
-             isDrawerOpen ? "text-cyan-400 bg-cyan-400/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-cyan-400/20" : "text-slate-500 hover:text-white"
+             isDrawerOpen ? "text-blue-600 bg-blue-600/10 shadow-[0_0_15px_rgba(0,245,255,0.15)] border border-blue-600/20" : "text-gray-600 hover:text-white"
            )}
          >
             <Menu className="h-5 w-5" />

@@ -38,7 +38,7 @@ export default function CostCalculator() {
         <h1 className="text-4xl font-bold font-outfit text-white tracking-tight">
           Simulador de <span className="text-purple-400">Custos</span>
         </h1>
-        <p className="text-slate-400 font-light mt-1">Calcule o orçamento ideal com base no material, tempo e lucro desejado.</p>
+        <p className="text-gray-500 font-light mt-1">Calcule o orçamento ideal com base no material, tempo e lucro desejado.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -47,7 +47,7 @@ export default function CostCalculator() {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                   <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Peso Estimado (g)</label>
+                   <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Peso Estimado (g)</label>
                    <span className="text-purple-400 text-xs font-medium">{weight}g</span>
                 </div>
                 <div className="flex gap-4">
@@ -66,7 +66,7 @@ export default function CostCalculator() {
 
              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                   <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Tempo de Impressão (min)</label>
+                   <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Tempo de Impressão (min)</label>
                    <span className="text-blue-400 text-xs font-medium">{Math.floor(time/60)}h {time % 60}m</span>
                 </div>
                 <div className="flex gap-4">
@@ -84,9 +84,9 @@ export default function CostCalculator() {
              </div>
 
              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Custo do Filamento (R$/kg)</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Custo do Filamento (R$/kg)</label>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">R$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">R$</span>
                   <input 
                     type="number" 
                     value={materialCost}
@@ -97,9 +97,9 @@ export default function CostCalculator() {
              </div>
 
              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Margem de Lucro (%)</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Margem de Lucro (%)</label>
                 <div className="relative group">
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">%</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">%</span>
                   <input 
                     type="number" 
                     value={profitMargin}
@@ -111,13 +111,13 @@ export default function CostCalculator() {
            </div>
 
            <div className="pt-6 border-t border-white/5">
-             <div className="flex items-center gap-2 mb-4 text-slate-400">
+             <div className="flex items-center gap-2 mb-4 text-gray-500">
                <Zap className="h-4 w-4" />
                <h3 className="text-xs font-bold uppercase tracking-widest">Configuração de Energia</h3>
              </div>
              <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <p className="text-[10px] text-slate-500 uppercase font-bold">Consumo Impressora (Watts)</p>
+                  <p className="text-[10px] text-gray-600 uppercase font-bold">Consumo Impressora (Watts)</p>
                   <input 
                     type="number" 
                     value={printerWattage}
@@ -126,7 +126,7 @@ export default function CostCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-[10px] text-slate-500 uppercase font-bold">Valor do kWh (R$)</p>
+                  <p className="text-[10px] text-gray-600 uppercase font-bold">Valor do kWh (R$)</p>
                   <input 
                     type="number" 
                     value={energyCost}
@@ -155,11 +155,11 @@ export default function CostCalculator() {
 
               <div className="space-y-4">
                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-400">Custo Material (Filamento)</span>
+                    <span className="text-gray-500">Custo Material (Filamento)</span>
                     <span className="text-white font-medium">{formatCurrency(calculations.material)}</span>
                  </div>
                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-400">Energia Elétrica</span>
+                    <span className="text-gray-500">Energia Elétrica</span>
                     <span className="text-white font-medium">{formatCurrency(calculations.energy)}</span>
                  </div>
                  <div className="flex justify-between items-center text-sm pt-4 border-t border-white/5">
@@ -170,7 +170,7 @@ export default function CostCalculator() {
 
               <button className="w-full mt-8 bg-white/5 hover:bg-white/10 text-white rounded-xl py-4 font-bold text-sm transition-all border border-white/5 flex items-center justify-center gap-2">
                  Gerar Orçamento PDF
-                 <HelpCircle className="h-4 w-4 text-slate-500" />
+                 <HelpCircle className="h-4 w-4 text-gray-600" />
               </button>
            </div>
 
@@ -179,7 +179,7 @@ export default function CostCalculator() {
                 <TrendingUp className="h-5 w-5" />
                 <h4 className="font-bold text-sm">Análise de ROI</h4>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-gray-500 leading-relaxed">
                  Ao vender este item pelo preço recomendado, você terá um retorno de <span className="text-emerald-400 font-bold">{formatCurrency(calculations.profit)}</span> livre sobre os custos de produção.
               </p>
            </div>

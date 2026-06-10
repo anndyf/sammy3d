@@ -22,11 +22,11 @@ export default function CostsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
          <div className="flex items-center gap-4">
             <div className="p-3 bg-transparent rounded-xl">
-               <Tag className="h-6 w-6 text-cyan-400" />
+               <Tag className="h-6 w-6 text-blue-600" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white">Custos Extras & Insumos</h1>
          </div>
-         <button className="bg-cyan-500 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg">
+         <button className="bg-blue-600 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg">
            <Plus className="h-4 w-4" />
            Novo Custo
          </button>
@@ -44,21 +44,21 @@ export default function CostsPage() {
 
               <div className="p-6">
                  <h3 className="text-lg font-bold text-white mb-1">{cost.name}</h3>
-                 <p className="text-xs font-medium text-slate-400 mb-4">Custo Unitário Médio</p>
+                 <p className="text-xs font-medium text-gray-500 mb-4">Custo Unitário Médio</p>
                  
                  <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-xs font-bold text-slate-500">R$</span>
+                    <span className="text-xs font-bold text-gray-600">R$</span>
                     <span className="text-3xl font-black text-emerald-400 font-mono tracking-tighter">{cost.unitCost.toFixed(2)}</span>
-                    <span className="text-xs font-medium text-slate-500 ml-1">/ {cost.unitLabel}</span>
+                    <span className="text-xs font-medium text-gray-600 ml-1">/ {cost.unitLabel}</span>
                  </div>
 
                  {/* STOCK BOX */}
                  <div className="bg-[#14161b] border border-white/5 rounded-xl p-4 mb-6 flex justify-between items-end">
                     <div>
-                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Estoque Atual</p>
+                       <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">Estoque Atual</p>
                        <div className="flex items-baseline gap-1">
                           <span className="text-xl font-bold text-white">{cost.currentStock}</span>
-                          <span className="text-xs text-slate-500 font-medium">un</span>
+                          <span className="text-xs text-gray-600 font-medium">un</span>
                        </div>
                     </div>
                     <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Min: {cost.minStock}</span>

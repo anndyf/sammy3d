@@ -52,7 +52,7 @@ export default function NewMaterialPage() {
       {/* Back Button */}
       <button 
         onClick={() => router.back()}
-        className="text-slate-400 hover:text-white flex items-center gap-2 group text-sm font-medium transition-colors"
+        className="text-gray-500 hover:text-white flex items-center gap-2 group text-sm font-medium transition-colors"
       >
         <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
         Voltar para os Materiais
@@ -63,7 +63,7 @@ export default function NewMaterialPage() {
         <h1 className="text-4xl font-bold font-outfit text-white tracking-tight">
           Cadastrar <span className="text-purple-400">Novo Insumo</span>
         </h1>
-        <p className="text-slate-400 font-light mt-1">Registre a compra de um novo rolo de filamento ou frasco de resina.</p>
+        <p className="text-gray-500 font-light mt-1">Registre a compra de um novo rolo de filamento ou frasco de resina.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -71,7 +71,7 @@ export default function NewMaterialPage() {
         <div className="lg:col-span-3 glass-card p-8 border border-white/5 space-y-8">
           {/* Type Selector */}
           <div className="space-y-4">
-             <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Tipo do Material</label>
+             <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Tipo do Material</label>
              <div className="grid grid-cols-2 gap-4">
                 <button 
                   onClick={() => setType("FILAMENT")}
@@ -79,7 +79,7 @@ export default function NewMaterialPage() {
                     "p-4 rounded-2xl border transition-all flex flex-col items-center gap-3",
                     type === "FILAMENT" 
                       ? "bg-purple-600/10 border-purple-500/50 text-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.1)]" 
-                      : "bg-white/5 border-white/5 text-slate-500 hover:border-white/10"
+                      : "bg-white/5 border-white/5 text-gray-600 hover:border-white/10"
                   )}
                 >
                   <Layers className="h-8 w-8" />
@@ -91,7 +91,7 @@ export default function NewMaterialPage() {
                     "p-4 rounded-2xl border transition-all flex flex-col items-center gap-3",
                     type === "RESIN" 
                       ? "bg-blue-600/10 border-blue-500/50 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.1)]" 
-                      : "bg-white/5 border-white/5 text-slate-500 hover:border-white/10"
+                      : "bg-white/5 border-white/5 text-gray-600 hover:border-white/10"
                   )}
                 >
                   <Droplets className="h-8 w-8" />
@@ -103,7 +103,7 @@ export default function NewMaterialPage() {
           {/* Form Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="md:col-span-2 space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Nome / Marca</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Nome / Marca</label>
                 <input 
                   type="text" 
                   value={name}
@@ -114,7 +114,7 @@ export default function NewMaterialPage() {
              </div>
              
              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Custo Total (R$)</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Custo Total (R$)</label>
                 <input 
                   type="number" 
                   step="0.01"
@@ -127,7 +127,7 @@ export default function NewMaterialPage() {
              </div>
 
              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Peso Total ({type === "FILAMENT" ? "g" : "ml"})</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Peso Total ({type === "FILAMENT" ? "g" : "ml"})</label>
                 <input 
                   type="number" 
                   min="0"
@@ -139,7 +139,7 @@ export default function NewMaterialPage() {
              </div>
 
              <div className="md:col-span-2 space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Cor Predominante (Hex)</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Cor Predominante (Hex)</label>
                 <div className="flex gap-4">
                   <input 
                     type="color" 
@@ -176,7 +176,7 @@ export default function NewMaterialPage() {
               </div>
               <div className="space-y-2">
                 <h4 className="font-bold text-white text-sm">Por que isso é importante?</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-gray-500 leading-relaxed">
                   O custo unitário por grama será calculado automaticamente. 
                   Isso permite que o sistema projete o custo exato de cada peça impressa com base no fatiamento.
                 </p>

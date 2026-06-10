@@ -30,8 +30,8 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="py-40 text-center flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
-        <div className="text-slate-500 font-mono uppercase text-[10px] tracking-[0.2em] animate-pulse">Sincronizando painel em tempo real...</div>
+        <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+        <div className="text-gray-600 font-mono uppercase text-[10px] tracking-[0.2em] animate-pulse">Sincronizando painel em tempo real...</div>
       </div>
     );
   }
@@ -44,8 +44,8 @@ export default function Dashboard() {
     if (validPoints.length === 0) {
       return (
         <div className="flex-1 flex flex-col items-center justify-center opacity-25">
-          <TrendingUp className="h-8 w-8 text-slate-500 mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sem dados financeiros</p>
+          <TrendingUp className="h-8 w-8 text-gray-600 mb-2" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Sem dados financeiros</p>
         </div>
       );
     }
@@ -95,7 +95,7 @@ export default function Dashboard() {
             ))}
           </svg>
         </div>
-        <div className="flex justify-between mt-3 pt-3 border-t border-white/5 text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono">
+        <div className="flex justify-between mt-3 pt-3 border-t border-white/5 text-[9px] font-bold text-gray-600 uppercase tracking-wider font-mono">
           {points.map((p: any, idx: number) => (
             <span key={idx}>{p.month}</span>
           ))}
@@ -109,8 +109,8 @@ export default function Dashboard() {
     if (categories.length === 0) {
       return (
         <div className="flex-1 flex flex-col items-center justify-center opacity-25">
-          <Activity className="h-8 w-8 text-slate-500 mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sem custos ativos</p>
+          <Activity className="h-8 w-8 text-gray-600 mb-2" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Sem custos ativos</p>
         </div>
       );
     }
@@ -131,7 +131,7 @@ export default function Dashboard() {
                     className="w-full bg-gradient-to-t from-red-600/80 to-red-400/90 rounded-t-lg transition-all duration-700"
                   ></div>
                 </div>
-                <span className="text-[8px] font-black text-slate-500 uppercase tracking-wider mt-2.5 truncate w-full text-center">
+                <span className="text-[8px] font-black text-gray-600 uppercase tracking-wider mt-2.5 truncate w-full text-center">
                   {c.category}
                 </span>
               </div>
@@ -147,8 +147,8 @@ export default function Dashboard() {
     if (products.length === 0) {
       return (
         <div className="flex-1 flex flex-col items-center justify-center opacity-25">
-          <Package className="h-8 w-8 text-slate-500 mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Nenhuma venda registrada</p>
+          <Package className="h-8 w-8 text-gray-600 mb-2" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Nenhuma venda registrada</p>
         </div>
       );
     }
@@ -169,7 +169,7 @@ export default function Dashboard() {
                   className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full transition-all duration-500"
                 ></div>
               </div>
-              <div className="flex justify-between text-[9px] text-slate-500 font-black">
+              <div className="flex justify-between text-[9px] text-gray-600 font-black">
                 <span>#{idx+1} RANKING</span>
                 <span>{p.qty} UNIDADES VENDIDAS</span>
               </div>
@@ -185,24 +185,24 @@ export default function Dashboard() {
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#1a1d24] p-5 rounded-2xl border border-white/5">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-cyan-500/10 rounded-xl">
-            <LayoutDashboard className="h-6 w-6 text-cyan-400" />
+          <div className="p-3 bg-blue-600/10 rounded-xl">
+            <LayoutDashboard className="h-6 w-6 text-blue-600" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight uppercase">Painel de Controle</h1>
-            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest text-glow-indigo">Sincronizado em Tempo Real</p>
+            <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest text-glow-indigo">Sincronizado em Tempo Real</p>
           </div>
         </div>
         
         <div className="flex flex-row items-center gap-3 mt-2 md:mt-0 w-full md:w-auto">
-          <button onClick={fetchDashboardData} className="p-3 bg-[#1a1d24] border border-white/10 text-slate-400 rounded-xl hover:text-white transition-all shadow-lg shrink-0">
+          <button onClick={fetchDashboardData} className="p-3 bg-[#1a1d24] border border-white/10 text-gray-500 rounded-xl hover:text-white transition-all shadow-lg shrink-0">
              <RotateCcw className="h-4 w-4" />
           </button>
           
           <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-[#14161b] border border-white/10 rounded-xl md:rounded-lg hover:bg-white/5 transition-all text-sm font-medium text-slate-300">
-            <Filter className="h-4 w-4 text-cyan-400" />
+            <Filter className="h-4 w-4 text-blue-600" />
             maio de 2026
-            <Calendar className="h-4 w-4 ml-2 text-slate-500" />
+            <Calendar className="h-4 w-4 ml-2 text-gray-600" />
           </button>
         </div>
       </div>
@@ -212,7 +212,7 @@ export default function Dashboard() {
         {/* FATURAMENTO TOTAL */}
         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">FATURAMENTO TOTAL</h3>
+            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">FATURAMENTO TOTAL</h3>
             <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-emerald-500/30 transition-colors">
               <DollarSign className="h-5 w-5 text-emerald-400" />
             </div>
@@ -225,7 +225,7 @@ export default function Dashboard() {
         {/* LUCRO LÍQUIDO */}
         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">LUCRO LÍQUIDO</h3>
+            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">LUCRO LÍQUIDO</h3>
             <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-emerald-500/30 transition-colors">
               <TrendingUp className="h-5 w-5 text-emerald-400" />
             </div>
@@ -238,7 +238,7 @@ export default function Dashboard() {
         {/* CUSTO PRODUÇÃO */}
         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">CUSTO PRODUÇÃO</h3>
+            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">CUSTO PRODUÇÃO</h3>
             <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-red-500/30 transition-colors">
               <Activity className="h-5 w-5 text-red-400" />
             </div>
@@ -251,7 +251,7 @@ export default function Dashboard() {
         {/* LOTES PRODUZIDOS */}
         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">LOTES CONCLUÍDOS</h3>
+            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">LOTES CONCLUÍDOS</h3>
             <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-purple-500/30 transition-colors">
               <Package className="h-5 w-5 text-purple-400" />
             </div>
@@ -271,18 +271,18 @@ export default function Dashboard() {
               <FileText className="h-4 w-4 text-amber-400" />
               <h3 className="font-bold text-white leading-tight">Orçamentos<br/>Pendentes</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-slate-400">{data?.orcamentosPendentes?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.orcamentosPendentes?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.orcamentosPendentes?.length === 0 ? (
-              <p className="text-sm text-slate-500">Nenhum orçamento<br/>pendente.</p>
+              <p className="text-sm text-gray-600">Nenhum orçamento<br/>pendente.</p>
             ) : (
               <div className="w-full text-left space-y-2 overflow-y-auto max-h-[160px] pr-1">
                 {data.orcamentosPendentes.map((q: any) => (
                   <div key={q.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-amber-500/30 transition-all">
                     <span className="text-[11px] font-black text-white truncate uppercase">{q.projectName || 'Sem Nome'}</span>
                     <div className="flex justify-between items-center mt-1.5">
-                      <span className="text-[9px] text-slate-500 uppercase font-bold truncate max-w-[120px]">{q.clientName}</span>
+                      <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[120px]">{q.clientName}</span>
                       <span className="text-[8px] font-black text-amber-400 bg-amber-400/5 border border-amber-400/10 px-1.5 py-0.5 rounded uppercase">Pendente</span>
                     </div>
                   </div>
@@ -299,11 +299,11 @@ export default function Dashboard() {
               <Clock className="h-4 w-4 text-purple-400" />
               <h3 className="font-bold text-white leading-tight">Na Fila<br/>(Produção)</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-slate-400">{data?.naFila?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.naFila?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.naFila?.length === 0 ? (
-              <p className="text-sm text-slate-500">Fila de produção vazia.</p>
+              <p className="text-sm text-gray-600">Fila de produção vazia.</p>
             ) : (
               <div className="w-full text-left space-y-2 overflow-y-auto max-h-[160px] pr-1">
                 {data.naFila.map((o: any) => {
@@ -312,7 +312,7 @@ export default function Dashboard() {
                     <div key={o.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-purple-500/30 transition-all">
                       <span className="text-[11px] font-black text-white truncate uppercase">{name}</span>
                       <div className="flex justify-between items-center mt-1.5">
-                        <span className="text-[9px] text-slate-500 uppercase font-bold truncate max-w-[100px]">{o.customerName}</span>
+                        <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[100px]">{o.customerName}</span>
                         <span className="text-[8px] font-black text-purple-400 bg-purple-400/5 border border-purple-400/10 px-1.5 py-0.5 rounded uppercase">
                           {o.status === 'PRINTING' ? 'Imprimindo' : o.status === 'POST_PROCESSING' ? 'Acabamento' : 'Fila'}
                         </span>
@@ -332,11 +332,11 @@ export default function Dashboard() {
               <Box className="h-4 w-4 text-orange-400" />
               <h3 className="font-bold text-white leading-tight">Pronto<br/>(A Enviar)</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-slate-400">{data?.aEnviar?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.aEnviar?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.aEnviar?.length === 0 ? (
-              <p className="text-sm text-slate-500">Tudo enviado! 🎉</p>
+              <p className="text-sm text-gray-600">Tudo enviado! 🎉</p>
             ) : (
               <div className="w-full text-left space-y-2 overflow-y-auto max-h-[160px] pr-1">
                 {data.aEnviar.map((o: any) => {
@@ -345,7 +345,7 @@ export default function Dashboard() {
                     <div key={o.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-orange-500/30 transition-all">
                       <span className="text-[11px] font-black text-white truncate uppercase">{name}</span>
                       <div className="flex justify-between items-center mt-1.5">
-                        <span className="text-[9px] text-slate-500 uppercase font-bold truncate max-w-[120px]">{o.customerName}</span>
+                        <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[120px]">{o.customerName}</span>
                         <span className="text-[8px] font-black text-orange-400 bg-orange-400/5 border border-orange-400/10 px-1.5 py-0.5 rounded uppercase">Pronto</span>
                       </div>
                     </div>
@@ -363,11 +363,11 @@ export default function Dashboard() {
               <Truck className="h-4 w-4 text-blue-400" />
               <h3 className="font-bold text-white leading-tight">Em Trânsito<br/>(Rota)</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-slate-400">{data?.emTransito?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.emTransito?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.emTransito?.length === 0 ? (
-              <p className="text-sm text-slate-500">Nenhum pedido em rota.</p>
+              <p className="text-sm text-gray-600">Nenhum pedido em rota.</p>
             ) : (
               <div className="w-full text-left space-y-2 overflow-y-auto max-h-[160px] pr-1">
                 {data.emTransito.map((o: any) => {
@@ -376,7 +376,7 @@ export default function Dashboard() {
                     <div key={o.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-blue-500/30 transition-all">
                       <span className="text-[11px] font-black text-white truncate uppercase">{name}</span>
                       <div className="flex justify-between items-center mt-1.5">
-                        <span className="text-[9px] text-slate-500 uppercase font-bold truncate max-w-[120px]">{o.customerName}</span>
+                        <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[120px]">{o.customerName}</span>
                         <span className="text-[8px] font-black text-blue-400 bg-blue-400/5 border border-blue-400/10 px-1.5 py-0.5 rounded uppercase">Em Rota</span>
                       </div>
                     </div>

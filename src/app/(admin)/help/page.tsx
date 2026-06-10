@@ -32,27 +32,27 @@ export default function HelpDeskPage() {
       
       {/* HEADER HERO */}
       <div className="bg-[#1a1d24] border border-white/5 rounded-3xl p-12 shadow-2xl relative overflow-hidden text-center flex flex-col items-center">
-         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-500"></div>
-         <div className="absolute -left-20 -top-20 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
+         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-emerald-500"></div>
+         <div className="absolute -left-20 -top-20 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
          
          <div className="w-16 h-16 rounded-2xl bg-[#14161b] border border-white/5 flex items-center justify-center mb-6 shadow-inner relative z-10">
-           <LifeBuoy className="h-8 w-8 text-cyan-400" />
+           <LifeBuoy className="h-8 w-8 text-blue-600" />
          </div>
          
          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-4 relative z-10">
            Como podemos te ajudar hoje?
          </h1>
-         <p className="text-slate-400 font-bold max-w-xl mx-auto mb-8 relative z-10">
+         <p className="text-gray-500 font-bold max-w-xl mx-auto mb-8 relative z-10">
            Explore tutoriais, resolva dúvidas na nossa base de conhecimento ou abra um chamado direto com nossa engenharia.
          </p>
 
          <div className="relative w-full max-w-2xl mx-auto z-10">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-500" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-600" />
             <input 
               type="text" 
               placeholder="Ex: Como exportar relatórios em PDF..." 
-              className="w-full bg-[#14161b] border border-white/10 rounded-2xl pl-16 pr-6 py-5 text-lg font-bold text-white outline-none focus:border-cyan-500 transition-all shadow-2xl placeholder:text-slate-600" 
+              className="w-full bg-[#14161b] border border-white/10 rounded-2xl pl-16 pr-6 py-5 text-lg font-bold text-white outline-none focus:border-blue-600 transition-all shadow-2xl placeholder:text-slate-600" 
               value={search} 
               onChange={e=>setSearch(e.target.value)}
             />
@@ -62,44 +62,44 @@ export default function HelpDeskPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          {/* VIDEOS */}
          <div className="col-span-1 space-y-6">
-            <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-widest pl-2">Tutoriais em Vídeo</h3>
+            <h3 className="text-[11px] font-black text-gray-600 uppercase tracking-widest pl-2">Tutoriais em Vídeo</h3>
             
             <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-2 space-y-2 shadow-lg">
                <a href="#" className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
-                  <div className="p-3 bg-[#14161b] rounded-lg group-hover:bg-cyan-500/10 transition-colors">
-                     <PlayCircle className="h-5 w-5 text-slate-500 group-hover:text-cyan-400" />
+                  <div className="p-3 bg-[#14161b] rounded-lg group-hover:bg-blue-600/10 transition-colors">
+                     <PlayCircle className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
                   </div>
                   <div className="flex-1">
-                     <h4 className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">Primeiros Passos</h4>
-                     <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">3 min de vídeo</p>
+                     <h4 className="text-sm font-bold text-white group-hover:text-blue-600 transition-colors">Primeiros Passos</h4>
+                     <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">3 min de vídeo</p>
                   </div>
                </a>
                <a href="#" className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
                   <div className="p-3 bg-[#14161b] rounded-lg group-hover:bg-blue-500/10 transition-colors">
-                     <PlayCircle className="h-5 w-5 text-slate-500 group-hover:text-blue-400" />
+                     <PlayCircle className="h-5 w-5 text-gray-600 group-hover:text-blue-400" />
                   </div>
                   <div className="flex-1">
                      <h4 className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">Fluxo de Kamban</h4>
-                     <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">5 min de vídeo</p>
+                     <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">5 min de vídeo</p>
                   </div>
                </a>
                <a href="#" className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
                   <div className="p-3 bg-[#14161b] rounded-lg group-hover:bg-indigo-500/10 transition-colors">
-                     <PlayCircle className="h-5 w-5 text-slate-500 group-hover:text-indigo-400" />
+                     <PlayCircle className="h-5 w-5 text-gray-600 group-hover:text-indigo-400" />
                   </div>
                   <div className="flex-1">
                      <h4 className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">Setup de Impressoras</h4>
-                     <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">8 min de vídeo</p>
+                     <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">8 min de vídeo</p>
                   </div>
                </a>
             </div>
 
             <div className="bg-gradient-to-br from-[#1a1d24] to-[#14161b] border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
-               <div className="absolute right-0 top-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-               <MessageSquare className="h-6 w-6 text-cyan-400 mb-4" />
+               <div className="absolute right-0 top-0 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+               <MessageSquare className="h-6 w-6 text-blue-600 mb-4" />
                <h3 className="text-sm font-black text-white mb-2">Suporte Direto</h3>
-               <p className="text-[11px] text-slate-400 font-bold mb-6">Fale diretamente com nossa equipe técnica para dúvidas avançadas.</p>
-               <button className="w-full bg-cyan-500 text-black font-black uppercase tracking-widest text-[10px] py-3 rounded-xl hover:bg-cyan-400 transition-colors flex items-center justify-center gap-2">
+               <p className="text-[11px] text-gray-500 font-bold mb-6">Fale diretamente com nossa equipe técnica para dúvidas avançadas.</p>
+               <button className="w-full bg-blue-600 text-black font-black uppercase tracking-widest text-[10px] py-3 rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">
                  Abrir Ticket <ArrowRight className="h-3 w-3" />
                </button>
             </div>
@@ -107,7 +107,7 @@ export default function HelpDeskPage() {
 
          {/* FAQS */}
          <div className="col-span-1 md:col-span-2 space-y-6">
-            <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-widest pl-2">Perguntas Frequentes</h3>
+            <h3 className="text-[11px] font-black text-gray-600 uppercase tracking-widest pl-2">Perguntas Frequentes</h3>
             
             <div className="space-y-4">
                {faqs.map((faq, idx) => {
@@ -117,7 +117,7 @@ export default function HelpDeskPage() {
                      key={idx} 
                      className={cn(
                        "bg-[#1a1d24] border rounded-2xl overflow-hidden transition-all duration-300 shadow-lg cursor-pointer",
-                       isActive ? "border-cyan-500/30 shadow-[0_0_20px_rgba(34,211,238,0.05)]" : "border-white/5 hover:border-white/10"
+                       isActive ? "border-blue-600/30 shadow-[0_0_20px_rgba(34,211,238,0.05)]" : "border-white/5 hover:border-white/10"
                      )}
                      onClick={() => setActiveFaq(isActive ? null : idx)}
                    >
@@ -125,13 +125,13 @@ export default function HelpDeskPage() {
                          <h4 className="text-sm font-bold text-white">{faq.q}</h4>
                          <div className={cn(
                            "p-1.5 rounded-md transition-all",
-                           isActive ? "bg-cyan-500/10 text-cyan-400" : "bg-[#14161b] text-slate-500"
+                           isActive ? "bg-blue-600/10 text-blue-600" : "bg-[#14161b] text-gray-600"
                          )}>
                             <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", isActive && "rotate-180")} />
                          </div>
                       </div>
                       <div className={cn(
-                        "px-6 text-[13px] text-slate-400 font-medium leading-relaxed overflow-hidden transition-all duration-300",
+                        "px-6 text-[13px] text-gray-500 font-medium leading-relaxed overflow-hidden transition-all duration-300",
                         isActive ? "max-h-40 pb-6 opacity-100" : "max-h-0 py-0 opacity-0"
                       )}>
                          <div className="h-px w-full bg-white/5 mb-6"></div>
@@ -149,7 +149,7 @@ export default function HelpDeskPage() {
                   </div>
                   <div>
                      <h4 className="text-sm font-bold text-white">Manual Completo (PDF)</h4>
-                     <p className="text-[11px] text-slate-400 mt-1">Todas as rotinas, cadastros e relatórios.</p>
+                     <p className="text-[11px] text-gray-500 mt-1">Todas as rotinas, cadastros e relatórios.</p>
                   </div>
                </div>
                <button className="px-6 py-3 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-colors">

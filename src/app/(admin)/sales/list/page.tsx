@@ -97,8 +97,8 @@ export default function OrdersListPage() {
       case 'PRINTING': return <span className={cn(base, "bg-blue-50 text-blue-600 border-blue-100 animate-pulse")}><Zap className="h-3 w-3" /> Em Produção</span>;
       case 'FINISHED': return <span className={cn(base, "bg-emerald-50 text-emerald-600 border-emerald-100")}><CheckCircle2 className="h-3 w-3" /> Concluído</span>;
       case 'READY': return <span className={cn(base, "bg-indigo-50 text-indigo-600 border-indigo-100")}><Globe className="h-3 w-3" /> Retirada</span>;
-      case 'SHIPPED': return <span className={cn(base, "bg-slate-50 text-slate-400 border-slate-100")}><Truck className="h-3 w-3" /> Despachado</span>;
-      default: return <span className={cn(base, "bg-slate-50 text-slate-400 border-slate-100")}>{status}</span>;
+      case 'SHIPPED': return <span className={cn(base, "bg-slate-50 text-gray-500 border-slate-100")}><Truck className="h-3 w-3" /> Despachado</span>;
+      default: return <span className={cn(base, "bg-slate-50 text-gray-500 border-slate-100")}>{status}</span>;
     }
   };
 
@@ -125,7 +125,7 @@ export default function OrdersListPage() {
               <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-3">
                  Gestão Comercial
               </h1>
-              <p className="text-[14px] text-slate-400">Fluxo de caixa industrial e ordens de venda direta.</p>
+              <p className="text-[14px] text-gray-500">Fluxo de caixa industrial e ordens de venda direta.</p>
            </div>
            <button 
              onClick={() => setIsAddingModo(!isAddingModo)}
@@ -144,8 +144,8 @@ export default function OrdersListPage() {
              <div className="absolute -top-40 -right-40 w-[300px] h-[300px] bg-emerald-500/5 blur-[100px] pointer-events-none" />
              <div className="pb-8 grid grid-cols-2 gap-8 relative z-10">
                 <div className="space-y-4">
-                   <div className="space-y-1.5"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Identificador Cliente</label><input type="text" placeholder="Nome do Cliente" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:bg-black focus:border-[#00D1FF] text-white transition-colors" value={customerName} onChange={e=>setCustomerName(e.target.value)} /></div>
-                   <div className="space-y-1.5"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">WhatsApp</label><input type="text" placeholder="(DD) 9XXXX-XXXX" maxLength={15} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none font-mono focus:bg-black focus:border-[#00D1FF] text-white transition-colors" value={customerContact} onChange={handlePhoneChange} /></div>
+                   <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Identificador Cliente</label><input type="text" placeholder="Nome do Cliente" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:bg-black focus:border-[#00D1FF] text-white transition-colors" value={customerName} onChange={e=>setCustomerName(e.target.value)} /></div>
+                   <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">WhatsApp</label><input type="text" placeholder="(DD) 9XXXX-XXXX" maxLength={15} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none font-mono focus:bg-black focus:border-[#00D1FF] text-white transition-colors" value={customerContact} onChange={handlePhoneChange} /></div>
                    
                    <div className="pt-4">
                       <button 
@@ -153,7 +153,7 @@ export default function OrdersListPage() {
                         onClick={() => setIsPaid(!isPaid)}
                         className={cn(
                           "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
-                          isPaid ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
+                          isPaid ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20"
                         )}
                       >
                          <span className="text-[10px] font-black uppercase tracking-widest">Status: {isPaid ? 'Pedido Pago (Capturado)' : 'Aguardando Pagamento'}</span>
@@ -165,11 +165,11 @@ export default function OrdersListPage() {
                     <p className="text-[11px] font-black text-white uppercase tracking-widest flex items-center gap-2"><ShoppingCart className="h-4 w-4 text-[#00D1FF]" /> Carrinho de Itens</p>
                     
                     <div className="space-y-1">
-                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Canal de Captação</label>
+                       <label className="text-[9px] font-black text-gray-600 uppercase tracking-widest pl-1">Canal de Captação</label>
                        <div className="flex gap-1 border border-white/10 rounded-lg p-1 bg-black/50">
-                          <button onClick={()=>setSaleChannel('DIRECT')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'DIRECT' ? "bg-[#00D1FF] text-black" : "text-slate-400 hover:text-white")}>DIRETA</button>
-                          <button onClick={()=>setSaleChannel('SHOPEE')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'SHOPEE' ? "bg-[#FF4500] text-white shadow-[0_0_15px_rgba(255,69,0,0.3)]" : "text-slate-400 hover:text-[#FF4500]")}>SHOPEE</button>
-                          <button onClick={()=>setSaleChannel('ML')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'ML' ? "bg-[#FFE600] text-black shadow-[0_0_15px_rgba(255,230,0,0.3)]" : "text-slate-400 hover:text-[#FFE600]")}>M.LIVRE</button>
+                          <button onClick={()=>setSaleChannel('DIRECT')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'DIRECT' ? "bg-[#00D1FF] text-black" : "text-gray-500 hover:text-white")}>DIRETA</button>
+                          <button onClick={()=>setSaleChannel('SHOPEE')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'SHOPEE' ? "bg-[#FF4500] text-white shadow-[0_0_15px_rgba(255,69,0,0.3)]" : "text-gray-500 hover:text-[#FF4500]")}>SHOPEE</button>
+                          <button onClick={()=>setSaleChannel('ML')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'ML' ? "bg-[#FFE600] text-black shadow-[0_0_15px_rgba(255,230,0,0.3)]" : "text-gray-500 hover:text-[#FFE600]")}>M.LIVRE</button>
                        </div>
                     </div>
 
@@ -193,7 +193,7 @@ export default function OrdersListPage() {
              
              <div className="pt-8 flex flex-col md:flex-row gap-12 items-start relative z-10">
                 <div className="flex-1 space-y-4">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Borderô Interno</p>
+                   <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Borderô Interno</p>
                    {cart.length === 0 ? <p className="text-xs text-slate-600 py-10 text-center uppercase tracking-widest font-black">Lista vazia.</p> : cart.map((item, i) => {
                      let p = products.find(prod => prod.id === item.productId);
                      let isVar = false;
@@ -204,7 +204,7 @@ export default function OrdersListPage() {
                         }
                      }
                      return <div key={i} className="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-xl hover:border-white/20 transition-all text-sm font-semibold text-slate-200">
-                        <span className="flex items-center gap-3"><span className="w-6 h-6 bg-black border border-white/10 rounded flex items-center justify-center text-[10px] text-slate-400">{item.quantity}x</span> {p?.name} {isVar && p?.material ? `(${p.material.color})` : ''}</span>
+                        <span className="flex items-center gap-3"><span className="w-6 h-6 bg-black border border-white/10 rounded flex items-center justify-center text-[10px] text-gray-500">{item.quantity}x</span> {p?.name} {isVar && p?.material ? `(${p.material.color})` : ''}</span>
                         <div className="flex items-center gap-4"><span className="font-mono text-[#00D1FF]">R$ {item.price.toFixed(2)}</span><Trash2 className="h-4 w-4 text-red-500 opacity-50 cursor-pointer hover:opacity-100" onClick={()=>setCart(cart.filter((_, idx)=>idx!==i))} /></div>
                      </div>
                    })}
@@ -212,8 +212,8 @@ export default function OrdersListPage() {
                 <div className="w-full md:w-[320px] bg-black/40 border border-white/10 p-6 rounded-2xl flex flex-col gap-6">
                    <div className="text-right space-y-4">
                       <div>
-                         <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Bruto Estimado:</p>
-                         <p className="text-4xl font-mono font-black text-slate-400 tracking-tighter opacity-70">R$ {finalTotal.toFixed(2)}</p>
+                         <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1">Total Bruto Estimado:</p>
+                         <p className="text-4xl font-mono font-black text-gray-500 tracking-tighter opacity-70">R$ {finalTotal.toFixed(2)}</p>
                       </div>
                       <div className="pt-4 border-t border-white/10">
                          <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 flex items-center justify-end gap-2">
@@ -226,12 +226,12 @@ export default function OrdersListPage() {
                                (finalTotal * 0.88 - (finalTotal < 79 ? 6 : 0))
                             ).toFixed(2)}
                          </p>
-                         <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">
+                         <p className="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] mt-2">
                             Aplicada a taxa {saleChannel}
                          </p>
                       </div>
                    </div>
-                   <button onClick={handleCreateOrder} disabled={cart.length === 0} className="w-full bg-[#00D1FF] text-black py-4 rounded-xl text-[12px] uppercase tracking-widest font-black hover:bg-white transition-all shadow-[0_0_30px_rgba(0,209,255,0.2)] active:scale-95 disabled:opacity-50 disabled:bg-slate-800 disabled:text-slate-500">Confirmar Operação</button>
+                   <button onClick={handleCreateOrder} disabled={cart.length === 0} className="w-full bg-[#00D1FF] text-black py-4 rounded-xl text-[12px] uppercase tracking-widest font-black hover:bg-white transition-all shadow-[0_0_30px_rgba(0,209,255,0.2)] active:scale-95 disabled:opacity-50 disabled:bg-slate-800 disabled:text-gray-600">Confirmar Operação</button>
                 </div>
              </div>
           </section>
@@ -241,16 +241,16 @@ export default function OrdersListPage() {
            {/* SEARCH & TABLE HEADER */}
            <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6 gap-6">
               <div className="relative w-full max-w-sm">
-                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
                  <input 
                    type="text" 
                    placeholder="Pesquisar por ID ou Cliente..." 
-                   className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[13px] outline-none hover:border-white/20 focus:bg-white/10 focus:border-[#00D1FF] transition-all text-white placeholder:text-slate-500" 
+                   className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[13px] outline-none hover:border-white/20 focus:bg-white/10 focus:border-[#00D1FF] transition-all text-white placeholder:text-gray-600" 
                    value={searchTerm}
                    onChange={e=>setSearchTerm(e.target.value)}
                  />
               </div>
-              <div className="flex flex-1 items-center gap-6 text-[9px] font-black text-slate-500 uppercase tracking-widest pl-10 select-none">
+              <div className="flex flex-1 items-center gap-6 text-[9px] font-black text-gray-600 uppercase tracking-widest pl-10 select-none">
                  <div className="flex-1 text-left">Cliente / Protocolo</div>
                  <div className="w-[180px] text-center">Setor Produção</div>
                  <div className="w-[180px] text-center">Liquidação</div>
@@ -268,14 +268,14 @@ export default function OrdersListPage() {
                >
                   <div className="flex items-center p-5 gap-6">
                      <div className="flex-1 min-w-0 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-black border border-white/10 text-slate-400 flex items-center justify-center text-xs font-black shadow-inner group-hover:bg-[#00D1FF] group-hover:text-black group-hover:border-[#00D1FF] transition-all">
+                        <div className="w-10 h-10 rounded-xl bg-black border border-white/10 text-gray-500 flex items-center justify-center text-xs font-black shadow-inner group-hover:bg-[#00D1FF] group-hover:text-black group-hover:border-[#00D1FF] transition-all">
                            {order.customerName.substring(0,2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
                            <h4 className="text-[14px] font-bold text-white truncate leading-tight flex items-center gap-2 group-hover:text-[#00D1FF] transition-colors">
                               {order.customerName}
                            </h4>
-                           <p className="text-[10px] text-slate-500 font-mono font-bold uppercase tracking-wider">REF: {order.id.split('_')[1]?.substring(0,6) || order.id.substring(0,6)}</p>
+                           <p className="text-[10px] text-gray-600 font-mono font-bold uppercase tracking-wider">REF: {order.id.split('_')[1]?.substring(0,6) || order.id.substring(0,6)}</p>
                         </div>
                      </div>
 
@@ -284,7 +284,7 @@ export default function OrdersListPage() {
                      </div>
 
                      <div className="w-[180px] flex justify-center">
-                        <div className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border flex items-center gap-1.5", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/5 text-slate-400 border-white/10")}>
+                        <div className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border flex items-center gap-1.5", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/5 text-gray-500 border-white/10")}>
                            {order.paymentStatus === 'PAID' ? 'Liquidado' : 'Aguardando'}
                         </div>
                      </div>
@@ -294,7 +294,7 @@ export default function OrdersListPage() {
                      </div>
 
                      <div className="w-[80px] flex justify-end">
-                        <div className="p-2 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-slate-400 group-hover:text-white">
+                        <div className="p-2 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-gray-500 group-hover:text-white">
                            <ChevronDown className="h-4 w-4" />
                         </div>
                      </div>
@@ -318,14 +318,14 @@ export default function OrdersListPage() {
               <div className="p-8 border-b border-white/10 flex items-center justify-between bg-black text-white">
                  <div>
                     <h3 className="text-xl font-black tracking-tight text-[#00D1FF]">Parâmetros O.S.</h3>
-                    <p className="text-[10px] font-mono text-slate-500 uppercase font-bold tracking-widest">TOKEN: {selectedOrder.id.substring(0,8)}</p>
+                    <p className="text-[10px] font-mono text-gray-600 uppercase font-bold tracking-widest">TOKEN: {selectedOrder.id.substring(0,8)}</p>
                  </div>
-                 <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-white/10 rounded-lg transition-all text-slate-400 hover:text-white"><X className="h-5 w-5" /></button>
+                 <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-white/10 rounded-lg transition-all text-gray-500 hover:text-white"><X className="h-5 w-5" /></button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest"><User className="h-4 w-4" /> Cliente</div>
+                    <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 uppercase tracking-widest"><User className="h-4 w-4" /> Cliente</div>
                     <div className="bg-black/50 p-6 rounded-xl border border-white/10">
                        <p className="text-lg font-bold text-white">{selectedOrder.customerName}</p>
                        <p className="text-[11px] font-black tracking-widest text-[#00D1FF] mt-1">{selectedOrder.customerContact || 'S/ Contato'}</p>
@@ -333,13 +333,13 @@ export default function OrdersListPage() {
                  </div>
 
                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest"><ShoppingCart className="h-4 w-4" /> Lote de Fabricação</div>
+                    <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 uppercase tracking-widest"><ShoppingCart className="h-4 w-4" /> Lote de Fabricação</div>
                     <div className="divide-y divide-white/5 border border-white/10 rounded-xl overflow-hidden bg-black/30">
                        {(selectedOrder.items || []).map((item, i) => (
                          <div key={i} className="p-4 flex justify-between items-center hover:bg-white/5 transition-all">
                             <div className="flex flex-col">
                                <span className="text-[13px] font-bold text-white">{item.product?.name || 'Item Avulso'}</span>
-                               <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest">{item.quantity} volumes</span>
+                               <span className="text-[9px] text-gray-600 uppercase font-black tracking-widest">{item.quantity} volumes</span>
                             </div>
                             <span className="font-mono font-bold text-[#00D1FF]">R$ {(item.price * item.quantity).toFixed(2)}</span>
                          </div>
@@ -349,7 +349,7 @@ export default function OrdersListPage() {
 
                  <div className="pt-6 border-t border-white/10">
                     <div className="flex justify-between items-center mb-8">
-                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Liquidado</span>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Total Liquidado</span>
                        <span className="text-3xl font-black text-white tracking-tighter font-mono">R$ {selectedOrder.totalAmount.toFixed(2)}</span>
                     </div>
 
@@ -372,7 +372,7 @@ export default function OrdersListPage() {
                        </div>
 
                        <div className="space-y-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Auditoria Financeira</label>
+                          <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest pl-1">Auditoria Financeira</label>
                           <select 
                             className={cn(
                                "w-full rounded-xl px-4 py-3 text-[12px] uppercase tracking-widest font-black outline-none transition-all cursor-pointer",

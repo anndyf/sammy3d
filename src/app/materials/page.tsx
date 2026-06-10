@@ -18,7 +18,7 @@ export default function MaterialsPage() {
           <h1 className="text-4xl font-bold font-outfit text-white tracking-tight">
             Insumos & <span className="text-purple-400">Materiais</span>
           </h1>
-          <p className="text-slate-400 font-light mt-1">Gerencie seu estoque de filamentos, resinas e acessórios.</p>
+          <p className="text-gray-500 font-light mt-1">Gerencie seu estoque de filamentos, resinas e acessórios.</p>
         </div>
         <button className="bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 text-sm font-bold shadow-lg shadow-purple-500/20 transition-all active:scale-95">
           <Plus className="h-4 w-4" />
@@ -28,7 +28,7 @@ export default function MaterialsPage() {
 
       {/* Filter Bar */}
       <div className="flex gap-4 items-center glass-card p-2 border-white/5 max-w-md">
-        <div className="pl-3 text-slate-500">
+        <div className="pl-3 text-gray-600">
           <Search className="h-4 w-4" />
         </div>
         <input 
@@ -56,10 +56,10 @@ export default function MaterialsPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white leading-tight">{material.name}</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">{material.type === "RESIN" ? "Resina" : "Filamento"}</p>
+                    <p className="text-xs text-gray-600 mt-0.5">{material.type === "RESIN" ? "Resina" : "Filamento"}</p>
                   </div>
                 </div>
-                <button className="text-slate-500 hover:text-white transition-colors">
+                <button className="text-gray-600 hover:text-white transition-colors">
                   <MoreVertical className="h-5 w-5" />
                 </button>
               </div>
@@ -67,13 +67,13 @@ export default function MaterialsPage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-end">
                   <div className="space-y-1">
-                    <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Restante</p>
+                    <p className="text-xs text-gray-600 uppercase font-bold tracking-wider">Restante</p>
                     <p className="text-xl font-bold font-outfit text-white">
-                      {material.remaining} <span className="text-sm font-normal text-slate-500">/{material.total}g</span>
+                      {material.remaining} <span className="text-sm font-normal text-gray-600">/{material.total}g</span>
                     </p>
                   </div>
                   <div className="text-right space-y-1">
-                    <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Custo Un.</p>
+                    <p className="text-xs text-gray-600 uppercase font-bold tracking-wider">Custo Un.</p>
                     <p className="text-sm font-bold text-slate-200">{formatCurrency(material.cost)}</p>
                   </div>
                 </div>
@@ -81,10 +81,10 @@ export default function MaterialsPage() {
                 {/* Progress Bar */}
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest px-0.5">
-                    <span className={isLow ? "text-amber-500" : "text-slate-500"}>
+                    <span className={isLow ? "text-amber-500" : "text-gray-600"}>
                       {isLow ? "Estoque Crítico" : "Nível"}
                     </span>
-                    <span className="text-slate-400">{Math.round(percentage)}%</span>
+                    <span className="text-gray-500">{Math.round(percentage)}%</span>
                   </div>
                   <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-white/5">
                     <div 
@@ -102,7 +102,7 @@ export default function MaterialsPage() {
         })}
         
         {/* Empty State / Quick Add Card */}
-        <button className="glass-card p-6 border-dashed border-white/10 hover:border-purple-500/50 transition-all flex flex-col items-center justify-center gap-3 text-slate-500 hover:text-purple-400 group">
+        <button className="glass-card p-6 border-dashed border-white/10 hover:border-purple-500/50 transition-all flex flex-col items-center justify-center gap-3 text-gray-600 hover:text-purple-400 group">
           <div className="h-12 w-12 rounded-full border border-dashed border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
              <Plus className="h-6 w-6" />
           </div>

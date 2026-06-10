@@ -26,8 +26,8 @@ interface KanbanColumn {
 }
 
 const PRODUCTION_COLUMNS: KanbanColumn[] = [
-  { id: "PENDING", title: "Fila de Impressão", color: "border-slate-500", textColor: "text-slate-400" },
-  { id: "PRINTING", title: "Imprimindo", color: "border-cyan-500", textColor: "text-cyan-400" },
+  { id: "PENDING", title: "Fila de Impressão", color: "border-slate-500", textColor: "text-gray-500" },
+  { id: "PRINTING", title: "Imprimindo", color: "border-blue-600", textColor: "text-blue-600" },
   { id: "POST_PROCESSING", title: "Pós-Produção", color: "border-amber-500", textColor: "text-amber-500" }
 ];
 
@@ -174,27 +174,27 @@ export default function ProductionKanbanPage() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 shrink-0 pt-2 pr-2">
          <div className="flex items-center gap-4">
-            <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/20 shadow-lg shadow-cyan-500/5">
-               <KanbanSquare className="h-6 w-6 text-cyan-400" />
+            <div className="p-3 bg-blue-600/10 rounded-2xl border border-blue-600/20 shadow-lg shadow-blue-600/5">
+               <KanbanSquare className="h-6 w-6 text-blue-600" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Fluxo de Produção</h1>
-              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest text-glow-indigo">Monitoramento em Tempo Real</p>
+              <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest text-glow-indigo">Monitoramento em Tempo Real</p>
             </div>
          </div>
          
          <div className="flex items-center gap-3">
             <div className="relative group">
-               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
+               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 group-focus-within:text-blue-600 transition-colors" />
                <input 
                  type="text" 
                  placeholder="Buscar peça..." 
-                 className="w-48 lg:w-64 bg-[#1a1d24] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all shadow-sm" 
+                 className="w-48 lg:w-64 bg-[#1a1d24] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all shadow-sm" 
                  value={searchTerm} 
                  onChange={e=>setSearchTerm(e.target.value)} 
                />
             </div>
-            <button onClick={fetchOrders} className="p-3 bg-[#1a1d24] border border-white/5 text-slate-400 rounded-xl hover:text-white transition-all shadow-lg">
+            <button onClick={fetchOrders} className="p-3 bg-[#1a1d24] border border-white/5 text-gray-500 rounded-xl hover:text-white transition-all shadow-lg">
                <RotateCcw className="h-4 w-4" />
             </button>
          </div>
@@ -211,7 +211,7 @@ export default function ProductionKanbanPage() {
                  <div className={cn("p-6 border-b-2 flex items-center justify-between shrink-0", col.color)}>
                     <div className="flex items-center gap-3">
                        <h3 className={cn("text-[11px] font-black uppercase tracking-[0.2em]", col.textColor)}>{col.title}</h3>
-                       <span className="bg-[#14161b] px-2 py-0.5 rounded-md text-[9px] font-black text-slate-500 border border-white/5">{items.length}</span>
+                       <span className="bg-[#14161b] px-2 py-0.5 rounded-md text-[9px] font-black text-gray-600 border border-white/5">{items.length}</span>
                     </div>
                     <MoreHorizontal className="h-4 w-4 text-slate-600" />
                  </div>
@@ -229,7 +229,7 @@ export default function ProductionKanbanPage() {
                           "bg-[#14161b] border p-6 rounded-[1.8rem] shadow-xl transition-all group relative overflow-hidden",
                           dlStatus?.type === 'danger' ? "border-red-500/50 animate-pulse-subtle shadow-red-500/5" : 
                           dlStatus?.type === 'warning' ? "border-amber-500/50 shadow-amber-500/5" :
-                          "border-white/5 hover:border-cyan-500/30"
+                          "border-white/5 hover:border-blue-600/30"
                         )}>
                            <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                               <button onClick={() => deleteOrder(item.id)} className="p-2 hover:bg-red-500/10 text-slate-700 hover:text-red-500 rounded-xl transition-all">
@@ -238,7 +238,7 @@ export default function ProductionKanbanPage() {
                            </div>
                            
                            <div className="flex items-center justify-between gap-2 mb-4">
-                              <span className="text-[9px] font-black text-cyan-400 bg-cyan-400/5 px-2 py-1 rounded-lg border border-cyan-400/10 uppercase tracking-widest">#{item.id.substring(0,6)}</span>
+                              <span className="text-[9px] font-black text-blue-600 bg-blue-600/5 px-2 py-1 rounded-lg border border-blue-600/10 uppercase tracking-widest">#{item.id.substring(0,6)}</span>
                               
                               {dlStatus && (
                                 <div className={cn(
@@ -253,12 +253,12 @@ export default function ProductionKanbanPage() {
                               )}
                            </div>
 
-                           <h4 className="text-sm font-black text-white mb-2 leading-tight uppercase group-hover:text-cyan-400 transition-colors">
+                           <h4 className="text-sm font-black text-white mb-2 leading-tight uppercase group-hover:text-blue-600 transition-colors">
                                {item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto Customizado'}
                             </h4>
 
                             {item.startDate && (
-                              <div className="flex items-center gap-1.5 text-[9px] font-black text-cyan-400 uppercase tracking-wider bg-cyan-400/5 border border-cyan-400/10 px-2.5 py-1 rounded-xl mb-3 w-fit">
+                              <div className="flex items-center gap-1.5 text-[9px] font-black text-blue-600 uppercase tracking-wider bg-blue-600/5 border border-blue-600/10 px-2.5 py-1 rounded-xl mb-3 w-fit">
                                  <Calendar className="h-3 w-3 shrink-0" />
                                  Agendado: {new Date(item.startDate).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                               </div>
@@ -266,20 +266,20 @@ export default function ProductionKanbanPage() {
                           
                             <div className="space-y-2 mb-4 bg-black/20 p-4 rounded-2xl border border-white/5">
                                {item.notes?.split('\n').filter(l => l.includes('⚙️') || l.includes('⚖️') || l.includes('⏳')).map((line, idx) => (
-                                 <div key={idx} className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                 <div key={idx} className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                                     {line}
                                  </div>
                                ))}
                                
                                {/* SELETOR DE IMPRESSORA NO CARD */}
                                <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
-                                  <Printer className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                                  <Printer className="h-3.5 w-3.5 text-blue-600 shrink-0" />
                                   <select
                                     value={item.printerId || ""}
                                     onChange={(e) => assignPrinter(item.id, e.target.value)}
                                     className="bg-transparent text-[10px] font-black uppercase text-slate-300 outline-none border-none cursor-pointer w-full"
                                   >
-                                    <option value="" className="bg-[#14161b] text-slate-500">Sem Impressora</option>
+                                    <option value="" className="bg-[#14161b] text-gray-600">Sem Impressora</option>
                                     {printers.map(p => (
                                       <option key={p.id} value={p.id} className="bg-[#14161b] text-white">
                                         {p.name} ({p.model})
@@ -296,14 +296,14 @@ export default function ProductionKanbanPage() {
 
                             {/* PLANILHA DE AGENDAMENTO E PRODUÇÃO */}
                             <div className="pt-4 border-t border-white/5 space-y-3">
-                               <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                               <div className="text-[8px] font-black text-gray-600 uppercase tracking-widest">
                                  Planejamento e Agenda
                                </div>
 
                                <div className="grid grid-cols-2 gap-3">
                                   {/* Programar Início (startDate) */}
                                   <div className="space-y-1">
-                                     <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block">Agendar Início</label>
+                                     <label className="text-[8px] font-bold text-gray-500 uppercase tracking-wider block">Agendar Início</label>
                                      <input 
                                        type="datetime-local" 
                                        value={item.startDate ? new Date(new Date(item.startDate).getTime() - new Date().getTimezoneOffset()*60000).toISOString().slice(0, 16) : ""}
@@ -322,13 +322,13 @@ export default function ProductionKanbanPage() {
                                            });
                                          }
                                        }}
-                                       className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-cyan-400 outline-none focus:border-cyan-500 cursor-pointer"
+                                       className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-blue-600 outline-none focus:border-blue-600 cursor-pointer"
                                      />
                                   </div>
 
                                   {/* Dias de Produção */}
                                   <div className="space-y-1">
-                                     <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block">Dias Produção</label>
+                                     <label className="text-[8px] font-bold text-gray-500 uppercase tracking-wider block">Dias Produção</label>
                                      <div className="flex items-center gap-1">
                                         <button 
                                           type="button"
@@ -345,7 +345,7 @@ export default function ProductionKanbanPage() {
                                               });
                                             }
                                           }}
-                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
+                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
                                         >
                                           -
                                         </button>
@@ -368,7 +368,7 @@ export default function ProductionKanbanPage() {
                                               updatePlanning(item.id, { productionDays: null });
                                             }
                                           }}
-                                          className="w-10 bg-black/40 border border-white/5 rounded-lg py-1 text-center font-mono text-[9px] text-white outline-none focus:border-cyan-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                          className="w-10 bg-black/40 border border-white/5 rounded-lg py-1 text-center font-mono text-[9px] text-white outline-none focus:border-blue-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                         <button 
                                           type="button"
@@ -383,7 +383,7 @@ export default function ProductionKanbanPage() {
                                               deadline: newDeadline.toISOString()
                                             });
                                           }}
-                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
+                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
                                         >
                                           +
                                         </button>
@@ -393,7 +393,7 @@ export default function ProductionKanbanPage() {
 
                                {/* Prazo Final (Deadline) */}
                                <div className="space-y-1">
-                                  <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block">Prazo Final</label>
+                                  <label className="text-[8px] font-bold text-gray-500 uppercase tracking-wider block">Prazo Final</label>
                                   <input 
                                     type="date"
                                     value={item.deadline ? item.deadline.substring(0, 10) : ""}
@@ -417,19 +417,19 @@ export default function ProductionKanbanPage() {
                                         });
                                       }
                                     }}
-                                    className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-slate-300 outline-none focus:border-cyan-500 cursor-pointer"
+                                    className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-slate-300 outline-none focus:border-blue-600 cursor-pointer"
                                   />
                                </div>
 
                                <div className="flex items-center justify-between pt-2">
-                                  <div className="flex items-center gap-1 text-[8px] font-black text-slate-500 uppercase">
+                                  <div className="flex items-center gap-1 text-[8px] font-black text-gray-600 uppercase">
                                      <Clock className="h-3 w-3 text-slate-600" />
                                      <span>Criado: {new Date(item.createdAt).toLocaleDateString('pt-BR')}</span>
                                   </div>
                                   
                                   <button 
                                     onClick={() => updateStatus(item.id, getNextStatus(col.id)!)}
-                                    className="h-9 px-3 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-black transition-all flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest"
+                                    className="h-9 px-3 bg-blue-600/10 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-black transition-all flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest"
                                   >
                                      Próximo <ArrowRight className="h-3 w-3" />
                                   </button>
@@ -452,7 +452,7 @@ export default function ProductionKanbanPage() {
                <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                   <h3 className={cn("text-[12px] font-black uppercase tracking-[0.2em]", FINISHED_COLUMN.textColor)}>{FINISHED_COLUMN.title}</h3>
-                  <span className="bg-[#14161b] px-2 py-0.5 rounded-md text-[10px] font-black text-slate-500 border border-white/5">{getFilteredOrders(FINISHED_COLUMN.id).length}</span>
+                  <span className="bg-[#14161b] px-2 py-0.5 rounded-md text-[10px] font-black text-gray-600 border border-white/5">{getFilteredOrders(FINISHED_COLUMN.id).length}</span>
                </div>
             </div>
 
@@ -471,9 +471,9 @@ export default function ProductionKanbanPage() {
                        </button>
                     </div>
                     <h4 className="text-xs font-black text-white mb-2 leading-tight uppercase truncate">{item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto'}</h4>
-                    <p className="text-[10px] text-slate-500 uppercase font-black">{item.customerName}</p>
+                    <p className="text-[10px] text-gray-600 uppercase font-black">{item.customerName}</p>
                     {item.printerId && (
-                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[9px] font-black text-cyan-400 uppercase tracking-wider">
+                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[9px] font-black text-blue-600 uppercase tracking-wider">
                         <Printer className="h-3 w-3" />
                         {printers.find(p => p.id === item.printerId)?.name || 'Impressora'}
                       </div>

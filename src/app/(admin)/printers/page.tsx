@@ -224,12 +224,12 @@ export default function PrintersPage() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-2">
          <div className="flex items-center gap-4">
-            <div className="p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20 shadow-lg shadow-cyan-500/5">
-               <Printer className="h-6 w-6 text-cyan-400" />
+            <div className="p-3 bg-blue-600/10 rounded-xl border border-blue-600/20 shadow-lg shadow-blue-600/5">
+               <Printer className="h-6 w-6 text-blue-600" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Gestão de Máquinas</h1>
-              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest text-glow-indigo">Controle e Custos de Equipamentos</p>
+              <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest text-glow-indigo">Controle e Custos de Equipamentos</p>
             </div>
          </div>
          
@@ -239,7 +239,7 @@ export default function PrintersPage() {
               onClick={() => setActiveTab('equipamentos')}
               className={cn(
                 "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all",
-                activeTab === 'equipamentos' ? 'bg-cyan-500 text-black shadow-md' : 'text-slate-400 hover:text-white'
+                activeTab === 'equipamentos' ? 'bg-blue-600 text-black shadow-md' : 'text-gray-500 hover:text-white'
               )}
             >
               <List className="h-4 w-4" />
@@ -249,7 +249,7 @@ export default function PrintersPage() {
               onClick={() => setActiveTab('manutencoes')}
               className={cn(
                 "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all",
-                activeTab === 'manutencoes' ? 'bg-cyan-500 text-black shadow-md' : 'text-slate-400 hover:text-white'
+                activeTab === 'manutencoes' ? 'bg-blue-600 text-black shadow-md' : 'text-gray-500 hover:text-white'
               )}
             >
               <PenTool className="h-4 w-4" />
@@ -259,7 +259,7 @@ export default function PrintersPage() {
               onClick={() => setActiveTab('plano')}
               className={cn(
                 "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all",
-                activeTab === 'plano' ? 'bg-cyan-500 text-black shadow-md' : 'text-slate-400 hover:text-white'
+                activeTab === 'plano' ? 'bg-blue-600 text-black shadow-md' : 'text-gray-500 hover:text-white'
               )}
             >
               <Wrench className="h-4 w-4" />
@@ -271,13 +271,13 @@ export default function PrintersPage() {
       {/* SEARCH AND NEW BUTTON */}
       <div className="flex items-center gap-4">
          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600" />
             <input 
               type="text" 
               placeholder="Buscar..." 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:bg-[#1a1d24] focus:border-cyan-500 transition-all shadow-sm" 
+              className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:bg-[#1a1d24] focus:border-blue-600 transition-all shadow-sm" 
             />
          </div>
          <button 
@@ -294,7 +294,7 @@ export default function PrintersPage() {
              });
              setShowPrinterModal(true);
            }}
-           className="bg-cyan-500 text-black px-6 py-3.5 rounded-xl text-sm font-bold hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-lg whitespace-nowrap"
+           className="bg-blue-600 text-black px-6 py-3.5 rounded-xl text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg whitespace-nowrap"
          >
            <Plus className="h-4 w-4" />
            Nova
@@ -303,15 +303,15 @@ export default function PrintersPage() {
 
       {loading ? (
         <div className="py-20 text-center flex flex-col items-center justify-center space-y-4">
-          <div className="w-10 h-10 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
-          <p className="text-slate-500 font-mono text-xs uppercase tracking-widest">Carregando...</p>
+          <div className="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+          <p className="text-gray-600 font-mono text-xs uppercase tracking-widest">Carregando...</p>
         </div>
       ) : activeTab === 'equipamentos' ? (
         /* PRINTER CARDS GRID */
         getFilteredPrinters().length === 0 ? (
           <div className="py-20 text-center bg-[#1a1d24]/50 border border-white/5 rounded-3xl opacity-40">
             <Printer className="h-10 w-10 mx-auto text-slate-600 mb-3" />
-            <p className="text-sm text-slate-500">Nenhuma impressora encontrada.</p>
+            <p className="text-sm text-gray-600">Nenhuma impressora encontrada.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -329,7 +329,7 @@ export default function PrintersPage() {
                     )}></span>
                     <button className={cn(
                       "p-2 rounded-lg transition-colors border",
-                      printer.status === 'OPERATIONAL' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                      printer.status === 'OPERATIONAL' ? 'bg-blue-600/10 text-blue-600 border-blue-600/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                     )}>
                        <Printer className="h-4 w-4" />
                     </button>
@@ -339,23 +339,23 @@ export default function PrintersPage() {
                  <div className="mb-6 pr-14">
                     <h3 className="text-xl font-bold text-white tracking-tight uppercase truncate">{printer.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest truncate max-w-[120px]">{printer.model}</span>
-                       <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-black text-slate-400 uppercase">{printer.type}</span>
+                       <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest truncate max-w-[120px]">{printer.model}</span>
+                       <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-black text-gray-500 uppercase">{printer.type}</span>
                     </div>
                  </div>
 
                  <div className="space-y-3.5 mb-8 flex-1">
                     <div className="flex justify-between items-center text-xs">
-                       <span className="font-black text-slate-500 uppercase tracking-wider">Depreciação:</span>
+                       <span className="font-black text-gray-600 uppercase tracking-wider">Depreciação:</span>
                        <span className="font-bold text-white font-mono">R$ {printer.depreciation.toFixed(2)} / h</span>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                       <span className="font-black text-slate-500 uppercase tracking-wider">Potência:</span>
+                       <span className="font-black text-gray-600 uppercase tracking-wider">Potência:</span>
                        <span className="font-bold text-white font-mono">{printer.powerW} W</span>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                       <span className="font-black text-slate-500 uppercase tracking-wider">Total Impresso:</span>
-                       <span className="font-bold text-cyan-400 font-mono">{printer.totalHours.toFixed(1)} h</span>
+                       <span className="font-black text-gray-600 uppercase tracking-wider">Total Impresso:</span>
+                       <span className="font-bold text-blue-600 font-mono">{printer.totalHours.toFixed(1)} h</span>
                     </div>
                  </div>
 
@@ -373,7 +373,7 @@ export default function PrintersPage() {
                       title={printer.status === 'OPERATIONAL' ? 'Colocar em Manutenção' : 'Tornar Operacional'}
                       className={cn(
                         "p-3 rounded-xl transition-all shadow-md border",
-                        printer.status === 'MAINTENANCE' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/5 border-white/5 text-slate-500 hover:text-amber-400 hover:border-amber-500/20'
+                        printer.status === 'MAINTENANCE' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/5 border-white/5 text-gray-600 hover:text-amber-400 hover:border-amber-500/20'
                       )}
                     >
                        <AlertTriangle className="h-4 w-4" />
@@ -401,7 +401,7 @@ export default function PrintersPage() {
         getFilteredMaintenances().length === 0 ? (
           <div className="py-20 text-center bg-[#1a1d24]/50 border border-white/5 rounded-3xl opacity-40">
             <PenTool className="h-10 w-10 mx-auto text-slate-600 mb-3" />
-            <p className="text-sm text-slate-500">Nenhum registro de manutenção.</p>
+            <p className="text-sm text-gray-600">Nenhum registro de manutenção.</p>
           </div>
         ) : (
           <div className="bg-[#1a1d24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
@@ -409,11 +409,11 @@ export default function PrintersPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-white/5 bg-[#14161b]">
-                    <th className="p-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">Equipamento</th>
-                    <th className="p-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">Descrição</th>
-                    <th className="p-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">Custo</th>
-                    <th className="p-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">Data</th>
-                    <th className="p-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Ação</th>
+                    <th className="p-5 text-[10px] font-black text-gray-600 uppercase tracking-widest">Equipamento</th>
+                    <th className="p-5 text-[10px] font-black text-gray-600 uppercase tracking-widest">Descrição</th>
+                    <th className="p-5 text-[10px] font-black text-gray-600 uppercase tracking-widest">Custo</th>
+                    <th className="p-5 text-[10px] font-black text-gray-600 uppercase tracking-widest">Data</th>
+                    <th className="p-5 text-[10px] font-black text-gray-600 uppercase tracking-widest text-right">Ação</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -421,7 +421,7 @@ export default function PrintersPage() {
                     <tr key={maint.id} className="hover:bg-white/5 transition-all">
                       <td className="p-5">
                         <div className="flex items-center gap-2">
-                          <Wrench className="h-4 w-4 text-cyan-400" />
+                          <Wrench className="h-4 w-4 text-blue-600" />
                           <span className="text-sm font-bold text-white uppercase">{maint.printer?.name || 'Impressora Excluída'}</span>
                         </div>
                       </td>
@@ -431,7 +431,7 @@ export default function PrintersPage() {
                       <td className="p-5 text-sm font-bold text-emerald-400 font-mono">
                         R$ {maint.cost.toFixed(2)}
                       </td>
-                      <td className="p-5 text-xs text-slate-400 font-mono">
+                      <td className="p-5 text-xs text-gray-500 font-mono">
                         {new Date(maint.date).toLocaleDateString('pt-BR')}
                       </td>
                       <td className="p-5 text-right">
@@ -454,7 +454,7 @@ export default function PrintersPage() {
         getFilteredPrinters().length === 0 ? (
           <div className="py-20 text-center bg-[#1a1d24]/50 border border-white/5 rounded-3xl opacity-40">
             <Printer className="h-10 w-10 mx-auto text-slate-600 mb-3" />
-            <p className="text-sm text-slate-500">Nenhuma impressora ativa para monitorar.</p>
+            <p className="text-sm text-gray-600">Nenhuma impressora ativa para monitorar.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -496,11 +496,11 @@ export default function PrintersPage() {
                   <div className="flex justify-between items-start mb-6 border-b border-white/5 pb-6">
                     <div>
                       <h3 className="text-xl font-bold text-white uppercase tracking-tight">{printer.name}</h3>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">{printer.model} • {printer.type}</p>
+                      <p className="text-[10px] text-gray-600 font-bold uppercase mt-1">{printer.model} • {printer.type}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Uso Acumulado</span>
-                      <span className="text-lg font-black text-cyan-400 font-mono">{printer.totalHours.toFixed(1)} h</span>
+                      <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest block">Uso Acumulado</span>
+                      <span className="text-lg font-black text-blue-600 font-mono">{printer.totalHours.toFixed(1)} h</span>
                     </div>
                   </div>
 
@@ -538,11 +538,11 @@ export default function PrintersPage() {
                               </div>
                               <div>
                                 <h4 className="text-xs font-black text-white uppercase tracking-wider">{cp.title}</h4>
-                                <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{cp.desc}</p>
+                                <p className="text-[10px] text-gray-500 mt-1 leading-relaxed">{cp.desc}</p>
                               </div>
                             </div>
                             <div className="text-right shrink-0">
-                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block font-mono">Ciclo</span>
+                              <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest block font-mono">Ciclo</span>
                               <span className="text-xs font-bold text-white font-mono">{Math.floor(currentVal)} / {cp.interval}h</span>
                             </div>
                           </div>
@@ -554,7 +554,7 @@ export default function PrintersPage() {
                             </div>
                             <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
                               <span className={statusColor}>{statusLabel}</span>
-                              <span className="text-slate-500 font-mono">{percent}%</span>
+                              <span className="text-gray-600 font-mono">{percent}%</span>
                             </div>
                           </div>
 
@@ -574,7 +574,7 @@ export default function PrintersPage() {
                                 "px-3 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
                                 percent >= 95 ? "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500 hover:text-black hover:border-transparent" :
                                 percent >= 80 ? "bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-black hover:border-transparent" :
-                                "bg-[#14161b] border-white/5 text-slate-400 hover:text-white hover:border-white/10"
+                                "bg-[#14161b] border-white/5 text-gray-500 hover:text-white hover:border-white/10"
                               )}
                             >
                               Registrar Preventiva
@@ -599,7 +599,7 @@ export default function PrintersPage() {
               <h2 className="text-lg font-bold text-white uppercase tracking-tight">
                 {isEditing ? "Editar Impressora" : "Nova Impressora"}
               </h2>
-              <button onClick={() => setShowPrinterModal(false)} className="text-slate-400 hover:text-white transition-colors">
+              <button onClick={() => setShowPrinterModal(false)} className="text-gray-500 hover:text-white transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -616,7 +616,7 @@ export default function PrintersPage() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xs font-black text-white uppercase tracking-wider">Status da Máquina</span>
-                    <span className="text-[10px] text-slate-500 font-bold uppercase mt-0.5">
+                    <span className="text-[10px] text-gray-600 font-bold uppercase mt-0.5">
                       {printerForm.status === 'OPERATIONAL' ? 'Máquina Operacional' : 'Em Manutenção'}
                     </span>
                   </div>
@@ -638,36 +638,36 @@ export default function PrintersPage() {
 
               {/* NOME (APELIDO) */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Nome (Apelido)</label>
+                <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Nome (Apelido)</label>
                 <input 
                   type="text"
                   required
                   placeholder="Ex: H1, Ender-3, etc."
                   value={printerForm.name}
                   onChange={e => setPrinterForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold"
+                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold"
                 />
               </div>
 
               {/* MODELO / TECNOLOGIA */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Modelo</label>
+                  <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Modelo</label>
                   <input 
                     type="text"
                     required
                     placeholder="Ex: H1 Combo"
                     value={printerForm.model}
                     onChange={e => setPrinterForm(prev => ({ ...prev, model: e.target.value }))}
-                    className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold"
+                    className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tecnologia</label>
+                  <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Tecnologia</label>
                   <select
                     value={printerForm.type}
                     onChange={e => setPrinterForm(prev => ({ ...prev, type: e.target.value }))}
-                    className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold"
+                    className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold"
                   >
                     <option value="FDM">FDM</option>
                     <option value="SLA">SLA (Resina)</option>
@@ -679,9 +679,9 @@ export default function PrintersPage() {
               {/* PREÇO / VIDA ÚTIL */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Preço (R$)</label>
+                  <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Preço (R$)</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-600">$</span>
                     <input 
                       type="number"
                       required
@@ -689,21 +689,21 @@ export default function PrintersPage() {
                       step="0.01"
                       value={printerForm.price}
                       onChange={e => setPrinterForm(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-                      className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-8 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold font-mono"
+                      className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-8 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold font-mono"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Vida Útil (h)</label>
+                  <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Vida Útil (h)</label>
                   <div className="relative">
-                    <Clock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                    <Clock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
                     <input 
                       type="number"
                       required
                       min="1"
                       value={printerForm.lifespan}
                       onChange={e => setPrinterForm(prev => ({ ...prev, lifespan: parseInt(e.target.value) || 5000 }))}
-                      className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold font-mono"
+                      className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold font-mono"
                     />
                   </div>
                 </div>
@@ -711,27 +711,27 @@ export default function PrintersPage() {
 
               {/* CONSUMO (W) */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Consumo (W)</label>
+                <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Consumo (W)</label>
                 <input 
                   type="number"
                   required
                   min="0"
                   value={printerForm.powerW}
                   onChange={e => setPrinterForm(prev => ({ ...prev, powerW: parseInt(e.target.value) || 250 }))}
-                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold font-mono"
+                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold font-mono"
                 />
               </div>
 
               {/* INFO BOX */}
-              <div className="bg-cyan-500/5 border border-cyan-500/10 p-4 rounded-xl flex items-start gap-3">
-                <Clock className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" />
-                <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider leading-relaxed">
+              <div className="bg-blue-600/5 border border-blue-600/10 p-4 rounded-xl flex items-start gap-3">
+                <Clock className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider leading-relaxed">
                   Depreciação calculada automaticamente baseada no preço de compra e vida útil.
                 </span>
               </div>
 
               {/* SUBMIT */}
-              <button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-400 text-black py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-lg mt-2">
+              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-600 text-black py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-lg mt-2">
                 Salvar
               </button>
             </form>
@@ -747,7 +747,7 @@ export default function PrintersPage() {
               <h2 className="text-lg font-bold text-white uppercase tracking-tight">
                 Registrar Manutenção
               </h2>
-              <button onClick={() => setShowMaintModal(false)} className="text-slate-400 hover:text-white transition-colors">
+              <button onClick={() => setShowMaintModal(false)} className="text-gray-500 hover:text-white transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -755,22 +755,22 @@ export default function PrintersPage() {
             <form onSubmit={handleSaveMaint} className="p-6 space-y-5">
               {/* DESCRIÇÃO DA FALHA / MANUTENÇÃO */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Descrição da Manutenção</label>
+                <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Descrição da Manutenção</label>
                 <textarea 
                   required
                   placeholder="Ex: Troca de bico 0.4mm, troca de correia, lubrificação do eixo Z..."
                   rows={3}
                   value={maintForm.description}
                   onChange={e => setMaintForm(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold resize-none"
+                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold resize-none"
                 />
               </div>
 
               {/* CUSTO (R$) */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Custo do Conserto (R$)</label>
+                <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Custo do Conserto (R$)</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-600">$</span>
                   <input 
                     type="number"
                     required
@@ -778,20 +778,20 @@ export default function PrintersPage() {
                     step="0.01"
                     value={maintForm.cost}
                     onChange={e => setMaintForm(prev => ({ ...prev, cost: parseFloat(e.target.value) || 0 }))}
-                    className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-8 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold font-mono"
+                    className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-8 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold font-mono"
                   />
                 </div>
               </div>
 
               {/* DATA */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Data</label>
+                <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Data</label>
                 <input 
                   type="date"
                   required
                   value={maintForm.date}
                   onChange={e => setMaintForm(prev => ({ ...prev, date: e.target.value }))}
-                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-cyan-500 transition-all font-semibold font-mono"
+                  className="w-full bg-[#14161b] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all font-semibold font-mono"
                 />
               </div>
 
@@ -804,7 +804,7 @@ export default function PrintersPage() {
               </div>
 
               {/* SUBMIT */}
-              <button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-400 text-black py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-lg mt-2">
+              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-600 text-black py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-lg mt-2">
                 Salvar Manutenção
               </button>
             </form>
