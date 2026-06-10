@@ -68,7 +68,7 @@ export default function NewMaterialPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Main Form */}
-        <div className="lg:col-span-3 glass-card p-8 border border-white/5 space-y-8">
+        <div className="lg:col-span-3 glass-card p-8 border border-gray-200 space-y-8">
           {/* Type Selector */}
           <div className="space-y-4">
              <label className="text-xs font-bold uppercase tracking-widest text-gray-600">Tipo do Material</label>
@@ -79,7 +79,7 @@ export default function NewMaterialPage() {
                     "p-4 rounded-2xl border transition-all flex flex-col items-center gap-3",
                     type === "FILAMENT" 
                       ? "bg-purple-600/10 border-purple-500/50 text-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.1)]" 
-                      : "bg-white/5 border-white/5 text-gray-600 hover:border-white/10"
+                      : "bg-white/5 border-gray-200 text-gray-600 hover:border-gray-200"
                   )}
                 >
                   <Layers className="h-8 w-8" />
@@ -91,7 +91,7 @@ export default function NewMaterialPage() {
                     "p-4 rounded-2xl border transition-all flex flex-col items-center gap-3",
                     type === "RESIN" 
                       ? "bg-blue-600/10 border-blue-500/50 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.1)]" 
-                      : "bg-white/5 border-white/5 text-gray-600 hover:border-white/10"
+                      : "bg-white/5 border-gray-200 text-gray-600 hover:border-gray-200"
                   )}
                 >
                   <Droplets className="h-8 w-8" />
@@ -109,7 +109,7 @@ export default function NewMaterialPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: PLA Plus Rock White - Creality" 
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
+                  className="w-full bg-white/5 border border-gray-200 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                 />
              </div>
              
@@ -122,7 +122,7 @@ export default function NewMaterialPage() {
                   value={costPerUnit}
                   onChange={(e) => setCostPerUnit(e.target.value)}
                   placeholder="0.00" 
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
+                  className="w-full bg-white/5 border border-gray-200 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                 />
              </div>
 
@@ -134,7 +134,7 @@ export default function NewMaterialPage() {
                   value={totalAmount}
                   onChange={(e) => setTotalAmount(e.target.value)}
                   placeholder="1000" 
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
+                  className="w-full bg-white/5 border border-gray-200 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                 />
              </div>
 
@@ -145,14 +145,14 @@ export default function NewMaterialPage() {
                     type="color" 
                     value={colorHex}
                     onChange={(e) => setColorHex(e.target.value)}
-                    className="h-12 w-12 bg-white/5 border border-white/10 rounded-xl p-1 cursor-pointer"
+                    className="h-12 w-12 bg-white/5 border border-gray-200 rounded-xl p-1 cursor-pointer"
                   />
                   <input 
                     type="text" 
                     value={colorHex}
                     onChange={(e) => setColorHex(e.target.value)}
                     placeholder="#FFFFFF" 
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
+                    className="flex-1 bg-white/5 border border-gray-200 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                   />
                 </div>
              </div>
@@ -169,7 +169,7 @@ export default function NewMaterialPage() {
 
         {/* Sidebar Help / Info */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-card p-6 border border-white/5 bg-purple-500/5">
+          <div className="glass-card p-6 border border-gray-200 bg-purple-500/5">
             <div className="flex items-start gap-4">
               <div className="h-8 w-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
                 <Info className="h-5 w-5" />

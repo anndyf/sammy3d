@@ -27,14 +27,14 @@ export default function MaterialsPage() {
       </div>
 
       {/* Filter Bar */}
-      <div className="flex gap-4 items-center glass-card p-2 border-white/5 max-w-md">
+      <div className="flex gap-4 items-center glass-card p-2 border-gray-200 max-w-md">
         <div className="pl-3 text-gray-600">
           <Search className="h-4 w-4" />
         </div>
         <input 
           type="text" 
           placeholder="Buscar material..." 
-          className="bg-transparent border-none focus:ring-0 text-sm text-white w-full placeholder:text-slate-600 p-2"
+          className="bg-transparent border-none focus:ring-0 text-sm text-gray-900 placeholder-gray-400 w-full placeholder:text-slate-600 p-2"
         />
       </div>
 
@@ -45,11 +45,11 @@ export default function MaterialsPage() {
           const isLow = percentage < 20;
 
           return (
-            <div key={material.id} className="glass-card p-6 border border-white/5 hover:border-white/10 transition-all group relative overflow-hidden">
+            <div key={material.id} className="glass-card p-6 border border-gray-200 hover:border-gray-200 transition-all group relative overflow-hidden">
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
                   <div 
-                    className="h-10 w-10 rounded-xl border border-white/10 flex items-center justify-center"
+                    className="h-10 w-10 rounded-xl border border-gray-200 flex items-center justify-center"
                     style={{ backgroundColor: material.color + "20" }}
                   >
                     {material.type === "RESIN" ? <Droplets className="h-5 w-5 text-blue-400" /> : <Layers className="h-5 w-5 text-purple-400" />}
@@ -86,7 +86,7 @@ export default function MaterialsPage() {
                     </span>
                     <span className="text-gray-500">{Math.round(percentage)}%</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                  <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-gray-200">
                     <div 
                       className={`h-full transition-all duration-1000 ${isLow ? "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" : "bg-purple-500 shadowed-purple"}`}
                       style={{ width: `${percentage}%` }}
@@ -102,8 +102,8 @@ export default function MaterialsPage() {
         })}
         
         {/* Empty State / Quick Add Card */}
-        <button className="glass-card p-6 border-dashed border-white/10 hover:border-purple-500/50 transition-all flex flex-col items-center justify-center gap-3 text-gray-600 hover:text-purple-400 group">
-          <div className="h-12 w-12 rounded-full border border-dashed border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <button className="glass-card p-6 border-dashed border-gray-200 hover:border-purple-500/50 transition-all flex flex-col items-center justify-center gap-3 text-gray-600 hover:text-purple-400 group">
+          <div className="h-12 w-12 rounded-full border border-dashed border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
              <Plus className="h-6 w-6" />
           </div>
           <span className="text-sm font-bold uppercase tracking-widest px-0.5">Adicionar Novo</span>

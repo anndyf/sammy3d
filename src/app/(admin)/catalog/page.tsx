@@ -385,7 +385,7 @@ export default function CatalogPage() {
          </div>
          <button 
            onClick={() => setIsAddingMode(!isAddingMode)}
-           className="bg-blue-600 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg"
+           className="bg-blue-600 text-white px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg"
          >
            {isAddingMode ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
            {isAddingMode ? "Fechar Catálogo" : "Novo Produto"}
@@ -400,14 +400,14 @@ export default function CatalogPage() {
                 <input 
                   type="text" 
                   placeholder="Buscar produto..." 
-                  className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white outline-none hover:border-white/10 focus:bg-[#1a1d24] focus:border-blue-600 transition-all shadow-sm" 
+                  className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none hover:border-gray-200 focus:bg-white focus:border-blue-600 transition-all shadow-sm" 
                   value={searchTerm} 
                   onChange={e=>setSearchTerm(e.target.value)} 
                 />
              </div>
 
-             <div className="bg-[#1a1d24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
-                <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-[#1a1d24]">
+             <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xl">
+                <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-200 bg-white">
                    <div className="col-span-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest">IMAGEM</div>
                    <div className="col-span-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest">NOME / DESCRIÇÃO</div>
                    <div className="col-span-1 text-[11px] font-bold text-gray-500 uppercase tracking-widest text-center">ESTOQUE</div>
@@ -426,7 +426,7 @@ export default function CatalogPage() {
                        filteredProducts.map(prod => (
                          <div key={prod.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
                             <div className="col-span-1">
-                               <div className="w-12 h-12 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
+                               <div className="w-12 h-12 bg-white/5 rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
                                   {prod.imageUrl ? (
                                     <img src={prod.imageUrl} className="w-full h-full object-cover" />
                                   ) : (
@@ -529,8 +529,8 @@ export default function CatalogPage() {
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => { setIsAddingMode(false); setEditingProduct(null); }} />
              
-             <div className="relative w-full max-w-xl bg-[#1a1d24] border border-white/10 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
-                <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between">
+             <div className="relative w-full max-w-xl bg-white border border-gray-200 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+                <div className="px-8 py-6 border-b border-gray-200 flex items-center justify-between">
                    <h3 className="text-xl font-bold text-white">{editingProduct ? 'Editar Produto' : 'Novo Produto'}</h3>
                    <button 
                      onClick={() => { setIsAddingMode(false); setEditingProduct(null); }}
@@ -542,7 +542,7 @@ export default function CatalogPage() {
 
                 <form className="p-8 space-y-6 overflow-y-auto max-h-[80vh] custom-scrollbar" onSubmit={handleSave}>
                    <div className="flex justify-center mb-4">
-                      <label className="w-40 h-40 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-600/50 hover:bg-white/5 transition-all group relative overflow-hidden">
+                      <label className="w-40 h-40 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-600/50 hover:bg-white/5 transition-all group relative overflow-hidden">
                          {imageUrl ? (
                             <img src={imageUrl} className="w-full h-full object-cover" />
                          ) : (
@@ -560,7 +560,7 @@ export default function CatalogPage() {
                          <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Nome do Produto</label>
                          <input 
                            type="text" 
-                           className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-600 force-white-text" 
+                           className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-600 force-white-text" 
                            required 
                            value={name} 
                            onChange={e=>setName(e.target.value)} 
@@ -571,7 +571,7 @@ export default function CatalogPage() {
                          <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">SKU (Cód.)</label>
                          <input 
                            type="text" 
-                           className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-600 force-white-text font-mono" 
+                           className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-600 force-white-text font-mono" 
                            value={sku} 
                            onChange={e=>setSku(e.target.value)} 
                          />
@@ -580,7 +580,7 @@ export default function CatalogPage() {
                       <div className="space-y-2">
                          <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Descrição</label>
                          <textarea 
-                           className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-600 min-h-[100px] force-white-text" 
+                           className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-600 min-h-[100px] force-white-text" 
                            value={description} 
                            onChange={e=>setDescription(e.target.value)} 
                          />
@@ -592,7 +592,7 @@ export default function CatalogPage() {
                                <Tag className="h-3 w-3" /> Tipo
                             </label>
                             <select 
-                              className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 transition-all"
+                              className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 outline-none focus:border-blue-600/50 transition-all"
                               required
                               value={category}
                               onChange={e=>setCategory(e.target.value)}
@@ -608,7 +608,7 @@ export default function CatalogPage() {
                                <Activity className="h-3 w-3" /> Personalização
                             </label>
                             <select 
-                              className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 transition-all"
+                              className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 outline-none focus:border-blue-600/50 transition-all"
                               value={subcategory}
                               onChange={e=>setSubcategory(e.target.value)}
                             >
@@ -623,16 +623,16 @@ export default function CatalogPage() {
                       <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-2">
                             <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Preço de Venda (R$)</label>
-                            <input type="number" step="0.01" className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 force-white-text" required value={sellingPrice} onChange={e=>setSellingPrice(e.target.value)} />
+                            <input type="number" step="0.01" className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 force-white-text" required value={sellingPrice} onChange={e=>setSellingPrice(e.target.value)} />
                          </div>
                          <div className="space-y-2">
                             <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Estoque Inicial (Produzido)</label>
-                            <input type="number" className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 force-white-text" value={stockQuantity} onChange={e=>setStockQuantity(e.target.value)} />
+                            <input type="number" className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 force-white-text" value={stockQuantity} onChange={e=>setStockQuantity(e.target.value)} />
                          </div>
                       </div>
 
                       {/* RESUMO DE CUSTO / PREVISÃO */}
-                      <div className="bg-[#14161b] rounded-xl p-4 border border-white/5 space-y-3">
+                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 space-y-3">
                         <div className="flex justify-between items-center text-sm font-bold">
                            <span className="text-gray-500">Custo Total de Produção Estimado:</span>
                            <span className="text-emerald-400 font-mono text-lg">R$ {estimatedProdCost.toFixed(2)}</span>
@@ -643,20 +643,20 @@ export default function CatalogPage() {
                            <div className="bg-white/5 p-2 rounded-lg text-red-400" title="Depreciação de Máquina">Máquina<br/><span className="text-white text-xs">R${depreciationCost.toFixed(2)}</span></div>
                            <div className="bg-white/5 p-2 rounded-lg text-blue-600" title="Custo de Embalagem">Embal.<br/><span className="text-white text-xs">R${packagingCost.toFixed(2)}</span></div>
                         </div>
-                        <div className="flex justify-between text-xs font-bold pt-2 border-t border-white/5">
+                        <div className="flex justify-between text-xs font-bold pt-2 border-t border-gray-200">
                            <span className="text-gray-600">Sugestão de Venda (Markup 3.5x):</span>
                            <span className="text-slate-300">R$ {suggestedPrice.toFixed(2)}</span>
                         </div>
                       </div>
 
                       {/* PRODUÇÃO 3D: FILAMENTO E PESO */}
-                      <div className="space-y-4 pt-4 border-t border-white/5">
+                      <div className="space-y-4 pt-4 border-t border-gray-200">
                          <h4 className="text-[11px] font-black text-blue-600 uppercase tracking-widest ml-1">Especificações da Impressão (Ficha Técnica)</h4>
                          <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Filamento Utilizado</label>
                                <select 
-                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 transition-all"
+                                 className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 outline-none focus:border-blue-600/50 transition-all"
                                  required
                                  value={materialId}
                                  onChange={e=>setMaterialId(e.target.value)}
@@ -674,7 +674,7 @@ export default function CatalogPage() {
                                <input 
                                  type="number" 
                                  step="0.1" 
-                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 force-white-text" 
+                                 className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 force-white-text" 
                                  required 
                                  placeholder="Ex: 150" 
                                  value={weightGrams} 
@@ -688,7 +688,7 @@ export default function CatalogPage() {
                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Tempo de Impressão (Horas)</label>
                                <input 
                                  type="number" 
-                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 force-white-text" 
+                                 className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 force-white-text" 
                                  placeholder="Horas" 
                                  value={hours} 
                                  onChange={e=>setHours(e.target.value)} 
@@ -698,7 +698,7 @@ export default function CatalogPage() {
                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Tempo de Impressão (Minutos)</label>
                                <input 
                                  type="number" 
-                                 className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-blue-600/50 force-white-text" 
+                                 className="w-full bg-[#242933] border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 force-white-text" 
                                  placeholder="Minutos" 
                                  value={minutes} 
                                  onChange={e=>setMinutes(e.target.value)} 
@@ -708,7 +708,7 @@ export default function CatalogPage() {
                       </div>
 
                       {/* Kit Composition section */}
-                      <div className="space-y-4 pt-4 border-t border-white/5">
+                      <div className="space-y-4 pt-4 border-t border-gray-200">
                          <label className="text-[11px] font-black text-blue-600 uppercase tracking-widest ml-1 flex items-center gap-2">
                             <LayoutGrid className="h-3 w-3" /> Composição do Kit (Peças)
                          </label>
@@ -718,12 +718,12 @@ export default function CatalogPage() {
                             <input 
                               type="text" 
                               placeholder="Buscar peça para adicionar..." 
-                              className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white outline-none focus:border-blue-600/50 transition-all"
+                              className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600/50 transition-all"
                               value={compSearch}
                               onChange={e=>setCompSearch(e.target.value)}
                             />
                             {compResults.length > 0 && (
-                              <div className="absolute top-full left-0 w-full z-[300] bg-[#1a1d24] border border-white/10 rounded-xl mt-1 shadow-2xl overflow-hidden max-h-40 overflow-y-auto">
+                              <div className="absolute top-full left-0 w-full z-[300] bg-white border border-gray-200 rounded-xl mt-1 shadow-2xl overflow-hidden max-h-40 overflow-y-auto">
                                  {compResults.map(p => (
                                    <button 
                                      key={p.id} 
@@ -741,7 +741,7 @@ export default function CatalogPage() {
 
                          <div className="space-y-2">
                             {composition.map(c => (
-                              <div key={c.componentId} className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center justify-between">
+                              <div key={c.componentId} className="bg-white/5 border border-gray-200 rounded-xl p-3 flex items-center justify-between">
                                  <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
                                        <Box className="h-4 w-4 text-gray-600" />
@@ -751,7 +751,7 @@ export default function CatalogPage() {
                                  <div className="flex items-center gap-3">
                                     <input 
                                       type="number" 
-                                      className="w-12 bg-black border border-white/10 rounded px-2 py-1 text-[10px] text-center text-white" 
+                                      className="w-12 bg-black border border-gray-200 rounded px-2 py-1 text-[10px] text-center text-gray-900 placeholder-gray-400" 
                                       value={c.quantity} 
                                       onChange={e => updateCompQty(c.componentId, parseInt(e.target.value) || 1)}
                                     />
@@ -841,7 +841,7 @@ export default function CatalogPage() {
                                 </div>
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); setViewingProduct(null); handleEdit(variation); }}
-                                  className="p-2 text-gray-500 hover:text-black hover:bg-slate-200 rounded-lg transition-all"
+                                  className="p-2 text-gray-500 hover:text-white hover:bg-slate-200 rounded-lg transition-all"
                                 >
                                    <Edit3 className="h-4 w-4" />
                                 </button>
@@ -874,7 +874,7 @@ export default function CatalogPage() {
       {replenishingProduct && (
          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setReplenishingProduct(null)} />
-            <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
+            <div className="relative bg-white border border-gray-200 rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
                
                <div className="flex items-center justify-between mb-8">
                   <div>
@@ -892,7 +892,7 @@ export default function CatalogPage() {
                        required 
                        type="number" 
                        min="1" 
-                       className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xl font-black text-white outline-none focus:border-blue-600" 
+                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-xl font-black text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600" 
                        value={replenishAmount} 
                        onChange={e => setReplenishAmount(e.target.value)} 
                      />
@@ -902,7 +902,7 @@ export default function CatalogPage() {
                      <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Insumo Utilizado (Filamento)</label>
                      <div className="relative">
                         <select 
-                          className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-blue-600 appearance-none cursor-pointer"
+                          className="w-full h-[60px] bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-xs font-black text-gray-900 outline-none focus:border-blue-600 appearance-none cursor-pointer"
                           value={replenishMaterialId}
                           onChange={e => setReplenishMaterialId(e.target.value)}
                         >
@@ -917,14 +917,14 @@ export default function CatalogPage() {
                   <div className="space-y-2">
                      <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Observações (Opcional)</label>
                      <textarea 
-                       className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-sm font-bold text-white outline-none focus:border-blue-600 h-24 resize-none"
+                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-sm font-bold text-white outline-none focus:border-blue-600 h-24 resize-none"
                        placeholder="Motivo do reabastecimento ou detalhes da produção..."
                        value={replenishNotes}
                        onChange={e => setReplenishNotes(e.target.value)}
                      />
                   </div>
 
-                  <button type="submit" className="w-full bg-blue-600 text-black h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-blue-600/10 mt-4">
+                  <button type="submit" className="w-full bg-blue-600 text-white h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-blue-600/10 mt-4">
                      Confirmar Reabastecimento
                   </button>
                </form>
@@ -936,7 +936,7 @@ export default function CatalogPage() {
       {historyProduct && (
          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setHistoryProduct(null)} />
-            <div className="relative bg-[#1a1d24] border border-white/10 rounded-[3rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 flex flex-col max-h-[85vh]">
+            <div className="relative bg-white border border-gray-200 rounded-[3rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 flex flex-col max-h-[85vh]">
                
                <div className="flex items-center justify-between mb-8">
                   <div>

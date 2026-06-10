@@ -732,7 +732,7 @@ export default function ShopeeImporterPage() {
          <div className="flex items-center gap-4">
             <Link 
               href="/sales" 
-              className="p-2.5 bg-[#1a1d24] border border-white/5 rounded-xl text-gray-600 hover:text-white transition-all shadow-lg active:scale-95"
+              className="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 hover:text-white transition-all shadow-lg active:scale-95"
             >
                <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -747,7 +747,7 @@ export default function ShopeeImporterPage() {
          
          <button 
            onClick={() => setIsHelpOpen(true)}
-           className="bg-[#1a1d24] hover:bg-[#242831] text-gray-500 hover:text-white border border-white/5 px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 active:scale-95 shadow-md"
+           className="bg-white hover:bg-[#242831] text-gray-500 hover:text-white border border-gray-200 px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 active:scale-95 shadow-md"
          >
             <HelpCircle className="h-4 w-4 text-[#FF4500]" /> Como Exportar da Shopee?
          </button>
@@ -762,20 +762,20 @@ export default function ShopeeImporterPage() {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             className={cn(
-              "border-2 border-dashed rounded-[3rem] p-16 text-center transition-all duration-300 relative overflow-hidden bg-[#1a1d24] shadow-2xl",
-              dragActive ? "border-[#FF4500] bg-[#FF4500]/5 scale-[1.01]" : "border-white/10 hover:border-[#FF4500]/30 hover:bg-[#1a1d24]/60"
+              "border-2 border-dashed rounded-[3rem] p-16 text-center transition-all duration-300 relative overflow-hidden bg-white shadow-2xl",
+              dragActive ? "border-[#FF4500] bg-[#FF4500]/5 scale-[1.01]" : "border-gray-200 hover:border-[#FF4500]/30 hover:bg-white/60"
             )}
           >
              <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#FF4500]/5 blur-[80px] pointer-events-none" />
              
-             <div className="w-20 h-20 bg-[#14161b] rounded-3xl flex items-center justify-center border border-white/10 mx-auto mb-8 shadow-2xl relative group">
+             <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center border border-gray-200 mx-auto mb-8 shadow-2xl relative group">
                 <UploadCloud className={cn("h-8 w-8 transition-transform group-hover:scale-110", dragActive ? "text-[#FF4500]" : "text-gray-600")} />
                 <Sparkles className="h-4.5 w-4.5 text-amber-400 absolute -top-1 -right-1 animate-pulse" />
              </div>
 
              <h2 className="text-2xl font-black text-white tracking-tight uppercase mb-3">Arraste seu Relatório de Vendas</h2>
              <p className="text-gray-500 font-bold text-sm max-w-md mx-auto mb-10 leading-relaxed">
-                Insira o arquivo <code className="text-[#FF4500] font-mono bg-[#14161b] px-1.5 py-0.5 rounded font-black">.xls</code>, <code className="text-[#FF4500] font-mono bg-[#14161b] px-1.5 py-0.5 rounded font-black">.xlsx</code> ou <code className="text-[#FF4500] font-mono bg-[#14161b] px-1.5 py-0.5 rounded font-black">.csv</code> exportado da Central do Vendedor da Shopee para iniciarmos o mapeamento automático.
+                Insira o arquivo <code className="text-[#FF4500] font-mono bg-gray-50 px-1.5 py-0.5 rounded font-black">.xls</code>, <code className="text-[#FF4500] font-mono bg-gray-50 px-1.5 py-0.5 rounded font-black">.xlsx</code> ou <code className="text-[#FF4500] font-mono bg-gray-50 px-1.5 py-0.5 rounded font-black">.csv</code> exportado da Central do Vendedor da Shopee para iniciarmos o mapeamento automático.
              </p>
 
              <label className="bg-white text-black px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-[#FF4500] hover:text-white hover:scale-105 transition-all inline-flex items-center gap-3 active:scale-95 cursor-pointer">
@@ -788,7 +788,7 @@ export default function ShopeeImporterPage() {
                 />
              </label>
 
-             <div className="mt-12 flex items-center justify-center gap-8 text-gray-600 text-[10px] font-black uppercase tracking-widest border-t border-white/5 pt-8">
+             <div className="mt-12 flex items-center justify-center gap-8 text-gray-600 text-[10px] font-black uppercase tracking-widest border-t border-gray-200 pt-8">
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4.5 w-4.5 text-[#FF4500]" /> Suporta Excel (.xls, .xlsx) e CSV</span>
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4.5 w-4.5 text-[#FF4500]" /> Baixa Automática de Estoque</span>
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4.5 w-4.5 text-[#FF4500]" /> Lançamento de Receita Líquida</span>
@@ -800,7 +800,7 @@ export default function ShopeeImporterPage() {
         <div className="space-y-8 animate-in fade-in duration-300">
            
            {/* CONFIGURAÇÃO DE ESTOQUE + RESUMO CARD */}
-           <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-2xl flex flex-col xl:flex-row xl:items-center justify-between gap-8 relative overflow-hidden">
+           <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-2xl flex flex-col xl:flex-row xl:items-center justify-between gap-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-blue-600/5 blur-[50px] pointer-events-none" />
               
               <div className="space-y-4">
@@ -812,13 +812,13 @@ export default function ShopeeImporterPage() {
                  </div>
 
                  {/* Opção de Evitar Baixa de Estoque solicitada pelo Usuário */}
-                 <div className="flex items-start gap-3 bg-[#14161b] border border-[#FF4500]/15 p-4 rounded-2xl max-w-xl">
+                 <div className="flex items-start gap-3 bg-gray-50 border border-[#FF4500]/15 p-4 rounded-2xl max-w-xl">
                     <input 
                       type="checkbox" 
                       id="bypassStockCheck"
                       checked={bypassStock}
                       onChange={(e) => setBypassStock(e.target.checked)}
-                      className="mt-1 h-5 w-5 rounded border-white/10 bg-transparent text-[#FF4500] focus:ring-offset-0 focus:ring-0 checked:bg-[#FF4500] cursor-pointer"
+                      className="mt-1 h-5 w-5 rounded border-gray-200 bg-transparent text-[#FF4500] focus:ring-offset-0 focus:ring-0 checked:bg-[#FF4500] cursor-pointer"
                     />
                     <label htmlFor="bypassStockCheck" className="text-xs text-slate-300 font-bold leading-relaxed cursor-pointer select-none">
                        <span className="text-white block font-black uppercase text-[10px] tracking-wider mb-0.5">Vendas Históricas / Antigas</span>
@@ -833,7 +833,7 @@ export default function ShopeeImporterPage() {
                    <button 
                      onClick={handleAutoRegisterAll}
                      disabled={registeringAll || importingState === 'importing'}
-                     className="px-6 py-4 bg-[#14161b] hover:bg-[#20242e] text-amber-500 hover:text-amber-400 border border-amber-500/20 hover:border-amber-500/50 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2"
+                     className="px-6 py-4 bg-gray-50 hover:bg-[#20242e] text-amber-500 hover:text-amber-400 border border-amber-500/20 hover:border-amber-500/50 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2"
                    >
                       {registeringAll ? (
                         <>
@@ -850,7 +850,7 @@ export default function ShopeeImporterPage() {
                  <button 
                    onClick={handleReset}
                    disabled={importingState === 'importing'}
-                   className="px-6 py-4 bg-[#14161b] hover:bg-[#1f222b] text-gray-500 hover:text-white border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
+                   className="px-6 py-4 bg-gray-50 hover:bg-[#1f222b] text-gray-500 hover:text-white border border-gray-200 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
                  >
                     Limpar
                  </button>
@@ -872,8 +872,8 @@ export default function ShopeeImporterPage() {
            </div>
 
            {/* ORDERS TAB / STREAM */}
-           <div className="bg-[#1a1d24] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
-              <div className="flex items-center justify-between border-b border-white/5 pb-6">
+           <div className="bg-white border border-gray-200 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
+              <div className="flex items-center justify-between border-b border-gray-200 pb-6">
                  <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
                     Visualização das Vendas da Planilha
                  </h3>
@@ -894,8 +894,8 @@ export default function ShopeeImporterPage() {
                       <div 
                         key={order.orderId} 
                         className={cn(
-                          "bg-[#14161b] border rounded-3xl p-6 transition-all duration-300 group relative",
-                          isSelected ? "border-[#FF4500]/30 shadow-lg shadow-[#FF4500]/2" : "border-white/5",
+                          "bg-gray-50 border rounded-3xl p-6 transition-all duration-300 group relative",
+                          isSelected ? "border-[#FF4500]/30 shadow-lg shadow-[#FF4500]/2" : "border-gray-200",
                           !isFullyMapped && "opacity-80 border-amber-500/20"
                         )}
                       >
@@ -907,7 +907,7 @@ export default function ShopeeImporterPage() {
                                  checked={isSelected}
                                  disabled={!isFullyMapped || importingState === 'importing'}
                                  onChange={() => toggleSelectOrder(order.orderId)}
-                                 className="mt-1.5 h-4.5 w-4.5 rounded border-white/10 bg-transparent text-[#FF4500] focus:ring-offset-0 focus:ring-0 checked:bg-[#FF4500] cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                                 className="mt-1.5 h-4.5 w-4.5 rounded border-gray-200 bg-transparent text-[#FF4500] focus:ring-offset-0 focus:ring-0 checked:bg-[#FF4500] cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
                                />
                                
                                <div className="space-y-1">
@@ -940,7 +940,7 @@ export default function ShopeeImporterPage() {
                                   const isRegisteringThis = registeringItem?.oIdx === oIdx && registeringItem?.iIdx === iIdx;
                                   
                                   return (
-                                    <div key={iIdx} className="bg-[#1a1d24] border border-white/5 px-4 py-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div key={iIdx} className="bg-white border border-gray-200 px-4 py-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                                        <div className="space-y-0.5">
                                           <p className="text-xs font-bold text-white uppercase">{item.productName}</p>
                                           <p className="text-[9px] text-gray-600 font-bold tracking-widest uppercase">
@@ -960,7 +960,7 @@ export default function ShopeeImporterPage() {
                                                <button 
                                                  onClick={() => handleAutoRegisterProduct(oIdx, iIdx)}
                                                  disabled={isRegisteringThis}
-                                                 className="bg-amber-500/10 hover:bg-amber-500 hover:text-black text-amber-500 text-[9px] font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-amber-500/20 hover:border-transparent transition-all flex items-center gap-1 active:scale-95"
+                                                 className="bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 text-[9px] font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-amber-500/20 hover:border-transparent transition-all flex items-center gap-1 active:scale-95"
                                                >
                                                   {isRegisteringThis ? (
                                                     <>
@@ -978,7 +978,7 @@ export default function ShopeeImporterPage() {
                                                   <AlertTriangle className="h-4 w-4 text-amber-400" />
                                                   <select 
                                                     onChange={(e) => handleMapProduct(oIdx, iIdx, e.target.value)}
-                                                    className="bg-[#14161b] border border-amber-500/30 text-amber-500 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-xl outline-none focus:border-amber-400 max-w-[200px]"
+                                                    className="bg-gray-50 border border-amber-500/30 text-amber-500 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-xl outline-none focus:border-amber-400 max-w-[200px]"
                                                     defaultValue=""
                                                   >
                                                      <option value="" disabled>Vincular manual...</option>
@@ -1003,14 +1003,14 @@ export default function ShopeeImporterPage() {
 
            {/* LOGS E PROGRESSO SE IMPORTANDO */}
            {importingState === 'importing' && (
-             <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-2xl space-y-6">
+             <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-2xl space-y-6">
                 <div className="flex items-center justify-between">
                    <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Progresso da Importação</h3>
                    <span className="text-xs font-mono font-bold text-gray-500">{importProgress.current} de {importProgress.total}</span>
                 </div>
                 
                 {/* PROGRESS BAR */}
-                <div className="w-full bg-[#14161b] h-3 rounded-full overflow-hidden border border-white/5">
+                <div className="w-full bg-gray-50 h-3 rounded-full overflow-hidden border border-gray-200">
                    <div 
                      className="bg-[#FF4500] h-full transition-all duration-300"
                      style={{ width: `${(importProgress.current / importProgress.total) * 100}%` }}
@@ -1018,15 +1018,15 @@ export default function ShopeeImporterPage() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-6 text-center">
-                   <div className="bg-[#14161b] p-4 rounded-2xl border border-white/5">
+                   <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200">
                       <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest block mb-1">Processados</span>
                       <span className="text-2xl font-black text-white">{importProgress.current}</span>
                    </div>
-                   <div className="bg-[#14161b] p-4 rounded-2xl border border-emerald-500/10">
+                   <div className="bg-gray-50 p-4 rounded-2xl border border-emerald-500/10">
                       <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest block mb-1">Sucessos</span>
                       <span className="text-2xl font-black text-emerald-400">{importProgress.success}</span>
                    </div>
-                   <div className="bg-[#14161b] p-4 rounded-2xl border border-red-500/10">
+                   <div className="bg-gray-50 p-4 rounded-2xl border border-red-500/10">
                       <span className="text-[9px] font-black text-red-400 uppercase tracking-widest block mb-1">Erros</span>
                       <span className="text-2xl font-black text-red-400">{importProgress.errors}</span>
                    </div>
@@ -1037,10 +1037,10 @@ export default function ShopeeImporterPage() {
         </div>
       ) : (
         /* IMPORT COMPLETED (SUCCESS ZONE) */
-        <div className="max-w-2xl mx-auto text-center bg-[#1a1d24] border border-white/5 rounded-[3.5rem] p-16 shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-500">
+        <div className="max-w-2xl mx-auto text-center bg-white border border-gray-200 rounded-[3.5rem] p-16 shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-500">
            <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-emerald-500/5 blur-[80px] pointer-events-none" />
            
-           <div className="w-24 h-24 bg-[#14161b] rounded-[2rem] flex items-center justify-center border border-emerald-500/20 mx-auto mb-8 shadow-2xl relative">
+           <div className="w-24 h-24 bg-gray-50 rounded-[2rem] flex items-center justify-center border border-emerald-500/20 mx-auto mb-8 shadow-2xl relative">
               <CheckCircle2 className="h-10 w-10 text-emerald-400 animate-bounce" />
               <Sparkles className="h-5 w-5 text-amber-400 absolute top-4 right-4 animate-pulse" />
            </div>
@@ -1050,7 +1050,7 @@ export default function ShopeeImporterPage() {
               Processamos sua planilha da Shopee com sucesso. {bypassStock ? "Nenhum estoque foi debitado devido à configuração de vendas históricas." : "O estoque dos produtos mapeados foi devidamente debitado."} As transações financeiras foram geradas no painel.
            </p>
 
-           <div className="bg-[#14161b] rounded-2xl p-6 border border-white/5 text-left mb-10 max-h-48 overflow-y-auto space-y-2.5 custom-scrollbar">
+           <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 text-left mb-10 max-h-48 overflow-y-auto space-y-2.5 custom-scrollbar">
               {importLogs.map((log, idx) => (
                 <div key={idx} className="flex items-center justify-between text-[11px] font-bold">
                    <span className="text-gray-600 font-mono">Pedido #{log.orderId}</span>
@@ -1073,7 +1073,7 @@ export default function ShopeeImporterPage() {
               </button>
               <Link 
                 href="/sales" 
-                className="bg-transparent text-gray-500 border border-white/10 hover:border-white hover:text-white px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all"
+                className="bg-transparent text-gray-500 border border-gray-200 hover:border-white hover:text-white px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all"
               >
                  Voltar para Pedidos
               </Link>
@@ -1085,8 +1085,8 @@ export default function ShopeeImporterPage() {
       {isHelpOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsHelpOpen(false)} />
-           <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2.5rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 text-left">
-              <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+           <div className="relative bg-white border border-gray-200 rounded-[2.5rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500 text-left">
+              <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
                  <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2">
                     <Info className="h-5.5 w-5.5 text-[#FF4500]" /> Como exportar pedidos da Shopee?
                  </h2>
@@ -1105,7 +1105,7 @@ export default function ShopeeImporterPage() {
                     <li>Importe o arquivo baixado diretamente nesta tela!</li>
                  </ol>
 
-                 <div className="bg-[#14161b] p-5 rounded-2xl border border-emerald-500/10 flex items-start gap-4 mt-6">
+                 <div className="bg-gray-50 p-5 rounded-2xl border border-emerald-500/10 flex items-start gap-4 mt-6">
                     <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
                        <h4 className="text-xs font-bold text-white uppercase tracking-wide mb-1">Planilhas XLS/XLSX Nativas</h4>

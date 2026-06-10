@@ -119,7 +119,7 @@ export default function StockPage() {
              setName(""); setType("FILAMENT"); setColor(""); setCostPerUnit(""); setTotalAmount("1000"); setRemainingAmount("");
              setIsAddingMode(!isAddingMode);
            }}
-           className="bg-blue-600 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg uppercase tracking-widest"
+           className="bg-blue-600 text-white px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg uppercase tracking-widest"
          >
            {isAddingMode ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
            {isAddingMode ? "Fechar" : "Novo Filamento"}
@@ -129,30 +129,30 @@ export default function StockPage() {
       <div className="space-y-8">
         
         {/* SEARCH & FILTER BAR */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-4 flex gap-4 items-center">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 flex gap-4 items-center">
            <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600" />
               <input 
                 type="text" 
                 placeholder="Buscar por nome ou marca..." 
-                className="w-full bg-[#14161b] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-all shadow-sm" 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-all shadow-sm" 
                 value={searchTerm} 
                 onChange={e=>setSearchTerm(e.target.value)}
               />
            </div>
-           <button className="p-3 bg-[#14161b] border border-white/5 rounded-xl text-gray-600 hover:text-white transition-colors">
+           <button className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-600 hover:text-white transition-colors">
               <Filter className="h-5 w-5" />
            </button>
         </div>
 
         {isAddingMode && (
-          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 mb-10 shadow-lg animate-in slide-in-from-top-4 duration-500">
-             <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 mb-10 shadow-lg animate-in slide-in-from-top-4 duration-500">
+             <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
                 <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
                   <Plus className="h-4 w-4 text-blue-600" /> 
                   {editingMaterial ? 'Editar Insumo' : 'Novo Insumo'}
                 </h3>
-                <div className="bg-[#14161b] text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase border border-white/5">
+                <div className="bg-gray-50 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase border border-gray-200">
                   {editingMaterial ? 'Edição' : 'Cadastro'}
                 </div>
              </div>
@@ -161,36 +161,36 @@ export default function StockPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                    <div className="space-y-1.5 flex flex-col">
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">Tipo</label>
-                      <select className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-all cursor-pointer" required value={type} onChange={e=>setType(e.target.value)}>
-                        <option value="FILAMENT" className="bg-[#14161b]">🧵 Filamento</option>
-                        <option value="RESIN" className="bg-[#14161b]">🧪 Resina</option>
+                      <select className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-600 transition-all cursor-pointer" required value={type} onChange={e=>setType(e.target.value)}>
+                        <option value="FILAMENT" className="bg-gray-50">🧵 Filamento</option>
+                        <option value="RESIN" className="bg-gray-50">🧪 Resina</option>
                       </select>
                    </div>
                    <div className="space-y-1.5 flex flex-col">
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">Nome / Marca</label>
-                      <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-all" required value={name} onChange={e=>setName(e.target.value)} placeholder="ex: VOOLT PRETO PETG" />
+                      <input type="text" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-all" required value={name} onChange={e=>setName(e.target.value)} placeholder="ex: VOOLT PRETO PETG" />
                    </div>
                    <div className="space-y-1.5 flex flex-col">
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">Variante / Cor</label>
-                      <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-all" value={color} onChange={e=>setColor(e.target.value)} placeholder="ex: VOOLT3D - PETG" />
+                      <input type="text" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-all" value={color} onChange={e=>setColor(e.target.value)} placeholder="ex: VOOLT3D - PETG" />
                    </div>
                     <div className="space-y-1.5 flex flex-col">
                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">Custo do Rolo (R$)</label>
-                       <input type="number" step="0.01" min="0" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-all" required value={costPerUnit} onChange={e=>setCostPerUnit(e.target.value)} placeholder="ex: 98.00" />
+                       <input type="number" step="0.01" min="0" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-all" required value={costPerUnit} onChange={e=>setCostPerUnit(e.target.value)} placeholder="ex: 98.00" />
                     </div>
                     <div className="space-y-1.5 flex flex-col">
                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">Peso do Rolo / Unidade (g)</label>
-                       <input type="number" min="1" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-all" required value={totalAmount} onChange={e=>setTotalAmount(e.target.value)} placeholder="ex: 1000" />
+                       <input type="number" min="1" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-all" required value={totalAmount} onChange={e=>setTotalAmount(e.target.value)} placeholder="ex: 1000" />
                     </div>
                     <div className="space-y-1.5 flex flex-col">
                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">Estoque Atual Total (g)</label>
-                       <input type="number" min="0" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-all" required value={remainingAmount} onChange={e=>setRemainingAmount(e.target.value)} placeholder="ex: 4000" />
+                       <input type="number" min="0" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-all" required value={remainingAmount} onChange={e=>setRemainingAmount(e.target.value)} placeholder="ex: 4000" />
                     </div>
                 </div>
 
                 <div className="flex justify-end pt-4 gap-4">
-                   <button type="button" onClick={()=>{setIsAddingMode(false); setEditingMaterial(null);}} className="px-8 h-11 bg-[#14161b] text-gray-500 rounded-lg text-sm font-bold transition-all hover:bg-white/5 hover:text-white">Cancelar</button>
-                   <button type="submit" className="bg-blue-600 text-black px-8 h-11 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-600 transition-all">{editingMaterial ? 'Salvar' : 'Cadastrar'}</button>
+                   <button type="button" onClick={()=>{setIsAddingMode(false); setEditingMaterial(null);}} className="px-8 h-11 bg-gray-50 text-gray-500 rounded-lg text-sm font-bold transition-all hover:bg-white/5 hover:text-white">Cancelar</button>
+                   <button type="submit" className="bg-blue-600 text-white px-8 h-11 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-600 transition-all">{editingMaterial ? 'Salvar' : 'Cadastrar'}</button>
                 </div>
              </form>
           </div>
@@ -205,13 +205,13 @@ export default function StockPage() {
                const rolls = (mat.remainingAmount / 1000).toFixed(1);
 
                return (
-                 <div key={mat.id} className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-xl hover:border-blue-600/30 transition-all group flex flex-col">
+                 <div key={mat.id} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xl hover:border-blue-600/30 transition-all group flex flex-col">
                     <div className="flex justify-between items-start mb-4">
                        <div className="min-w-0">
                           <h4 className="text-lg font-black text-white truncate leading-tight uppercase tracking-tight">{mat.name}</h4>
                           <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">{mat.color || 'Industrial'}</p>
                        </div>
-                       <div className="w-6 h-6 rounded-full border-2 border-white/10 shadow-inner shrink-0" style={{ backgroundColor: mat.color?.toLowerCase().includes('preto') ? '#000' : mat.color?.toLowerCase().includes('branco') ? '#fff' : '#444' }}></div>
+                       <div className="w-6 h-6 rounded-full border-2 border-gray-200 shadow-inner shrink-0" style={{ backgroundColor: mat.color?.toLowerCase().includes('preto') ? '#000' : mat.color?.toLowerCase().includes('branco') ? '#fff' : '#444' }}></div>
                     </div>
 
                     <div className="space-y-2 mb-6 flex-1">
@@ -233,7 +233,7 @@ export default function StockPage() {
                        </div>
                     </div>
 
-                    <div className="flex gap-2 pt-4 border-t border-white/5">
+                    <div className="flex gap-2 pt-4 border-t border-gray-200">
                        <button className="flex-1 bg-emerald-500 text-black h-10 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all flex items-center justify-center gap-2">
                           <RotateCcw className="h-3.5 w-3.5" /> Abastecer
                        </button>

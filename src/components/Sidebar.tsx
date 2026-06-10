@@ -108,7 +108,7 @@ export function Sidebar() {
         </div>
         <button 
           onClick={() => setIsDrawerOpen(true)}
-          className="p-2 bg-white/10 border border-white/10 rounded-xl text-blue-200 active:scale-90 transition-transform"
+          className="p-2 bg-white/10 border border-gray-200 rounded-xl text-blue-200 active:scale-90 transition-transform"
         >
           <Menu className="h-5 w-5 text-white" />
         </button>
@@ -141,7 +141,7 @@ export function Sidebar() {
           </div>
           <button 
             onClick={() => setIsDrawerOpen(false)}
-            className="p-1.5 bg-white/10 border border-white/10 rounded-lg text-blue-200 hover:text-white"
+            className="p-1.5 bg-white/10 border border-gray-200 rounded-lg text-blue-200 hover:text-white"
           >
             <X className="h-4 w-4 text-white" />
           </button>
@@ -170,7 +170,7 @@ export function Sidebar() {
                        isActive 
                          ? "bg-white/10 text-white font-bold border-l-4 border-blue-400 pl-4 rounded-l-none" 
                          : "text-blue-100/70 hover:text-white hover:bg-white/5",
-                       item.isSubItem && "ml-6 border-l border-white/10 rounded-l-none pl-4 py-1.5 text-[12px]"
+                       item.isSubItem && "ml-6 border-l border-gray-200 rounded-l-none pl-4 py-1.5 text-[12px]"
                      )}
                    >
                      <div className="flex items-center gap-3">
@@ -190,7 +190,7 @@ export function Sidebar() {
         {/* DRAWER FOOTER */}
         <div className="p-4 border-t border-blue-800/50 bg-[#1e3a8a]">
            <div 
-             className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all cursor-pointer group active:scale-95"
+             className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-gray-200 hover:border-white/20 transition-all cursor-pointer group active:scale-95"
              onClick={async () => {
                 if (confirm("Deseja encerrar a sessão operacional?")) {
                    await fetch('/api/auth/logout', { method: 'POST' });
@@ -263,7 +263,7 @@ export function Sidebar() {
                        isActive 
                          ? "bg-white/10 text-white font-bold border-l-4 border-blue-400 pl-4 rounded-l-none" 
                          : "text-blue-100/70 hover:text-white hover:bg-white/5",
-                       item.isSubItem && "ml-6 border-l border-white/10 rounded-l-none pl-4 py-1.5 text-[12px]"
+                       item.isSubItem && "ml-6 border-l border-gray-200 rounded-l-none pl-4 py-1.5 text-[12px]"
                      )}
                    >
                      <div className="flex items-center gap-3">
@@ -283,7 +283,7 @@ export function Sidebar() {
         {/* PROFILE WITH LOGOUT */}
         <div className="p-4 border-t border-blue-800/50 bg-[#1e3a8a]">
            <div 
-             className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all cursor-pointer group"
+             className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-gray-200 hover:border-white/20 transition-all cursor-pointer group"
              onClick={async () => {
                 if (confirm("Deseja encerrar a sessão operacional?")) {
                    await fetch('/api/auth/logout', { method: 'POST' });
@@ -304,7 +304,7 @@ export function Sidebar() {
       </aside>
 
       {/* MOBILE BOTTOM NAV */}
-      <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-[#081d24]/90 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-2xl z-[990] flex items-center justify-around px-2 select-none">
+      <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-[#081d24]/90 backdrop-blur-2xl border border-gray-200 shadow-2xl rounded-2xl z-[990] flex items-center justify-around px-2 select-none">
          {/* ITEM 1: DASHBOARD */}
          <Link 
            href="/dashboard" 

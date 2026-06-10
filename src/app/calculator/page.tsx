@@ -43,7 +43,7 @@ export default function CostCalculator() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Input Controls */}
-        <div className="lg:col-span-7 glass-card p-8 border border-white/5 space-y-8">
+        <div className="lg:col-span-7 glass-card p-8 border border-gray-200 space-y-8">
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -91,7 +91,7 @@ export default function CostCalculator() {
                     type="number" 
                     value={materialCost}
                     onChange={(e) => setMaterialCost(Number(e.target.value))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
+                    className="w-full bg-white/5 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                   />
                 </div>
              </div>
@@ -104,13 +104,13 @@ export default function CostCalculator() {
                     type="number" 
                     value={profitMargin}
                     onChange={(e) => setProfitMargin(Number(e.target.value))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
+                    className="w-full bg-white/5 border border-gray-200 rounded-xl px-4 py-3 text-white focus:border-purple-500/50 transition-all outline-none"
                   />
                 </div>
              </div>
            </div>
 
-           <div className="pt-6 border-t border-white/5">
+           <div className="pt-6 border-t border-gray-200">
              <div className="flex items-center gap-2 mb-4 text-gray-500">
                <Zap className="h-4 w-4" />
                <h3 className="text-xs font-bold uppercase tracking-widest">Configuração de Energia</h3>
@@ -122,7 +122,7 @@ export default function CostCalculator() {
                     type="number" 
                     value={printerWattage}
                     onChange={(e) => setPrinterWattage(Number(e.target.value))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm outline-none"
+                    className="w-full bg-white/5 border border-gray-200 rounded-xl px-4 py-2 text-white text-sm outline-none"
                   />
                 </div>
                 <div className="space-y-2">
@@ -131,7 +131,7 @@ export default function CostCalculator() {
                     type="number" 
                     value={energyCost}
                     onChange={(e) => setEnergyCost(Number(e.target.value))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm outline-none"
+                    className="w-full bg-white/5 border border-gray-200 rounded-xl px-4 py-2 text-white text-sm outline-none"
                   />
                 </div>
              </div>
@@ -146,7 +146,7 @@ export default function CostCalculator() {
                  <h2 className="text-xl font-bold font-outfit text-white">Preço Recomendado</h2>
               </div>
               
-              <div className="text-center py-6 mb-8 border-b border-white/10">
+              <div className="text-center py-6 mb-8 border-b border-gray-200">
                  <p className="text-5xl font-black font-outfit text-white tracking-tight">
                     {formatCurrency(calculations.finalPrice)}
                  </p>
@@ -162,19 +162,19 @@ export default function CostCalculator() {
                     <span className="text-gray-500">Energia Elétrica</span>
                     <span className="text-white font-medium">{formatCurrency(calculations.energy)}</span>
                  </div>
-                 <div className="flex justify-between items-center text-sm pt-4 border-t border-white/5">
+                 <div className="flex justify-between items-center text-sm pt-4 border-t border-gray-200">
                     <span className="text-slate-200 font-bold uppercase text-xs tracking-widest">Custo Real Total</span>
                     <span className="text-white font-black">{formatCurrency(calculations.totalCost)}</span>
                  </div>
               </div>
 
-              <button className="w-full mt-8 bg-white/5 hover:bg-white/10 text-white rounded-xl py-4 font-bold text-sm transition-all border border-white/5 flex items-center justify-center gap-2">
+              <button className="w-full mt-8 bg-white/5 hover:bg-white/10 text-white rounded-xl py-4 font-bold text-sm transition-all border border-gray-200 flex items-center justify-center gap-2">
                  Gerar Orçamento PDF
                  <HelpCircle className="h-4 w-4 text-gray-600" />
               </button>
            </div>
 
-           <div className="glass-card p-6 border border-white/5">
+           <div className="glass-card p-6 border border-gray-200">
               <div className="flex items-center gap-3 mb-4 text-emerald-400">
                 <TrendingUp className="h-5 w-5" />
                 <h4 className="font-bold text-sm">Análise de ROI</h4>

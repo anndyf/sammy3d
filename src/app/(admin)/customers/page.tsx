@@ -4,10 +4,10 @@ import { Rocket, Sparkles, ChevronRight } from "lucide-react";
 
 export default function ComingSoonPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-10 bg-[#1a1d24] border border-white/5 rounded-[3rem] shadow-2xl relative overflow-hidden">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-10 bg-white border border-gray-200 rounded-[3rem] shadow-2xl relative overflow-hidden">
        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-600/5 blur-[100px] pointer-events-none" />
        
-       <div className="w-24 h-24 bg-[#14161b] rounded-3xl flex items-center justify-center border border-white/10 mb-8 shadow-2xl relative group">
+       <div className="w-24 h-24 bg-gray-50 rounded-3xl flex items-center justify-center border border-gray-200 mb-8 shadow-2xl relative group">
           <Rocket className="h-10 w-10 text-blue-600 animate-bounce" />
           <Sparkles className="h-4 w-4 text-amber-400 absolute top-4 right-4 animate-pulse" />
        </div>

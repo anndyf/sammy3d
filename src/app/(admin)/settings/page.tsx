@@ -168,8 +168,8 @@ export default function SettingsPage() {
       {toast && (
         <div className={`fixed bottom-6 right-6 z-50 p-4 rounded-xl shadow-2xl border flex items-center gap-3 animate-in slide-in-from-bottom duration-300 ${
           toast.type === 'success' 
-            ? 'bg-[#14161b] border-emerald-500/20 text-emerald-400' 
-            : 'bg-[#14161b] border-red-500/20 text-red-400'
+            ? 'bg-gray-50 border-emerald-500/20 text-emerald-400' 
+            : 'bg-gray-50 border-red-500/20 text-red-400'
         }`}>
           {toast.type === 'success' ? (
             <CheckCircle2 className="h-5 w-5 text-emerald-500 animate-pulse" />
@@ -191,7 +191,7 @@ export default function SettingsPage() {
          </div>
          
          {/* TABS */}
-         <div className="flex items-center gap-6 border-b border-white/5 pb-0">
+         <div className="flex items-center gap-6 border-b border-gray-200 pb-0">
             <button 
               onClick={() => setActiveTab('geral')}
               className={`pb-3 text-sm font-bold transition-all relative ${activeTab === 'geral' ? 'text-blue-600' : 'text-gray-500 hover:text-white'}`}
@@ -228,7 +228,7 @@ export default function SettingsPage() {
         <div className="max-w-4xl space-y-6">
           
           {/* EMPRESA CARD */}
-          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
              <div className="flex items-center gap-3 mb-6">
                 <Building className="h-5 w-5 text-purple-400" />
                 <h2 className="text-lg font-bold text-white tracking-tight">Dados da sua Empresa</h2>
@@ -237,7 +237,7 @@ export default function SettingsPage() {
              <div className="flex flex-col md:flex-row gap-8">
                 {/* LOGO UPLOAD */}
                 <div className="flex flex-col items-center gap-3">
-                   <div className="w-40 h-40 bg-[#14161b] border border-white/10 rounded-2xl flex items-center justify-center cursor-pointer hover:border-blue-600/50 transition-colors group overflow-hidden relative">
+                   <div className="w-40 h-40 bg-gray-50 border border-gray-200 rounded-2xl flex items-center justify-center cursor-pointer hover:border-blue-600/50 transition-colors group overflow-hidden relative">
                       {/* Custom CSS Kitty Logo (Large) */}
                       <div className="relative w-24 h-24 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-500">
                          <div className="absolute -top-2 -left-2 w-8 h-8 bg-blue-600 rotate-[-15deg] rounded-sm"></div>
@@ -263,23 +263,23 @@ export default function SettingsPage() {
                 <div className="flex-1 space-y-4">
                    <div>
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Nome da Empresa / Fantasia</label>
-                      <input type="text" defaultValue="SAMMY3D" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                      <input type="text" defaultValue="SAMMY3D" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                    </div>
                    
                    <div className="grid grid-cols-2 gap-4">
                       <div>
                          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">CPF / CNPJ (Visual)</label>
-                         <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                         <input type="text" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                       </div>
                       <div>
                          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Telefone</label>
-                         <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                         <input type="text" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                       </div>
                    </div>
 
                    <div>
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">E-mail de Contato</label>
-                      <input type="email" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                      <input type="email" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                    </div>
 
                    <div>
@@ -288,26 +288,26 @@ export default function SettingsPage() {
                         Chave PIX
                       </label>
                       <div className="flex gap-2">
-                         <select className="w-1/3 bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors">
+                         <select className="w-1/3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-blue-600 transition-colors">
                             <option>Telefone</option>
                             <option>CPF/CNPJ</option>
                             <option>E-mail</option>
                             <option>Aleatória</option>
                          </select>
-                         <input type="text" defaultValue="75991162829" className="flex-1 bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors font-mono" />
+                         <input type="text" defaultValue="75991162829" className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors font-mono" />
                       </div>
                    </div>
 
                    <div>
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Endereço Completo</label>
-                      <input type="text" className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                      <input type="text" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                    </div>
                 </div>
              </div>
           </div>
 
           {/* ORÇAMENTO CARD */}
-          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
              <div className="flex items-center gap-3 mb-6">
                 <FileText className="h-5 w-5 text-blue-400" />
                 <h2 className="text-lg font-bold text-white tracking-tight">Configurações de Orçamento</h2>
@@ -316,7 +316,7 @@ export default function SettingsPage() {
              <div className="space-y-4">
                 <div className="w-full md:w-1/2">
                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Validade Padrão do Orçamento</label>
-                   <select className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors">
+                   <select className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-blue-600 transition-colors">
                       <option>7 dias</option>
                       <option>15 dias</option>
                       <option>30 dias</option>
@@ -328,7 +328,7 @@ export default function SettingsPage() {
                    <textarea 
                      rows={3} 
                      placeholder="Ex: Pagamento 50% na entrada. Prazo de entrega a combinar..."
-                     className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-colors resize-none" 
+                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-blue-600 transition-colors resize-none" 
                    />
                    <p className="text-[10px] text-gray-600 mt-2 font-medium">Este texto aparecerá automaticamente em todos os novos orçamentos gerados.</p>
                 </div>
@@ -336,7 +336,7 @@ export default function SettingsPage() {
           </div>
 
           {/* PARÂMETROS CARD */}
-          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
              <div className="flex items-center gap-3 mb-6">
                 <Calculator className="h-5 w-5 text-emerald-400" />
                 <h2 className="text-lg font-bold text-white tracking-tight">Parâmetros de Cálculo</h2>
@@ -347,7 +347,7 @@ export default function SettingsPage() {
                     <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Tarifa de Energia (R$/kWh)</label>
                     <div className="relative">
                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm font-bold">R$</span>
-                       <input type="text" defaultValue="1,32" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                       <input type="text" defaultValue="1,32" className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                     </div>
                  </div>
                  
@@ -355,7 +355,7 @@ export default function SettingsPage() {
                     <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Taxa de Embalagem (R$)</label>
                     <div className="relative">
                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm font-bold">R$</span>
-                       <input type="text" defaultValue="1,50" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                       <input type="text" defaultValue="1,50" className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                     </div>
                  </div>
 
@@ -365,7 +365,7 @@ export default function SettingsPage() {
                        <div className="text-amber-500" title="Estimativa de falha média em impressões">⚠️</div>
                     </label>
                     <div className="relative">
-                       <input type="text" defaultValue="5" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-4 pr-8 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                       <input type="text" defaultValue="5" className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-4 pr-8 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm font-bold">%</span>
                     </div>
                  </div>
@@ -373,7 +373,7 @@ export default function SettingsPage() {
                  <div>
                     <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Margem Lucro (%)</label>
                     <div className="relative">
-                       <input type="text" defaultValue="100" className="w-full bg-[#14161b] border border-white/5 rounded-lg pl-4 pr-8 py-2.5 text-sm text-white outline-none focus:border-blue-600 transition-colors" />
+                       <input type="text" defaultValue="100" className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-4 pr-8 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-colors" />
                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm font-bold">%</span>
                     </div>
                  </div>
@@ -390,11 +390,11 @@ export default function SettingsPage() {
       )}
 
       {activeTab === 'fiscal' && (
-        <div className="max-w-4xl bg-[#1a1d24] border border-white/5 rounded-2xl p-8 text-center shadow-lg">
+        <div className="max-w-4xl bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-lg">
           <ShieldCheck className="h-12 w-12 text-blue-600 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-white mb-2">Emissor de Notas Fiscais</h2>
           <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">Emita Notas Fiscais de Produto (NF-e) ou de Serviço (NFS-e) diretamente a partir de suas vendas faturadas no SAMMY3D.</p>
-          <button className="bg-blue-600 hover:bg-blue-600 text-black px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all">Configurar Certificado Digital</button>
+          <button className="bg-blue-600 hover:bg-blue-600 text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all">Configurar Certificado Digital</button>
         </div>
       )}
 
@@ -402,11 +402,11 @@ export default function SettingsPage() {
         <div className="max-w-4xl space-y-6">
           
           {/* STATUS DE CONEXÃO CARD */}
-          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg relative overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg relative overflow-hidden">
              {shopId && <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-emerald-500/5 blur-[50px] pointer-events-none" />}
              {!shopId && <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-[#FF4500]/5 blur-[50px] pointer-events-none" />}
              
-             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6 mb-6">
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-6 mb-6">
                 <div className="flex items-center gap-4">
                    <div className="w-12 h-12 bg-[#FF4500]/10 rounded-2xl flex items-center justify-center border border-[#FF4500]/20">
                       <Store className="h-6 w-6 text-[#FF4500]" />
@@ -417,7 +417,7 @@ export default function SettingsPage() {
                         {shopId ? (
                           <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-widest">Ativa</span>
                         ) : (
-                          <span className="bg-slate-500/10 text-gray-500 text-[10px] font-black px-2 py-0.5 rounded-full border border-white/5 uppercase tracking-widest">Inativa</span>
+                          <span className="bg-slate-500/10 text-gray-500 text-[10px] font-black px-2 py-0.5 rounded-full border border-gray-200 uppercase tracking-widest">Inativa</span>
                         )}
                       </h2>
                       <p className="text-xs text-gray-500 mt-0.5 font-bold">Importação e sincronização automática de pedidos e estoque em tempo real.</p>
@@ -444,7 +444,7 @@ export default function SettingsPage() {
              </div>
 
              {shopId ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#14161b] border border-white/5 rounded-2xl p-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 border border-gray-200 rounded-2xl p-5">
                    <div>
                       <div className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">ID da Loja Integrada</div>
                       <div className="text-sm font-mono font-black text-white">{shopId}</div>
@@ -458,7 +458,7 @@ export default function SettingsPage() {
                    </div>
                 </div>
              ) : (
-                <div className="bg-[#14161b] border border-dashed border-white/5 rounded-2xl p-8 text-center">
+                <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-8 text-center">
                    <Lock className="h-8 w-8 text-slate-600 mx-auto mb-3" />
                    <h3 className="text-sm font-bold text-white mb-1">Passo 1: Salve suas credenciais de desenvolvedor</h3>
                    <p className="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">
@@ -469,8 +469,8 @@ export default function SettingsPage() {
           </div>
 
           {/* CREDENCIAIS FORM */}
-          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg">
-             <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
+             <div className="flex items-center gap-3 mb-6 border-b border-gray-200 pb-4">
                 <Lock className="h-5 w-5 text-amber-500" />
                 <h2 className="text-lg font-bold text-white tracking-tight">Credenciais da API da Shopee</h2>
              </div>
@@ -489,7 +489,7 @@ export default function SettingsPage() {
                            value={partnerId}
                            onChange={(e) => setPartnerId(e.target.value)}
                            placeholder="Ex: 1005602"
-                           className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white font-mono outline-none focus:border-[#FF4500] transition-colors" 
+                           className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-white font-mono outline-none focus:border-[#FF4500] transition-colors" 
                            required
                          />
                       </div>
@@ -500,13 +500,13 @@ export default function SettingsPage() {
                            value={partnerKey}
                            onChange={(e) => setPartnerKey(e.target.value)}
                            placeholder="••••••••••••••••••••••••••••••••"
-                           className="w-full bg-[#14161b] border border-white/5 rounded-lg px-4 py-2.5 text-sm text-white font-mono outline-none focus:border-[#FF4500] transition-colors" 
+                           className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-white font-mono outline-none focus:border-[#FF4500] transition-colors" 
                            required
                          />
                       </div>
                    </div>
 
-                   <div className="flex items-center justify-between border-t border-white/5 pt-6">
+                   <div className="flex items-center justify-between border-t border-gray-200 pt-6">
                       <div className="flex items-center gap-3">
                          <button
                            type="button"
@@ -539,7 +539,7 @@ export default function SettingsPage() {
           </div>
 
           {/* WEBHOOK URL CARD */}
-          <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
              <div className="flex items-center gap-3 mb-4">
                 <AlertCircle className="h-5 w-5 text-blue-600" />
                 <h2 className="text-lg font-bold text-white tracking-tight">Configurar URL de Webhook</h2>
@@ -549,7 +549,7 @@ export default function SettingsPage() {
                Para receber as notificações de novos pedidos e atualizações de pagamento em tempo real, copie a URL abaixo e insira no campo <strong>"Webhook URL"</strong> do Console de Desenvolvedor da Shopee (em <em>Console &gt; App Management &gt; Webhook Settings</em>).
              </p>
 
-             <div className="flex items-center gap-3 bg-[#14161b] border border-white/5 rounded-xl p-3">
+             <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl p-3">
                 <div className="flex-1 font-mono text-xs text-gray-500 select-all truncate px-2">{webhookUrl}</div>
                 <button 
                   onClick={copyToClipboard}

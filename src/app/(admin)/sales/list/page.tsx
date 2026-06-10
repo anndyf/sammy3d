@@ -118,7 +118,7 @@ export default function OrdersListPage() {
     <div className="bg-black min-h-screen text-white font-sans select-none animate-fade-in pb-40 relative">
       
       {/* VERCEL HEADER AREA */}
-      <div className="border-b border-white/10 px-6 py-8 relative overflow-hidden">
+      <div className="border-b border-gray-200 px-6 py-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00D1FF]/5 blur-[80px] pointer-events-none" />
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
            <div className="flex flex-col gap-1">
@@ -140,12 +140,12 @@ export default function OrdersListPage() {
       <div className="max-w-[1200px] mx-auto px-6 py-8">
         
         {isAddingModo && (
-          <section className="bg-[#111111] border border-white/10 rounded-2xl p-8 mb-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-top-4 duration-500 divide-y divide-white/5 relative overflow-hidden">
+          <section className="bg-[#111111] border border-gray-200 rounded-2xl p-8 mb-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-top-4 duration-500 divide-y divide-white/5 relative overflow-hidden">
              <div className="absolute -top-40 -right-40 w-[300px] h-[300px] bg-emerald-500/5 blur-[100px] pointer-events-none" />
              <div className="pb-8 grid grid-cols-2 gap-8 relative z-10">
                 <div className="space-y-4">
-                   <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Identificador Cliente</label><input type="text" placeholder="Nome do Cliente" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:bg-black focus:border-[#00D1FF] text-white transition-colors" value={customerName} onChange={e=>setCustomerName(e.target.value)} /></div>
-                   <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">WhatsApp</label><input type="text" placeholder="(DD) 9XXXX-XXXX" maxLength={15} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none font-mono focus:bg-black focus:border-[#00D1FF] text-white transition-colors" value={customerContact} onChange={handlePhoneChange} /></div>
+                   <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Identificador Cliente</label><input type="text" placeholder="Nome do Cliente" className="w-full bg-black/50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:bg-black focus:border-[#00D1FF] text-gray-900 placeholder-gray-400 transition-colors" value={customerName} onChange={e=>setCustomerName(e.target.value)} /></div>
+                   <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">WhatsApp</label><input type="text" placeholder="(DD) 9XXXX-XXXX" maxLength={15} className="w-full bg-black/50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] outline-none font-mono focus:bg-black focus:border-[#00D1FF] text-gray-900 placeholder-gray-400 transition-colors" value={customerContact} onChange={handlePhoneChange} /></div>
                    
                    <div className="pt-4">
                       <button 
@@ -153,7 +153,7 @@ export default function OrdersListPage() {
                         onClick={() => setIsPaid(!isPaid)}
                         className={cn(
                           "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
-                          isPaid ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20"
+                          isPaid ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "bg-white/5 border-gray-200 text-gray-500 hover:border-white/20"
                         )}
                       >
                          <span className="text-[10px] font-black uppercase tracking-widest">Status: {isPaid ? 'Pedido Pago (Capturado)' : 'Aguardando Pagamento'}</span>
@@ -161,19 +161,19 @@ export default function OrdersListPage() {
                       </button>
                    </div>
                 </div>
-                <div className="bg-black/40 p-6 rounded-xl border border-white/10 space-y-4">
+                <div className="bg-black/40 p-6 rounded-xl border border-gray-200 space-y-4">
                     <p className="text-[11px] font-black text-white uppercase tracking-widest flex items-center gap-2"><ShoppingCart className="h-4 w-4 text-[#00D1FF]" /> Carrinho de Itens</p>
                     
                     <div className="space-y-1">
                        <label className="text-[9px] font-black text-gray-600 uppercase tracking-widest pl-1">Canal de Captação</label>
-                       <div className="flex gap-1 border border-white/10 rounded-lg p-1 bg-black/50">
+                       <div className="flex gap-1 border border-gray-200 rounded-lg p-1 bg-black/50">
                           <button onClick={()=>setSaleChannel('DIRECT')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'DIRECT' ? "bg-[#00D1FF] text-black" : "text-gray-500 hover:text-white")}>DIRETA</button>
                           <button onClick={()=>setSaleChannel('SHOPEE')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'SHOPEE' ? "bg-[#FF4500] text-white shadow-[0_0_15px_rgba(255,69,0,0.3)]" : "text-gray-500 hover:text-[#FF4500]")}>SHOPEE</button>
                           <button onClick={()=>setSaleChannel('ML')} className={cn("flex-1 py-1.5 text-[9px] font-black tracking-widest rounded-md transition-all uppercase", saleChannel === 'ML' ? "bg-[#FFE600] text-black shadow-[0_0_15px_rgba(255,230,0,0.3)]" : "text-gray-500 hover:text-[#FFE600]")}>M.LIVRE</button>
                        </div>
                     </div>
 
-                    <select className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white focus:bg-black focus:border-[#00D1FF] outline-none" value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)}>
+                    <select className="w-full bg-black/50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-900 focus:bg-black focus:border-[#00D1FF] outline-none" value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)}>
                        <option value="">Puxar do modelo 3D...</option>
                        {products.map(p => (
                           <optgroup key={p.id} label={p.name} className="bg-slate-900 text-white font-bold">
@@ -185,8 +185,8 @@ export default function OrdersListPage() {
                        ))}
                     </select>
                     <div className="flex gap-4">
-                       <input type="number" min="1" className="w-20 bg-black/50 border border-white/10 rounded-xl px-2 py-3 text-center font-bold text-white focus:border-[#00D1FF] focus:bg-black outline-none" value={selectedQuantity} onChange={(e) => setSelectedQuantity(e.target.value)} />
-                       <button onClick={handleAddToCart} className="flex-1 bg-white/10 border border-white/10 text-white rounded-xl text-[11px] uppercase tracking-widest font-black hover:bg-[#00D1FF] hover:text-black hover:border-[#00D1FF] transition-all">Lançar Item</button>
+                       <input type="number" min="1" className="w-20 bg-black/50 border border-gray-200 rounded-xl px-2 py-3 text-center font-bold text-gray-900 placeholder-gray-400 focus:border-[#00D1FF] focus:bg-black outline-none" value={selectedQuantity} onChange={(e) => setSelectedQuantity(e.target.value)} />
+                       <button onClick={handleAddToCart} className="flex-1 bg-white/10 border border-gray-200 text-white rounded-xl text-[11px] uppercase tracking-widest font-black hover:bg-[#00D1FF] hover:text-white hover:border-[#00D1FF] transition-all">Lançar Item</button>
                     </div>
                 </div>
              </div>
@@ -203,19 +203,19 @@ export default function OrdersListPage() {
                            if (v) { p = v; isVar = true; break; }
                         }
                      }
-                     return <div key={i} className="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-xl hover:border-white/20 transition-all text-sm font-semibold text-slate-200">
-                        <span className="flex items-center gap-3"><span className="w-6 h-6 bg-black border border-white/10 rounded flex items-center justify-center text-[10px] text-gray-500">{item.quantity}x</span> {p?.name} {isVar && p?.material ? `(${p.material.color})` : ''}</span>
+                     return <div key={i} className="flex justify-between items-center bg-white/5 border border-gray-200 p-3 rounded-xl hover:border-white/20 transition-all text-sm font-semibold text-slate-200">
+                        <span className="flex items-center gap-3"><span className="w-6 h-6 bg-black border border-gray-200 rounded flex items-center justify-center text-[10px] text-gray-500">{item.quantity}x</span> {p?.name} {isVar && p?.material ? `(${p.material.color})` : ''}</span>
                         <div className="flex items-center gap-4"><span className="font-mono text-[#00D1FF]">R$ {item.price.toFixed(2)}</span><Trash2 className="h-4 w-4 text-red-500 opacity-50 cursor-pointer hover:opacity-100" onClick={()=>setCart(cart.filter((_, idx)=>idx!==i))} /></div>
                      </div>
                    })}
                 </div>
-                <div className="w-full md:w-[320px] bg-black/40 border border-white/10 p-6 rounded-2xl flex flex-col gap-6">
+                <div className="w-full md:w-[320px] bg-black/40 border border-gray-200 p-6 rounded-2xl flex flex-col gap-6">
                    <div className="text-right space-y-4">
                       <div>
                          <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1">Total Bruto Estimado:</p>
                          <p className="text-4xl font-mono font-black text-gray-500 tracking-tighter opacity-70">R$ {finalTotal.toFixed(2)}</p>
                       </div>
-                      <div className="pt-4 border-t border-white/10">
+                      <div className="pt-4 border-t border-gray-200">
                          <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 flex items-center justify-end gap-2">
                            <DollarSign className="h-3 w-3" /> Recebimento Líquido:
                          </p>
@@ -239,13 +239,13 @@ export default function OrdersListPage() {
 
         <div className="space-y-1">
            {/* SEARCH & TABLE HEADER */}
-           <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6 gap-6">
+           <div className="flex items-center justify-between pb-6 border-b border-gray-200 mb-6 gap-6">
               <div className="relative w-full max-w-sm">
                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
                  <input 
                    type="text" 
                    placeholder="Pesquisar por ID ou Cliente..." 
-                   className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[13px] outline-none hover:border-white/20 focus:bg-white/10 focus:border-[#00D1FF] transition-all text-white placeholder:text-gray-600" 
+                   className="w-full bg-white/5 border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-[13px] outline-none hover:border-white/20 focus:bg-white/10 focus:border-[#00D1FF] transition-all text-gray-900 placeholder-gray-400 placeholder:text-gray-600" 
                    value={searchTerm}
                    onChange={e=>setSearchTerm(e.target.value)}
                  />
@@ -263,12 +263,12 @@ export default function OrdersListPage() {
              filteredOrders.map(order => (
                <div 
                  key={order.id} 
-                 className="flex flex-col border border-white/5 rounded-2xl mb-4 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all group relative overflow-hidden cursor-pointer shadow-lg"
+                 className="flex flex-col border border-gray-200 rounded-2xl mb-4 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all group relative overflow-hidden cursor-pointer shadow-lg"
                  onClick={() => setSelectedOrder(order)}
                >
                   <div className="flex items-center p-5 gap-6">
                      <div className="flex-1 min-w-0 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-black border border-white/10 text-gray-500 flex items-center justify-center text-xs font-black shadow-inner group-hover:bg-[#00D1FF] group-hover:text-black group-hover:border-[#00D1FF] transition-all">
+                        <div className="w-10 h-10 rounded-xl bg-black border border-gray-200 text-gray-500 flex items-center justify-center text-xs font-black shadow-inner group-hover:bg-[#00D1FF] group-hover:text-white group-hover:border-[#00D1FF] transition-all">
                            {order.customerName.substring(0,2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -284,7 +284,7 @@ export default function OrdersListPage() {
                      </div>
 
                      <div className="w-[180px] flex justify-center">
-                        <div className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border flex items-center gap-1.5", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/5 text-gray-500 border-white/10")}>
+                        <div className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border flex items-center gap-1.5", order.paymentStatus === 'PAID' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/5 text-gray-500 border-gray-200")}>
                            {order.paymentStatus === 'PAID' ? 'Liquidado' : 'Aguardando'}
                         </div>
                      </div>
@@ -294,13 +294,13 @@ export default function OrdersListPage() {
                      </div>
 
                      <div className="w-[80px] flex justify-end">
-                        <div className="p-2 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-gray-500 group-hover:text-white">
+                        <div className="p-2 border border-gray-200 rounded-lg hover:bg-white/10 transition-all text-gray-500 group-hover:text-white">
                            <ChevronDown className="h-4 w-4" />
                         </div>
                      </div>
                   </div>
 
-                  <div className="px-6 py-2.5 bg-black/40 border-t border-white/5 flex items-center gap-10">
+                  <div className="px-6 py-2.5 bg-black/40 border-t border-gray-200 flex items-center gap-10">
                      <div className="flex items-center gap-2 text-[9px] font-black text-slate-600 uppercase tracking-widest"><Clock className="h-3 w-3" /> Em: {new Date(order.createdAt).toLocaleDateString()}</div>
                      <div className="flex items-center gap-2 text-[9px] font-black text-slate-600 uppercase tracking-widest"><User className="h-3 w-3" /> OS Auth: GUEST</div>
                      <div className="flex items-center gap-2 text-[9px] font-black text-slate-600 uppercase tracking-widest"><Phone className="h-3 w-3" /> WPP: {order.customerContact || 'Laboratório Interno'}</div>
@@ -314,8 +314,8 @@ export default function OrdersListPage() {
       {selectedOrder && (
         <div className="fixed inset-0 z-[100] flex justify-end animate-in fade-in duration-300">
            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedOrder(null)} />
-           <div className="relative w-full max-w-md bg-[#111111] h-full shadow-[0_0_100px_rgba(0,0,0,0.8)] border-l border-white/10 flex flex-col animate-in slide-in-from-right duration-500">
-              <div className="p-8 border-b border-white/10 flex items-center justify-between bg-black text-white">
+           <div className="relative w-full max-w-md bg-[#111111] h-full shadow-[0_0_100px_rgba(0,0,0,0.8)] border-l border-gray-200 flex flex-col animate-in slide-in-from-right duration-500">
+              <div className="p-8 border-b border-gray-200 flex items-center justify-between bg-black text-white">
                  <div>
                     <h3 className="text-xl font-black tracking-tight text-[#00D1FF]">Parâmetros O.S.</h3>
                     <p className="text-[10px] font-mono text-gray-600 uppercase font-bold tracking-widest">TOKEN: {selectedOrder.id.substring(0,8)}</p>
@@ -326,7 +326,7 @@ export default function OrdersListPage() {
               <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
                  <div className="space-y-4">
                     <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 uppercase tracking-widest"><User className="h-4 w-4" /> Cliente</div>
-                    <div className="bg-black/50 p-6 rounded-xl border border-white/10">
+                    <div className="bg-black/50 p-6 rounded-xl border border-gray-200">
                        <p className="text-lg font-bold text-white">{selectedOrder.customerName}</p>
                        <p className="text-[11px] font-black tracking-widest text-[#00D1FF] mt-1">{selectedOrder.customerContact || 'S/ Contato'}</p>
                     </div>
@@ -334,7 +334,7 @@ export default function OrdersListPage() {
 
                  <div className="space-y-4">
                     <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 uppercase tracking-widest"><ShoppingCart className="h-4 w-4" /> Lote de Fabricação</div>
-                    <div className="divide-y divide-white/5 border border-white/10 rounded-xl overflow-hidden bg-black/30">
+                    <div className="divide-y divide-white/5 border border-gray-200 rounded-xl overflow-hidden bg-black/30">
                        {(selectedOrder.items || []).map((item, i) => (
                          <div key={i} className="p-4 flex justify-between items-center hover:bg-white/5 transition-all">
                             <div className="flex flex-col">
@@ -347,17 +347,17 @@ export default function OrdersListPage() {
                     </div>
                  </div>
 
-                 <div className="pt-6 border-t border-white/10">
+                 <div className="pt-6 border-t border-gray-200">
                     <div className="flex justify-between items-center mb-8">
                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Total Liquidado</span>
                        <span className="text-3xl font-black text-white tracking-tighter font-mono">R$ {selectedOrder.totalAmount.toFixed(2)}</span>
                     </div>
 
-                    <div className="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-6">
+                    <div className="p-6 bg-white/5 border border-gray-200 rounded-2xl space-y-6">
                        <div className="space-y-2">
                           <label className="text-[9px] font-black text-[#00D1FF] uppercase tracking-widest pl-1">Avançar Setor Operacional</label>
                           <select 
-                            className="w-full bg-black border border-white/20 text-white rounded-xl px-4 py-3 text-[12px] font-bold outline-none focus:border-[#00D1FF] cursor-pointer"
+                            className="w-full bg-black border border-white/20 text-gray-900 rounded-xl px-4 py-3 text-[12px] font-bold outline-none focus:border-[#00D1FF] cursor-pointer"
                             value={selectedOrder.status}
                             onChange={(e) => handleUpdateStatus(selectedOrder, e.target.value)}
                           >
@@ -378,7 +378,7 @@ export default function OrdersListPage() {
                                "w-full rounded-xl px-4 py-3 text-[12px] uppercase tracking-widest font-black outline-none transition-all cursor-pointer",
                                selectedOrder.paymentStatus === 'PAID' ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400" : 
                                selectedOrder.paymentStatus === 'PARTIAL' ? "bg-amber-500/10 border border-amber-500/30 text-amber-400" :
-                               "bg-white/5 border border-white/10 text-slate-300"
+                               "bg-white/5 border border-gray-200 text-slate-300"
                             )}
                             value={selectedOrder.paymentStatus}
                             onChange={async (e) => {

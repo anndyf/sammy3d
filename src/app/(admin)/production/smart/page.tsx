@@ -150,16 +150,16 @@ export default function GCodeAnalyzerPage() {
           {/* SELECTORS */}
           <div className="flex flex-wrap items-center gap-3">
              {/* PRINTER SELECTOR */}
-             <div className="flex items-center gap-3 bg-[#1a1d24] border border-white/5 p-2 rounded-xl">
+             <div className="flex items-center gap-3 bg-white border border-gray-200 p-2 rounded-xl">
                 <Printer className="h-4 w-4 text-blue-600 ml-2" />
                 <select 
                   value={selectedPrinterId}
                   onChange={(e) => setSelectedPrinterId(e.target.value)}
                   className="bg-transparent text-xs font-bold text-white outline-none border-none pr-8 cursor-pointer"
                 >
-                  <option value="avg" className="bg-[#1a1d24]">Custo Médio (Impressoras)</option>
+                  <option value="avg" className="bg-white">Custo Médio (Impressoras)</option>
                   {printers.map(p => (
-                    <option key={p.id} value={p.id} className="bg-[#1a1d24]">
+                    <option key={p.id} value={p.id} className="bg-white">
                       {p.name} ({p.model})
                     </option>
                   ))}
@@ -167,16 +167,16 @@ export default function GCodeAnalyzerPage() {
              </div>
 
              {/* MATERIAL SELECTOR */}
-             <div className="flex items-center gap-3 bg-[#1a1d24] border border-white/5 p-2 rounded-xl">
+             <div className="flex items-center gap-3 bg-white border border-gray-200 p-2 rounded-xl">
                 <Layers className="h-4 w-4 text-gray-600 ml-2" />
                 <select 
                   value={selectedMaterialId}
                   onChange={(e) => setSelectedMaterialId(e.target.value)}
                   className="bg-transparent text-xs font-bold text-white outline-none border-none pr-8 cursor-pointer"
                 >
-                  <option value="avg" className="bg-[#1a1d24]">Custo Médio (Filamentos)</option>
+                  <option value="avg" className="bg-white">Custo Médio (Filamentos)</option>
                   {materials.map(m => (
-                    <option key={m.id} value={m.id} className="bg-[#1a1d24]">
+                    <option key={m.id} value={m.id} className="bg-white">
                       {m.name} ({m.color}) - R$ {m.costPerUnit.toFixed(2)}/{m.unitType}
                     </option>
                   ))}
@@ -189,13 +189,13 @@ export default function GCodeAnalyzerPage() {
         <div 
           className={cn(
             "mt-10 border-2 border-dashed rounded-3xl p-20 flex flex-col items-center justify-center text-center transition-all duration-300",
-            isDragging ? "border-indigo-500 bg-indigo-500/5" : "border-white/10 bg-[#1a1d24] hover:border-white/20"
+            isDragging ? "border-indigo-500 bg-indigo-500/5" : "border-gray-200 bg-white hover:border-white/20"
           )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          <div className="w-20 h-20 rounded-2xl bg-[#14161b] flex items-center justify-center border border-white/5 mb-6 shadow-xl relative group">
+          <div className="w-20 h-20 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-200 mb-6 shadow-xl relative group">
             <Upload className="h-8 w-8 text-indigo-400 group-hover:-translate-y-1 transition-transform" />
             <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>
@@ -211,9 +211,9 @@ export default function GCodeAnalyzerPage() {
       )}
 
       {isAnalyzing && (
-        <div className="bg-[#1a1d24] border border-white/5 rounded-3xl p-20 flex flex-col items-center justify-center text-center">
+        <div className="bg-white border border-gray-200 rounded-3xl p-20 flex flex-col items-center justify-center text-center">
            <div className="relative w-32 h-32 mb-8">
-              <div className="absolute inset-0 border-4 border-white/5 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
               <div className="absolute inset-0 border-4 border-indigo-500 rounded-full border-t-transparent animate-spin"></div>
               <div className="absolute inset-0 flex items-center justify-center text-indigo-400">
                 <FileCode2 className="h-10 w-10 animate-pulse" />
@@ -227,15 +227,15 @@ export default function GCodeAnalyzerPage() {
       {results && (
         <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
           
-          <div className="flex items-center justify-between bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
              <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#14161b] rounded-xl border border-white/5 text-indigo-400"><FileCode2 className="h-6 w-6" /></div>
+                <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-indigo-400"><FileCode2 className="h-6 w-6" /></div>
                 <div>
                    <h3 className="text-sm font-bold text-white">{file?.name || 'arquivo.gcode'}</h3>
                    <p className="text-[10px] text-gray-600 font-mono">{(file?.size ? (file.size / 1024 / 1024).toFixed(2) : '0')} MB</p>
                 </div>
              </div>
-             <button onClick={() => setResults(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-white px-4 py-2 border border-white/5 rounded-lg bg-[#14161b] transition-colors">
+             <button onClick={() => setResults(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-white px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 transition-colors">
                Analisar Outro
              </button>
           </div>
@@ -247,29 +247,29 @@ export default function GCodeAnalyzerPage() {
                 <h4 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em] mb-4 pl-2">Telemetria Extraída</h4>
                 
                 <div className="grid grid-cols-2 gap-4">
-                   <div className="bg-[#1a1d24] border border-white/5 p-5 rounded-2xl shadow-lg flex flex-col">
+                   <div className="bg-white border border-gray-200 p-5 rounded-2xl shadow-lg flex flex-col">
                       <Clock className="h-4 w-4 text-blue-600 mb-4" />
                       <span className="text-[10px] text-gray-600 uppercase tracking-widest font-bold mb-1">Tempo Est.</span>
                       <span className="text-xl font-black text-white font-mono">{results.metrics.time}</span>
                    </div>
-                   <div className="bg-[#1a1d24] border border-white/5 p-5 rounded-2xl shadow-lg flex flex-col">
+                   <div className="bg-white border border-gray-200 p-5 rounded-2xl shadow-lg flex flex-col">
                       <Box className="h-4 w-4 text-blue-600 mb-4" />
                       <span className="text-[10px] text-gray-600 uppercase tracking-widest font-bold mb-1">Consumo</span>
                       <span className="text-xl font-black text-white font-mono">{results.metrics.weight}</span>
                    </div>
-                   <div className="bg-[#1a1d24] border border-white/5 p-5 rounded-2xl shadow-lg flex flex-col">
+                   <div className="bg-white border border-gray-200 p-5 rounded-2xl shadow-lg flex flex-col">
                       <Activity className="h-4 w-4 text-indigo-400 mb-4" />
                       <span className="text-[10px] text-gray-600 uppercase tracking-widest font-bold mb-1">Camadas</span>
                       <span className="text-xl font-black text-white font-mono">{results.metrics.layers}</span>
                    </div>
-                   <div className="bg-[#14161b] border border-emerald-500/20 p-5 rounded-2xl shadow-lg flex flex-col relative overflow-hidden group">
+                   <div className="bg-gray-50 border border-emerald-500/20 p-5 rounded-2xl shadow-lg flex flex-col relative overflow-hidden group">
                       <div className="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl"></div>
                       <DollarSign className="h-4 w-4 text-emerald-400 mb-4 relative z-10" />
                       <span className="text-[10px] text-emerald-500/70 uppercase tracking-widest font-bold mb-1 relative z-10">Custo Base</span>
                       <span className="text-xl font-black text-emerald-400 font-mono relative z-10">{results.metrics.cost}</span>
                       
                       {results.metrics.breakdown && (
-                        <div className="mt-3 pt-3 border-t border-white/5 space-y-1 relative z-10">
+                        <div className="mt-3 pt-3 border-t border-gray-200 space-y-1 relative z-10">
                            <div className="flex justify-between text-[9px] font-bold">
                               <span className="text-gray-600 uppercase">Filamento:</span>
                               <span className="text-slate-300">R$ {results.metrics.breakdown.material}</span>
@@ -294,9 +294,9 @@ export default function GCodeAnalyzerPage() {
                   <Wand2 className="h-3 w-3 text-indigo-400" /> Relatório de Inteligência
                 </h4>
 
-                <div className="bg-[#1a1d24] border border-white/5 rounded-3xl p-8 shadow-xl">
+                <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-xl">
                    
-                   <div className="flex items-center gap-6 pb-8 border-b border-white/5 mb-8">
+                   <div className="flex items-center gap-6 pb-8 border-b border-gray-200 mb-8">
                       <div className="relative w-20 h-20 flex items-center justify-center">
                          <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                            <path className="text-white/5" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
@@ -331,10 +331,10 @@ export default function GCodeAnalyzerPage() {
                          )}
                       </div>
 
-                      <h5 className="text-[11px] font-black text-white uppercase tracking-widest pt-4 border-t border-white/5">Aprovações Estruturais</h5>
+                      <h5 className="text-[11px] font-black text-white uppercase tracking-widest pt-4 border-t border-gray-200">Aprovações Estruturais</h5>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                          {results.ai.passes.map((p: string, idx: number) => (
-                           <div key={idx} className="flex items-center gap-3 bg-[#14161b] border border-white/5 p-3 rounded-lg">
+                           <div key={idx} className="flex items-center gap-3 bg-gray-50 border border-gray-200 p-3 rounded-lg">
                               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                               <span className="text-[12px] text-slate-300 font-medium">{p}</span>
                            </div>
@@ -342,7 +342,7 @@ export default function GCodeAnalyzerPage() {
                       </div>
                    </div>
 
-                   <div className="mt-8 pt-8 border-t border-white/5 flex gap-4">
+                   <div className="mt-8 pt-8 border-t border-gray-200 flex gap-4">
                       <button 
                         onClick={handleGenerateQuote}
                         className="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white h-14 rounded-xl text-xs font-black uppercase tracking-widest transition-colors shadow-lg flex items-center justify-center gap-2"

@@ -31,12 +31,12 @@ export default function HelpDeskPage() {
     <div className="space-y-12 pb-20 max-w-[1000px] mx-auto">
       
       {/* HEADER HERO */}
-      <div className="bg-[#1a1d24] border border-white/5 rounded-3xl p-12 shadow-2xl relative overflow-hidden text-center flex flex-col items-center">
+      <div className="bg-white border border-gray-200 rounded-3xl p-12 shadow-2xl relative overflow-hidden text-center flex flex-col items-center">
          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-emerald-500"></div>
          <div className="absolute -left-20 -top-20 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
          
-         <div className="w-16 h-16 rounded-2xl bg-[#14161b] border border-white/5 flex items-center justify-center mb-6 shadow-inner relative z-10">
+         <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center mb-6 shadow-inner relative z-10">
            <LifeBuoy className="h-8 w-8 text-blue-600" />
          </div>
          
@@ -52,7 +52,7 @@ export default function HelpDeskPage() {
             <input 
               type="text" 
               placeholder="Ex: Como exportar relatórios em PDF..." 
-              className="w-full bg-[#14161b] border border-white/10 rounded-2xl pl-16 pr-6 py-5 text-lg font-bold text-white outline-none focus:border-blue-600 transition-all shadow-2xl placeholder:text-slate-600" 
+              className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-16 pr-6 py-5 text-lg font-bold text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600 transition-all shadow-2xl placeholder:text-slate-600" 
               value={search} 
               onChange={e=>setSearch(e.target.value)}
             />
@@ -64,9 +64,9 @@ export default function HelpDeskPage() {
          <div className="col-span-1 space-y-6">
             <h3 className="text-[11px] font-black text-gray-600 uppercase tracking-widest pl-2">Tutoriais em Vídeo</h3>
             
-            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-2 space-y-2 shadow-lg">
+            <div className="bg-white border border-gray-200 rounded-2xl p-2 space-y-2 shadow-lg">
                <a href="#" className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
-                  <div className="p-3 bg-[#14161b] rounded-lg group-hover:bg-blue-600/10 transition-colors">
+                  <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-blue-600/10 transition-colors">
                      <PlayCircle className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
                   </div>
                   <div className="flex-1">
@@ -75,7 +75,7 @@ export default function HelpDeskPage() {
                   </div>
                </a>
                <a href="#" className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
-                  <div className="p-3 bg-[#14161b] rounded-lg group-hover:bg-blue-500/10 transition-colors">
+                  <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-blue-500/10 transition-colors">
                      <PlayCircle className="h-5 w-5 text-gray-600 group-hover:text-blue-400" />
                   </div>
                   <div className="flex-1">
@@ -84,7 +84,7 @@ export default function HelpDeskPage() {
                   </div>
                </a>
                <a href="#" className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
-                  <div className="p-3 bg-[#14161b] rounded-lg group-hover:bg-indigo-500/10 transition-colors">
+                  <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-indigo-500/10 transition-colors">
                      <PlayCircle className="h-5 w-5 text-gray-600 group-hover:text-indigo-400" />
                   </div>
                   <div className="flex-1">
@@ -94,12 +94,12 @@ export default function HelpDeskPage() {
                </a>
             </div>
 
-            <div className="bg-gradient-to-br from-[#1a1d24] to-[#14161b] border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+            <div className="bg-gradient-to-br from-[#1a1d24] to-[#14161b] border border-gray-200 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
                <div className="absolute right-0 top-0 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
                <MessageSquare className="h-6 w-6 text-blue-600 mb-4" />
                <h3 className="text-sm font-black text-white mb-2">Suporte Direto</h3>
                <p className="text-[11px] text-gray-500 font-bold mb-6">Fale diretamente com nossa equipe técnica para dúvidas avançadas.</p>
-               <button className="w-full bg-blue-600 text-black font-black uppercase tracking-widest text-[10px] py-3 rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">
+               <button className="w-full bg-blue-600 text-white font-black uppercase tracking-widest text-[10px] py-3 rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">
                  Abrir Ticket <ArrowRight className="h-3 w-3" />
                </button>
             </div>
@@ -116,8 +116,8 @@ export default function HelpDeskPage() {
                    <div 
                      key={idx} 
                      className={cn(
-                       "bg-[#1a1d24] border rounded-2xl overflow-hidden transition-all duration-300 shadow-lg cursor-pointer",
-                       isActive ? "border-blue-600/30 shadow-[0_0_20px_rgba(34,211,238,0.05)]" : "border-white/5 hover:border-white/10"
+                       "bg-white border rounded-2xl overflow-hidden transition-all duration-300 shadow-lg cursor-pointer",
+                       isActive ? "border-blue-600/30 shadow-[0_0_20px_rgba(34,211,238,0.05)]" : "border-gray-200 hover:border-gray-200"
                      )}
                      onClick={() => setActiveFaq(isActive ? null : idx)}
                    >
@@ -125,7 +125,7 @@ export default function HelpDeskPage() {
                          <h4 className="text-sm font-bold text-white">{faq.q}</h4>
                          <div className={cn(
                            "p-1.5 rounded-md transition-all",
-                           isActive ? "bg-blue-600/10 text-blue-600" : "bg-[#14161b] text-gray-600"
+                           isActive ? "bg-blue-600/10 text-blue-600" : "bg-gray-50 text-gray-600"
                          )}>
                             <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", isActive && "rotate-180")} />
                          </div>
@@ -142,7 +142,7 @@ export default function HelpDeskPage() {
                })}
             </div>
 
-            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 flex items-center justify-between mt-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 flex items-center justify-between mt-8">
                <div className="flex items-center gap-5">
                   <div className="w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center">
                      <BookOpen className="h-6 w-6" />
@@ -152,7 +152,7 @@ export default function HelpDeskPage() {
                      <p className="text-[11px] text-gray-500 mt-1">Todas as rotinas, cadastros e relatórios.</p>
                   </div>
                </div>
-               <button className="px-6 py-3 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+               <button className="px-6 py-3 border border-gray-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white hover:text-white transition-colors">
                   Baixar 14.2mb
                </button>
             </div>

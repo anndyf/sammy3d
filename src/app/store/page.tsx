@@ -80,7 +80,7 @@ export default function StorefrontPage() {
     <div className="min-h-screen bg-black text-white font-sans selection:bg-[#00D1FF] selection:text-black pb-40">
       
       {/* MAGLO PROMO BAR: ALAGOINHAS EXCLUSIVE */}
-      <div className="bg-[#111111] border-b border-white/5 py-3 px-6 overflow-hidden relative">
+      <div className="bg-[#111111] border-b border-gray-200 py-3 px-6 overflow-hidden relative">
          <div className="max-w-[1600px] mx-auto flex items-center justify-between">
             <div className="flex items-center gap-6 animate-fade-in">
                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#00D1FF]">
@@ -93,14 +93,14 @@ export default function StorefrontPage() {
                </div>
             </div>
             <div className="flex items-center gap-4">
-                <a href="/store/request" className="text-[10px] font-bold uppercase tracking-[0.2em] hover:text-[#00D1FF] text-slate-300 transition-colors flex items-center gap-2 group border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/5">
+                <a href="/store/request" className="text-[10px] font-bold uppercase tracking-[0.2em] hover:text-[#00D1FF] text-slate-300 transition-colors flex items-center gap-2 group border border-gray-200 px-3 py-1.5 rounded-full hover:bg-white/5">
                    Orçamento Especializado
                 </a>
             </div>
          </div>
       </div>
 
-      <header className="sticky top-0 bg-black/80 backdrop-blur-2xl z-40 border-b border-white/10">
+      <header className="sticky top-0 bg-black/80 backdrop-blur-2xl z-40 border-b border-gray-200">
          <div className="max-w-[1600px] mx-auto px-6 md:px-10 h-24 flex items-center justify-between gap-10">
             
             <div className="flex items-center gap-6 min-w-fit">
@@ -110,7 +110,7 @@ export default function StorefrontPage() {
                   </div>
                   <span className="font-medium text-2xl tracking-tighter text-white">sammy<span className="text-[#00D1FF]">3d</span></span>
                </div>
-               <nav className="hidden xl:flex items-center gap-8 py-1.5 px-8 bg-white/5 rounded-full border border-white/10">
+               <nav className="hidden xl:flex items-center gap-8 py-1.5 px-8 bg-white/5 rounded-full border border-gray-200">
                   <span className={cn("text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all", !selectedCategory ? "text-[#00D1FF]" : "text-gray-500 hover:text-white")} onClick={()=>setSelectedCategory(null)}>Explorar Tudo</span>
                   {dynamicCategories.map(cat => (
                     <span key={cat} className={cn("text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all whitespace-nowrap", selectedCategory === cat ? "text-[#00D1FF]" : "text-gray-500 hover:text-white")} onClick={()=>setSelectedCategory(cat)}>{cat}</span>
@@ -121,14 +121,14 @@ export default function StorefrontPage() {
             <div className="flex-1 max-w-sm hidden md:block">
                <div className="relative group">
                   <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-[#00D1FF] transition-colors" />
-                  <input type="text" placeholder="O que você imagina hoje?..." className="w-full h-12 pl-14 pr-6 bg-white/5 border border-white/10 rounded-full text-sm outline-none focus:bg-white/10 focus:border-[#00D1FF]/50 transition-all font-light tracking-tight text-white placeholder:text-gray-600" />
+                  <input type="text" placeholder="O que você imagina hoje?..." className="w-full h-12 pl-14 pr-6 bg-white/5 border border-gray-200 rounded-full text-sm outline-none focus:bg-white/10 focus:border-[#00D1FF]/50 transition-all font-light tracking-tight text-gray-900 placeholder-gray-400 placeholder:text-gray-600" />
                </div>
             </div>
 
             <div className="flex items-center gap-4 md:gap-6">
                <div 
                  onClick={() => setIsCartOpen(true)}
-                 className="relative w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:border-[#00D1FF] transition-all cursor-pointer group"
+                 className="relative w-12 h-12 rounded-2xl bg-white/5 border border-gray-200 flex items-center justify-center text-white hover:border-[#00D1FF] transition-all cursor-pointer group"
                >
                   <ShoppingCart className="w-5 h-5 group-hover:text-[#00D1FF] transition-colors" />
                   {cartItems.length > 0 && (
@@ -144,7 +144,7 @@ export default function StorefrontPage() {
       <main className="max-w-[1600px] mx-auto pt-10 md:pt-20 px-6 md:px-10 space-y-24">
          
          {/* HERO SECTION - MIDNIGHT TECH */}
-         <section className="relative p-10 md:p-24 overflow-hidden bg-[#0A0A0A] border border-white/10 rounded-[48px] flex flex-col md:flex-row items-center gap-16 text-center md:text-left shadow-2xl">
+         <section className="relative p-10 md:p-24 overflow-hidden bg-[#0A0A0A] border border-gray-200 rounded-[48px] flex flex-col md:flex-row items-center gap-16 text-center md:text-left shadow-2xl">
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00D1FF]/10 blur-[120px] rounded-full pointer-events-none" />
             
             <div className="flex-1 space-y-10 z-10">
@@ -182,14 +182,14 @@ export default function StorefrontPage() {
             {loading ? (
               <div className="py-40 text-center text-gray-600 uppercase text-[12px] font-black tracking-[0.6em] animate-pulse">Lendo base de dados industrial...</div>
             ) : Object.keys(displayedProducts).length === 0 ? (
-              <div className="py-40 flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-[48px] bg-white/5">
+              <div className="py-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-[48px] bg-white/5">
                  <Box className="w-20 h-20 text-slate-700 mb-6" />
                  <p className="text-gray-600 uppercase text-[12px] tracking-[.3em] font-black">Nenhuma peça em catálogo</p>
               </div>
             ) : (
               Object.entries(displayedProducts).map(([category, items]) => (
                 <section key={category} className="space-y-12">
-                   <div className="flex items-center justify-between border-b border-white/10 pb-8">
+                   <div className="flex items-center justify-between border-b border-gray-200 pb-8">
                       <div className="space-y-2">
                          <h3 className="text-5xl font-black tracking-tighter text-white">{category}</h3>
                          <div className="flex items-center gap-3">
@@ -201,10 +201,10 @@ export default function StorefrontPage() {
 
                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                       {items.map(p => (
-                        <div key={p.id} className="group bg-white/5 backdrop-blur-md rounded-3xl p-5 border border-white/10 hover:border-[#00D1FF]/50 hover:bg-white/10 transition-all duration-300 flex flex-col h-full shadow-2xl">
+                        <div key={p.id} className="group bg-white/5 backdrop-blur-md rounded-3xl p-5 border border-gray-200 hover:border-[#00D1FF]/50 hover:bg-white/10 transition-all duration-300 flex flex-col h-full shadow-2xl">
                            
                            {/* IMAGEM DO PRODUTO */}
-                           <div className="relative aspect-square rounded-2xl overflow-hidden bg-black/40 mb-6 border border-white/5 flex items-center justify-center p-8 group-hover:shadow-[0_0_40px_rgba(0,209,255,0.1)] transition-all">
+                           <div className="relative aspect-square rounded-2xl overflow-hidden bg-black/40 mb-6 border border-gray-200 flex items-center justify-center p-8 group-hover:shadow-[0_0_40px_rgba(0,209,255,0.1)] transition-all">
                               {p.imageUrl ? (
                                  <img 
                                    src={p.imageUrl} 
@@ -215,7 +215,7 @@ export default function StorefrontPage() {
                               ) : (
                                  <Box className="w-16 h-16 text-slate-800" />
                               )}
-                              <div className="absolute top-3 left-3 px-3 py-1 bg-black/80 backdrop-blur-sm border border-white/10 text-white rounded-lg flex items-center text-[9px] font-black uppercase tracking-widest z-10">
+                              <div className="absolute top-3 left-3 px-3 py-1 bg-black/80 backdrop-blur-sm border border-gray-200 text-white rounded-lg flex items-center text-[9px] font-black uppercase tracking-widest z-10">
                                  REF: {p.sku || 'N/A'}
                               </div>
                            </div>
@@ -239,7 +239,7 @@ export default function StorefrontPage() {
                                  </div>
                                  <button 
                                    onClick={() => handleAddToCart(p)}
-                                   className="w-14 h-14 bg-white/10 hover:bg-[#00D1FF] text-white hover:text-black rounded-2xl flex items-center justify-center transition-all shadow-xl active:scale-90"
+                                   className="w-14 h-14 bg-white/10 hover:bg-[#00D1FF] text-white hover:text-white rounded-2xl flex items-center justify-center transition-all shadow-xl active:scale-90"
                                  >
                                     <Plus className="w-6 h-6 stroke-[3]" />
                                  </button>
@@ -261,11 +261,11 @@ export default function StorefrontPage() {
            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
            
            {/* DRAWER */}
-           <div className="relative w-full max-w-md bg-[#111111] h-full shadow-[0_0_100px_rgba(0,0,0,0.8)] border-l border-white/10 flex flex-col animate-in slide-in-from-right duration-500">
+           <div className="relative w-full max-w-md bg-[#111111] h-full shadow-[0_0_100px_rgba(0,0,0,0.8)] border-l border-gray-200 flex flex-col animate-in slide-in-from-right duration-500">
               
-              <div className="h-24 px-8 border-b border-white/10 flex items-center justify-between bg-black/40">
+              <div className="h-24 px-8 border-b border-gray-200 flex items-center justify-between bg-black/40">
                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-[#00D1FF]">
+                    <div className="w-12 h-12 bg-white/5 border border-gray-200 rounded-xl flex items-center justify-center text-[#00D1FF]">
                        <ShoppingCart className="w-5 h-5" />
                     </div>
                     <div>
@@ -284,8 +284,8 @@ export default function StorefrontPage() {
                     </div>
                  ) : (
                     cartItems.map(item => (
-                       <div key={item.product.id} className="bg-black/40 border border-white/10 rounded-2xl p-4 flex items-center gap-6">
-                           <div className="w-16 h-16 bg-white/5 rounded-xl border border-white/5 p-2 flex items-center justify-center">
+                       <div key={item.product.id} className="bg-black/40 border border-gray-200 rounded-2xl p-4 flex items-center gap-6">
+                           <div className="w-16 h-16 bg-white/5 rounded-xl border border-gray-200 p-2 flex items-center justify-center">
                               {item.product.imageUrl ? <img src={item.product.imageUrl} className="w-full h-full object-contain" /> : <Box className="w-6 h-6 text-slate-600" />}
                            </div>
                            <div className="flex-1 min-w-0">
@@ -293,7 +293,7 @@ export default function StorefrontPage() {
                               <p className="text-[12px] font-mono text-[#00D1FF] font-bold">R$ {item.product.sellingPrice.toFixed(2)}</p>
                               
                               <div className="flex items-center gap-4 mt-3">
-                                 <div className="flex items-center bg-white/5 rounded-lg border border-white/10">
+                                 <div className="flex items-center bg-white/5 rounded-lg border border-gray-200">
                                     <button onClick={() => updateQuantity(item.product.id, -1)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-white">-</button>
                                     <span className="w-8 text-center text-[12px] font-black">{item.quantity}</span>
                                     <button onClick={() => updateQuantity(item.product.id, 1)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-white">+</button>
@@ -306,7 +306,7 @@ export default function StorefrontPage() {
                  )}
               </div>
 
-              <div className="p-8 border-t border-white/10 bg-black/60 space-y-6">
+              <div className="p-8 border-t border-gray-200 bg-black/60 space-y-6">
                  <div className="flex items-center justify-between">
                     <span className="text-[12px] font-black text-gray-600 uppercase tracking-widest">Estimativa Tática</span>
                     <span className="text-3xl font-mono font-black text-white tracking-tighter">R$ {cartTotalAmount.toFixed(2)}</span>
@@ -324,7 +324,7 @@ export default function StorefrontPage() {
         </div>
       )}
 
-      <footer className="mt-40 bg-black border-t border-white/10 py-20 px-8 relative overflow-hidden">
+      <footer className="mt-40 bg-black border-t border-gray-200 py-20 px-8 relative overflow-hidden">
          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#00D1FF]/5 blur-[100px] rounded-full pointer-events-none" />
          <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12 relative z-10">
             <div className="text-center md:text-left space-y-6">

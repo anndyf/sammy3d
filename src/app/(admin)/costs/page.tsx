@@ -26,7 +26,7 @@ export default function CostsPage() {
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white">Custos Extras & Insumos</h1>
          </div>
-         <button className="bg-blue-600 text-black px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg">
+         <button className="bg-blue-600 text-white px-6 py-2.5 h-11 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all flex items-center gap-2 shadow-lg">
            <Plus className="h-4 w-4" />
            Novo Custo
          </button>
@@ -35,7 +35,7 @@ export default function CostsPage() {
       {/* CARDS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
          {costs.map(cost => (
-           <div key={cost.id} className="bg-[#1a1d24] border border-white/5 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-colors shadow-lg">
+           <div key={cost.id} className="bg-white border border-gray-200 rounded-2xl relative overflow-hidden group hover:border-gray-200 transition-colors shadow-lg">
               
               {/* TOP BADGE */}
               <div className="absolute top-0 right-0 bg-purple-500/20 px-3 py-1.5 rounded-bl-xl border-b border-l border-purple-500/30">
@@ -53,7 +53,7 @@ export default function CostsPage() {
                  </div>
 
                  {/* STOCK BOX */}
-                 <div className="bg-[#14161b] border border-white/5 rounded-xl p-4 mb-6 flex justify-between items-end">
+                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 flex justify-between items-end">
                     <div>
                        <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">Estoque Atual</p>
                        <div className="flex items-baseline gap-1">
@@ -66,7 +66,7 @@ export default function CostsPage() {
 
                  {/* ACTIONS */}
                  <div className="flex items-center gap-2">
-                    <button className="flex-1 bg-[#14161b] border border-white/5 hover:border-white/10 text-slate-300 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                    <button className="flex-1 bg-gray-50 border border-gray-200 hover:border-gray-200 text-slate-300 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
                        <Edit3 className="h-3.5 w-3.5" /> Editar
                     </button>
                     <button className="p-2.5 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 text-amber-500 rounded-lg transition-colors">

@@ -381,7 +381,7 @@ export default function OrdersPage() {
         <div className="flex items-center gap-4 mb-10 mt-2">
            <button 
              onClick={() => setIsAdding(false)} 
-             className="p-2.5 bg-[#1a1d24] border border-white/5 rounded-xl text-gray-600 hover:text-white transition-all shadow-lg active:scale-95"
+             className="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 hover:text-white transition-all shadow-lg active:scale-95"
            >
               <ArrowLeft className="h-5 w-5" />
            </button>
@@ -394,8 +394,8 @@ export default function OrdersPage() {
            <div className="lg:col-span-8 space-y-8">
               
               {/* DADOS DA VENDA */}
-              <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden">
-                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+              <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden">
+                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
                     <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Dados da Venda</h3>
                  </div>
                  
@@ -403,7 +403,7 @@ export default function OrdersPage() {
                     <div className="space-y-2">
                        <div className="flex items-center justify-between px-1">
                           <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Cliente</label>
-                          <span className="text-[9px] font-black text-slate-600 uppercase flex items-center gap-1.5 bg-[#14161b] px-2 py-1 rounded">
+                          <span className="text-[9px] font-black text-slate-600 uppercase flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded">
                              <LockIcon className="h-2.5 w-2.5" /> Texto Livre (Busca Bloqueada)
                           </span>
                        </div>
@@ -411,7 +411,7 @@ export default function OrdersPage() {
                           <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600 group-focus-within:text-blue-600 transition-colors" />
                           <input 
                             type="text" 
-                            className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl pl-12 pr-12 text-sm text-white font-bold outline-none focus:border-blue-600/50 transition-all shadow-inner" 
+                            className="w-full h-14 bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-12 text-sm text-gray-900 placeholder-gray-400 font-bold outline-none focus:border-blue-600/50 transition-all shadow-inner" 
                             value={customerName}
                             onChange={e=>setCustomerName(e.target.value)}
                           />
@@ -424,7 +424,7 @@ export default function OrdersPage() {
                           <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest px-1">Canal de Venda</label>
                           <div className="relative">
                              <select 
-                               className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-5 text-sm font-bold text-white outline-none focus:border-blue-600/50 transition-all appearance-none cursor-pointer"
+                               className="w-full h-14 bg-gray-50 border border-gray-200 rounded-2xl px-5 text-sm font-bold text-gray-900 outline-none focus:border-blue-600/50 transition-all appearance-none cursor-pointer"
                                value={channel}
                                onChange={e=>setChannel(e.target.value)}
                              >
@@ -441,7 +441,7 @@ export default function OrdersPage() {
                              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 font-mono font-bold">#</span>
                              <input 
                                type="text" 
-                               className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl pl-10 pr-5 text-sm text-white font-mono font-bold outline-none focus:border-blue-600/50 transition-all shadow-inner" 
+                               className="w-full h-14 bg-gray-50 border border-gray-200 rounded-2xl pl-10 pr-5 text-sm text-gray-900 placeholder-gray-400 font-mono font-bold outline-none focus:border-blue-600/50 transition-all shadow-inner" 
                                placeholder="123"
                                value={orderNumber}
                                onChange={e=>setOrderNumber(e.target.value)}
@@ -456,7 +456,7 @@ export default function OrdersPage() {
                                  <input 
                                    type="number" 
                                    step="0.01"
-                                   className="w-full h-14 bg-[#14161b] border border-blue-600/20 rounded-2xl px-5 text-sm text-blue-600 font-mono font-bold outline-none focus:border-blue-600/50 transition-all shadow-inner" 
+                                   className="w-full h-14 bg-gray-50 border border-blue-600/20 rounded-2xl px-5 text-sm text-blue-600 font-mono font-bold outline-none focus:border-blue-600/50 transition-all shadow-inner" 
                                    placeholder="Deixe em branco para calcular automaticamente"
                                    value={netRevenue}
                                    onChange={e=>setNetRevenue(e.target.value)}
@@ -469,8 +469,8 @@ export default function OrdersPage() {
               </div>
 
               {/* ADICIONAR PRODUTOS */}
-              <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-2xl">
-                 <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
+              <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-2xl">
+                 <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-200">
                     <ShoppingCart className="h-5 w-5 text-blue-600" />
                     <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Adicionar Produtos</h3>
                  </div>
@@ -478,7 +478,7 @@ export default function OrdersPage() {
                  <div className="flex flex-col md:flex-row gap-4 mb-10">
                     <div className="w-full relative">
                        <select 
-                         className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-5 text-sm font-bold text-white outline-none focus:border-blue-600/50 transition-all appearance-none cursor-pointer" 
+                         className="w-full h-14 bg-gray-50 border border-gray-200 rounded-2xl px-5 text-sm font-bold text-gray-900 outline-none focus:border-blue-600/50 transition-all appearance-none cursor-pointer" 
                          value={selectedProduct} 
                          onChange={e=>handleProductChange(e.target.value)}
                        >
@@ -493,29 +493,29 @@ export default function OrdersPage() {
                             type="number" 
                             step="0.01"
                             placeholder="Preço R$"
-                            className="w-full h-14 bg-[#14161b] border border-white/5 rounded-2xl px-4 text-sm font-bold text-white text-center outline-none focus:border-blue-600/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                            className="w-full h-14 bg-gray-50 border border-gray-200 rounded-2xl px-4 text-sm font-bold text-gray-900 placeholder-gray-400 text-center outline-none focus:border-blue-600/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                             value={customPrice} 
                             onChange={e=>setCustomPrice(e.target.value)} 
                           />
                        </div>
                        <input 
                          type="number" 
-                         className="w-24 h-14 bg-[#14161b] border border-white/5 rounded-2xl px-4 text-sm font-bold text-white text-center outline-none focus:border-blue-600/50 transition-all" 
+                         className="w-24 h-14 bg-gray-50 border border-gray-200 rounded-2xl px-4 text-sm font-bold text-gray-900 placeholder-gray-400 text-center outline-none focus:border-blue-600/50 transition-all" 
                          value={selectedQuantity} 
                          onChange={e=>setSelectedQuantity(e.target.value)} 
                        />
                        <button 
                          onClick={handleAddToCart} 
-                         className="w-14 h-14 shrink-0 bg-blue-600 text-black rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20 hover:bg-blue-600 transition-all active:scale-95 text-2xl font-black"
+                         className="w-14 h-14 shrink-0 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20 hover:bg-blue-600 transition-all active:scale-95 text-2xl font-black"
                        >+</button>
                     </div>
                  </div>
 
                  <div className="space-y-4">
                     {cart.map((item, idx) => (
-                       <div key={idx} className="bg-[#14161b] border border-white/5 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-blue-600/30 transition-colors group">
+                       <div key={idx} className="bg-gray-50 border border-gray-200 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-blue-600/30 transition-colors group">
                           <div className="flex items-center gap-4">
-                             <div className="w-12 h-12 bg-[#1a1d24] border border-white/5 rounded-xl flex items-center justify-center shadow-inner">
+                             <div className="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-inner">
                                 <Box className="h-6 w-6 text-blue-600" />
                              </div>
                              <div>
@@ -524,14 +524,14 @@ export default function OrdersPage() {
                              </div>
                           </div>
                           
-                          <div className="flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-10 mt-4 md:mt-0 bg-[#1a1d24]/50 md:bg-transparent p-3 md:p-0 rounded-xl md:rounded-none">
+                          <div className="flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-10 mt-4 md:mt-0 bg-white/50 md:bg-transparent p-3 md:p-0 rounded-xl md:rounded-none">
                              <div className="text-center flex-1 md:flex-none">
                                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1.5">QTD</p>
-                                <div className="bg-[#1a1d24] px-4 py-1.5 rounded-lg border border-white/5 text-sm font-black text-white">{item.quantity}</div>
+                                <div className="bg-white px-4 py-1.5 rounded-lg border border-gray-200 text-sm font-black text-white">{item.quantity}</div>
                              </div>
                              <div className="text-center flex-1 md:flex-none">
                                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1.5">Preço Unit.</p>
-                                <div className="bg-[#1a1d24] px-4 py-1.5 rounded-lg border border-white/5 text-sm font-black text-white font-mono">R$ {item.price.toFixed(2)}</div>
+                                <div className="bg-white px-4 py-1.5 rounded-lg border border-gray-200 text-sm font-black text-white font-mono">R$ {item.price.toFixed(2)}</div>
                              </div>
                              <div className="text-right flex-[2] md:flex-none">
                                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1.5">Total</p>
@@ -554,7 +554,7 @@ export default function OrdersPage() {
            <div className="lg:col-span-4 space-y-8">
               
               {/* DESPESAS / EMBALAGEM */}
-              <div className="bg-[#1a1d24] border border-white/5 rounded-[2rem] p-8 shadow-2xl">
+              <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-2xl">
                  <div className="flex items-center gap-3 mb-6">
                     <TagIcon className="h-5 w-5 text-orange-500" />
                     <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Despesas / Embalagem</h3>
@@ -562,18 +562,18 @@ export default function OrdersPage() {
                  
                  <div className="flex gap-2">
                     <div className="flex-1 relative">
-                       <select className="w-full h-12 bg-[#14161b] border border-white/5 rounded-xl px-4 text-[11px] font-bold text-white outline-none appearance-none cursor-pointer">
+                       <select className="w-full h-12 bg-gray-50 border border-gray-200 rounded-xl px-4 text-[11px] font-bold text-gray-900 outline-none appearance-none cursor-pointer">
                           <option>Adicionar item...</option>
                        </select>
                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-600" />
                     </div>
-                    <input type="number" defaultValue="1" className="w-14 h-12 bg-[#14161b] border border-white/5 rounded-xl px-2 text-center text-[11px] font-bold text-white" />
+                    <input type="number" defaultValue="1" className="w-14 h-12 bg-gray-50 border border-gray-200 rounded-xl px-2 text-center text-[11px] font-bold text-gray-900 placeholder-gray-400" />
                     <button className="w-12 h-12 bg-orange-600 text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-orange-600/20">+</button>
                  </div>
               </div>
 
               {/* FINANCIAL SUMMARY */}
-              <div className="bg-[#1a1d24] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl space-y-8 relative overflow-hidden">
+              <div className="bg-white border border-gray-200 rounded-[2.5rem] p-8 shadow-2xl space-y-8 relative overflow-hidden">
                  <div className="space-y-5 relative z-10">
                     <div className="flex justify-between items-center">
                        <span className="text-[12px] font-bold text-gray-600">Subtotal (Venda)</span>
@@ -593,7 +593,7 @@ export default function OrdersPage() {
                     </div>
                  </div>
 
-                 <div className="pt-8 border-t border-white/5 flex justify-between items-end relative z-10">
+                 <div className="pt-8 border-t border-gray-200 flex justify-between items-end relative z-10">
                     <div className="space-y-1">
                        <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Lucro Estimado</p>
                        <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Lucro Líquido</h3>
@@ -632,20 +632,20 @@ export default function OrdersPage() {
                <input 
                  type="text" 
                  placeholder="Buscar pedido..." 
-                 className="w-full md:w-72 bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-sm text-white font-medium outline-none focus:border-blue-600/30 transition-all shadow-xl" 
+                 className="w-full md:w-72 bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 font-medium outline-none focus:border-blue-600/30 transition-all shadow-xl" 
                  value={searchTerm} 
                  onChange={e=>setSearchTerm(e.target.value)} 
                />
             </div>
             <div className="relative w-full md:w-auto">
-               <select className="w-full md:w-auto bg-[#1a1d24] border border-white/5 rounded-xl px-5 py-3 text-sm font-bold text-white outline-none appearance-none cursor-pointer pr-10 shadow-xl">
+               <select className="w-full md:w-auto bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm font-bold text-gray-900 outline-none appearance-none cursor-pointer pr-10 shadow-xl">
                   <option>Todos</option>
                   <option>Abertos</option>
                   <option>Finalizados</option>
                </select>
                <Filter className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 pointer-events-none" />
             </div>
-            <div className="hidden md:flex items-center gap-2 bg-[#1a1d24] border border-white/5 rounded-xl px-4 py-3 text-sm font-bold text-gray-500 shadow-xl cursor-pointer hover:border-white/10">
+            <div className="hidden md:flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-500 shadow-xl cursor-pointer hover:border-gray-200">
                <div className="w-4 h-4 border-2 border-white/20 rounded mr-1"></div>
                Selecionar
             </div>
@@ -657,7 +657,7 @@ export default function OrdersPage() {
             </button>
             <button 
               onClick={() => setIsAdding(true)}
-              className="bg-blue-600 text-black px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-cyan-300 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(34,211,238,0.2)] active:scale-95 w-full md:w-auto mt-2 md:mt-0"
+              className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-cyan-300 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(34,211,238,0.2)] active:scale-95 w-full md:w-auto mt-2 md:mt-0"
             >
               <Plus className="h-5 w-5" /> Novo Pedido
             </button>
@@ -665,7 +665,7 @@ export default function OrdersPage() {
       </div>
 
       {/* TABS (Image 1) */}
-      <div className="flex items-center gap-2 bg-[#1a1d24]/50 p-2 rounded-2xl w-full md:w-fit mb-10 border border-white/5 overflow-x-auto whitespace-nowrap custom-scrollbar">
+      <div className="flex items-center gap-2 bg-white/50 p-2 rounded-2xl w-full md:w-fit mb-10 border border-gray-200 overflow-x-auto whitespace-nowrap custom-scrollbar">
          <button 
            onClick={() => setActiveTab('vendas')}
            className={cn(
@@ -698,11 +698,11 @@ export default function OrdersPage() {
       {/* ORDERS LIST (Image 1 Style) */}
       <div className="space-y-4">
          {orders.map(order => (
-           <div key={order.id} className="bg-[#1a1d24] border border-white/5 rounded-3xl p-6 shadow-xl hover:border-white/10 transition-all group relative overflow-hidden">
+           <div key={order.id} className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xl hover:border-gray-200 transition-all group relative overflow-hidden">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                  
                  <div className="flex items-center gap-6">
-                    <div className="w-6 h-6 border-2 border-white/10 rounded-lg group-hover:border-blue-600/50 transition-colors cursor-pointer flex items-center justify-center">
+                    <div className="w-6 h-6 border-2 border-gray-200 rounded-lg group-hover:border-blue-600/50 transition-colors cursor-pointer flex items-center justify-center">
                        {/* Custom checkbox visual */}
                     </div>
                     
@@ -718,7 +718,7 @@ export default function OrdersPage() {
                           <span className="text-gray-600 text-xs font-medium">
                             ({order.customerName})
                           </span>
-                          <span className="bg-white/5 text-gray-500 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-white/5">
+                          <span className="bg-white/5 text-gray-500 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-gray-200">
                              {order.status}
                           </span>
                           <UserGroupIcon className="h-4 w-4 text-slate-600 hidden md:block" />
@@ -727,7 +727,7 @@ export default function OrdersPage() {
                           <span className="text-gray-600">{new Date(order.createdAt).toLocaleDateString('pt-BR')}</span>
                           <span className="text-slate-700">• via</span>
                           <span className="text-blue-600/80 uppercase tracking-widest">{order.channel}</span>
-                          <span className="bg-[#14161b] px-2 py-0.5 rounded text-slate-600 font-mono"># {order.id}</span>
+                          <span className="bg-gray-50 px-2 py-0.5 rounded text-slate-600 font-mono"># {order.id}</span>
                        </div>
                     </div>
                  </div>
@@ -735,14 +735,14 @@ export default function OrdersPage() {
                  <div className="flex flex-wrap md:flex-nowrap items-center gap-3 mt-4 md:mt-0">
                      <button 
                        onClick={() => handleOpenView(order)}
-                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-gray-600 hover:text-blue-600 hover:border-blue-600/30 transition-all shadow-sm flex items-center justify-center"
+                       className="flex-1 md:flex-none p-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-600 hover:text-blue-600 hover:border-blue-600/30 transition-all shadow-sm flex items-center justify-center"
                        title="Visualizar Pedido"
                      >
                         <Eye className="h-5 w-5" />
                      </button>
                      <button 
                        onClick={() => handlePrintOrder(order)}
-                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-gray-600 hover:text-white transition-all shadow-sm flex items-center justify-center"
+                       className="flex-1 md:flex-none p-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-600 hover:text-white transition-all shadow-sm flex items-center justify-center"
                        title="Imprimir Pedido"
                      >
                         <Printer className="h-5 w-5" />
@@ -756,14 +756,14 @@ export default function OrdersPage() {
                      </button>
                      <button 
                        onClick={() => handleDeleteOrder(order.id)}
-                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all shadow-sm flex items-center justify-center"
+                       className="flex-1 md:flex-none p-3 bg-gray-50 border border-gray-200 rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all shadow-sm flex items-center justify-center"
                        title="Excluir Pedido"
                      >
                         <Trash2 className="h-5 w-5" />
                      </button>
                      <button 
                        onClick={() => handleOpenEdit(order)}
-                       className="flex-1 md:flex-none p-3 bg-[#14161b] border border-white/5 rounded-xl text-slate-700 hover:text-white transition-all shadow-sm flex items-center justify-center"
+                       className="flex-1 md:flex-none p-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-700 hover:text-white transition-all shadow-sm flex items-center justify-center"
                        title="Editar Pedido"
                      >
                         <Edit3 className="h-5 w-5" />
@@ -772,7 +772,7 @@ export default function OrdersPage() {
               </div>
 
               {/* FOOTER OF ITEM CARD */}
-              <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-start gap-4">
+              <div className="mt-6 pt-6 border-t border-gray-200 flex items-center justify-start gap-4">
                  <span className="text-[11px] font-bold text-gray-600 uppercase tracking-widest">
                     {order.items.length} itens - Total:
                  </span>
@@ -785,7 +785,7 @@ export default function OrdersPage() {
 
          {orders.length === 0 && !loading && (
            <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-white/5">
+              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-gray-200">
                  <Box className="h-8 w-8 text-slate-700" />
               </div>
               <p className="text-sm font-bold text-slate-600 uppercase tracking-widest">Nenhum pedido encontrado nesta aba.</p>
@@ -797,8 +797,8 @@ export default function OrdersPage() {
       {isViewOpen && selectedOrder && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsViewOpen(false)} />
-           <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500">
-              <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+           <div className="relative bg-white border border-gray-200 rounded-[2rem] p-10 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-500">
+              <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
                  <div>
                     <h2 className="text-2xl font-black text-white uppercase tracking-tight">Detalhes do Pedido</h2>
                     <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest mt-1">ID: {selectedOrder.id}</p>
@@ -821,7 +821,7 @@ export default function OrdersPage() {
                  <div className="grid grid-cols-2 gap-6">
                     <div>
                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block mb-1">Status Operacional</span>
-                       <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-white/5 border border-white/5 text-slate-300">
+                       <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-white/5 border border-gray-200 text-slate-300">
                           {selectedOrder.status}
                        </span>
                     </div>
@@ -836,11 +836,11 @@ export default function OrdersPage() {
                     </div>
                  </div>
 
-                 <div className="border-t border-white/5 pt-6">
+                 <div className="border-t border-gray-200 pt-6">
                     <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block mb-4">Itens do Pedido</span>
                     <div className="space-y-3 max-h-60 overflow-y-auto">
                        {selectedOrder.items.map((item, idx) => (
-                          <div key={idx} className="flex justify-between items-center bg-[#14161b] border border-white/5 p-4 rounded-xl">
+                          <div key={idx} className="flex justify-between items-center bg-gray-50 border border-gray-200 p-4 rounded-xl">
                              <div>
                                 <h4 className="text-xs font-bold text-white uppercase">{item.customName || 'Produto'}</h4>
                                 <span className="text-[9px] font-bold text-slate-600">Qtd: {item.quantity} x R$ {item.price.toFixed(2)}</span>
@@ -851,7 +851,7 @@ export default function OrdersPage() {
                     </div>
                  </div>
 
-                 <div className="border-t border-white/5 pt-6 flex justify-between items-end">
+                 <div className="border-t border-gray-200 pt-6 flex justify-between items-end">
                     <div>
                        <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Valor do Pedido</p>
                        <h3 className="text-xl font-black text-white uppercase">Total Geral</h3>
@@ -867,7 +867,7 @@ export default function OrdersPage() {
       {isEditOpen && selectedOrder && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsEditOpen(false)} />
-           <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
+           <div className="relative bg-white border border-gray-200 rounded-[2rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
               <div className="flex items-center justify-between mb-8">
                  <h2 className="text-xl font-black text-white uppercase tracking-tight">Editar Pedido</h2>
                  <button onClick={() => setIsEditOpen(false)} className="p-2 text-gray-600 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
@@ -876,13 +876,13 @@ export default function OrdersPage() {
               <form onSubmit={handleUpdateOrder} className="space-y-6">
                  <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Nome do Cliente</label>
-                    <input required type="text" className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-sm font-bold text-white outline-none focus:border-blue-600" value={editCustomerName} onChange={e=>setEditCustomerName(e.target.value)} />
+                    <input required type="text" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600" value={editCustomerName} onChange={e=>setEditCustomerName(e.target.value)} />
                  </div>
 
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Canal de Venda</label>
-                       <select className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-blue-600 appearance-none" value={editChannel} onChange={e=>setEditChannel(e.target.value)}>
+                       <select className="w-full h-[60px] bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-xs font-black text-gray-900 outline-none focus:border-blue-600 appearance-none" value={editChannel} onChange={e=>setEditChannel(e.target.value)}>
                           <option value="Shoppe">Shopee</option>
                           <option value="Mercado Livre">Mercado Livre</option>
                           <option value="Venda Direta">Venda Direta</option>
@@ -890,7 +890,7 @@ export default function OrdersPage() {
                     </div>
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Status Operacional</label>
-                       <select className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-blue-600 appearance-none" value={editStatus} onChange={e=>setEditStatus(e.target.value)}>
+                       <select className="w-full h-[60px] bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-xs font-black text-gray-900 outline-none focus:border-blue-600 appearance-none" value={editStatus} onChange={e=>setEditStatus(e.target.value)}>
                           <option value="PENDING">Pendente</option>
                           <option value="PICKING">Separação</option>
                           <option value="PRINTING">Imprimindo</option>
@@ -900,7 +900,7 @@ export default function OrdersPage() {
                     </div>
                  </div>
 
-                 <button type="submit" className="w-full bg-blue-600 text-black h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-cyan-300 transition-all shadow-xl shadow-blue-600/10 mt-4">
+                 <button type="submit" className="w-full bg-blue-600 text-white h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-cyan-300 transition-all shadow-xl shadow-blue-600/10 mt-4">
                     Salvar Alterações
                  </button>
               </form>

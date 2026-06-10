@@ -189,12 +189,12 @@ export default function ProductionKanbanPage() {
                <input 
                  type="text" 
                  placeholder="Buscar peça..." 
-                 className="w-48 lg:w-64 bg-[#1a1d24] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all shadow-sm" 
+                 className="w-48 lg:w-64 bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none hover:border-gray-200 focus:border-blue-600 transition-all shadow-sm" 
                  value={searchTerm} 
                  onChange={e=>setSearchTerm(e.target.value)} 
                />
             </div>
-            <button onClick={fetchOrders} className="p-3 bg-[#1a1d24] border border-white/5 text-gray-500 rounded-xl hover:text-white transition-all shadow-lg">
+            <button onClick={fetchOrders} className="p-3 bg-white border border-gray-200 text-gray-500 rounded-xl hover:text-white transition-all shadow-lg">
                <RotateCcw className="h-4 w-4" />
             </button>
          </div>
@@ -206,12 +206,12 @@ export default function ProductionKanbanPage() {
            {PRODUCTION_COLUMNS.map(col => {
              const items = getFilteredOrders(col.id);
              return (
-              <div key={col.id} className="bg-[#1a1d24]/50 border border-white/5 rounded-[2.5rem] flex-1 w-full min-w-[300px] flex flex-col shadow-2xl relative">
+              <div key={col.id} className="bg-white/50 border border-gray-200 rounded-[2.5rem] flex-1 w-full min-w-[300px] flex flex-col shadow-2xl relative">
                  
                  <div className={cn("p-6 border-b-2 flex items-center justify-between shrink-0", col.color)}>
                     <div className="flex items-center gap-3">
                        <h3 className={cn("text-[11px] font-black uppercase tracking-[0.2em]", col.textColor)}>{col.title}</h3>
-                       <span className="bg-[#14161b] px-2 py-0.5 rounded-md text-[9px] font-black text-gray-600 border border-white/5">{items.length}</span>
+                       <span className="bg-gray-50 px-2 py-0.5 rounded-md text-[9px] font-black text-gray-600 border border-gray-200">{items.length}</span>
                     </div>
                     <MoreHorizontal className="h-4 w-4 text-slate-600" />
                  </div>
@@ -226,10 +226,10 @@ export default function ProductionKanbanPage() {
                       const dlStatus = getDeadlineStatus(item.deadline);
                       return (
                         <div key={item.id} className={cn(
-                          "bg-[#14161b] border p-6 rounded-[1.8rem] shadow-xl transition-all group relative overflow-hidden",
+                          "bg-gray-50 border p-6 rounded-[1.8rem] shadow-xl transition-all group relative overflow-hidden",
                           dlStatus?.type === 'danger' ? "border-red-500/50 animate-pulse-subtle shadow-red-500/5" : 
                           dlStatus?.type === 'warning' ? "border-amber-500/50 shadow-amber-500/5" :
-                          "border-white/5 hover:border-blue-600/30"
+                          "border-gray-200 hover:border-blue-600/30"
                         )}>
                            <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                               <button onClick={() => deleteOrder(item.id)} className="p-2 hover:bg-red-500/10 text-slate-700 hover:text-red-500 rounded-xl transition-all">
@@ -264,7 +264,7 @@ export default function ProductionKanbanPage() {
                               </div>
                             )}
                           
-                            <div className="space-y-2 mb-4 bg-black/20 p-4 rounded-2xl border border-white/5">
+                            <div className="space-y-2 mb-4 bg-black/20 p-4 rounded-2xl border border-gray-200">
                                {item.notes?.split('\n').filter(l => l.includes('⚙️') || l.includes('⚖️') || l.includes('⏳')).map((line, idx) => (
                                  <div key={idx} className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                                     {line}
@@ -272,16 +272,16 @@ export default function ProductionKanbanPage() {
                                ))}
                                
                                {/* SELETOR DE IMPRESSORA NO CARD */}
-                               <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
+                               <div className="mt-3 pt-3 border-t border-gray-200 flex items-center gap-2">
                                   <Printer className="h-3.5 w-3.5 text-blue-600 shrink-0" />
                                   <select
                                     value={item.printerId || ""}
                                     onChange={(e) => assignPrinter(item.id, e.target.value)}
                                     className="bg-transparent text-[10px] font-black uppercase text-slate-300 outline-none border-none cursor-pointer w-full"
                                   >
-                                    <option value="" className="bg-[#14161b] text-gray-600">Sem Impressora</option>
+                                    <option value="" className="bg-gray-50 text-gray-600">Sem Impressora</option>
                                     {printers.map(p => (
-                                      <option key={p.id} value={p.id} className="bg-[#14161b] text-white">
+                                      <option key={p.id} value={p.id} className="bg-gray-50 text-white">
                                         {p.name} ({p.model})
                                       </option>
                                     ))}
@@ -295,7 +295,7 @@ export default function ProductionKanbanPage() {
                             </div>
 
                             {/* PLANILHA DE AGENDAMENTO E PRODUÇÃO */}
-                            <div className="pt-4 border-t border-white/5 space-y-3">
+                            <div className="pt-4 border-t border-gray-200 space-y-3">
                                <div className="text-[8px] font-black text-gray-600 uppercase tracking-widest">
                                  Planejamento e Agenda
                                </div>
@@ -322,7 +322,7 @@ export default function ProductionKanbanPage() {
                                            });
                                          }
                                        }}
-                                       className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-blue-600 outline-none focus:border-blue-600 cursor-pointer"
+                                       className="w-full bg-black/40 border border-gray-200 rounded-xl px-2 py-1.5 text-[9px] font-bold text-blue-600 outline-none focus:border-blue-600 cursor-pointer"
                                      />
                                   </div>
 
@@ -345,7 +345,7 @@ export default function ProductionKanbanPage() {
                                               });
                                             }
                                           }}
-                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
+                                          className="w-6 h-6 rounded-lg bg-white/5 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
                                         >
                                           -
                                         </button>
@@ -368,7 +368,7 @@ export default function ProductionKanbanPage() {
                                               updatePlanning(item.id, { productionDays: null });
                                             }
                                           }}
-                                          className="w-10 bg-black/40 border border-white/5 rounded-lg py-1 text-center font-mono text-[9px] text-white outline-none focus:border-blue-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                          className="w-10 bg-black/40 border border-gray-200 rounded-lg py-1 text-center font-mono text-[9px] text-white outline-none focus:border-blue-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                         <button 
                                           type="button"
@@ -383,7 +383,7 @@ export default function ProductionKanbanPage() {
                                               deadline: newDeadline.toISOString()
                                             });
                                           }}
-                                          className="w-6 h-6 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
+                                          className="w-6 h-6 rounded-lg bg-white/5 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 text-xs font-black transition-all"
                                         >
                                           +
                                         </button>
@@ -417,7 +417,7 @@ export default function ProductionKanbanPage() {
                                         });
                                       }
                                     }}
-                                    className="w-full bg-black/40 border border-white/5 rounded-xl px-2 py-1.5 text-[9px] font-bold text-slate-300 outline-none focus:border-blue-600 cursor-pointer"
+                                    className="w-full bg-black/40 border border-gray-200 rounded-xl px-2 py-1.5 text-[9px] font-bold text-slate-300 outline-none focus:border-blue-600 cursor-pointer"
                                   />
                                </div>
 
@@ -429,7 +429,7 @@ export default function ProductionKanbanPage() {
                                   
                                   <button 
                                     onClick={() => updateStatus(item.id, getNextStatus(col.id)!)}
-                                    className="h-9 px-3 bg-blue-600/10 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-black transition-all flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest"
+                                    className="h-9 px-3 bg-blue-600/10 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest"
                                   >
                                      Próximo <ArrowRight className="h-3 w-3" />
                                   </button>
@@ -447,12 +447,12 @@ export default function ProductionKanbanPage() {
 
       {/* KANBAN BOARD - FINISHED (FULL WIDTH BELOW) */}
       <div className="w-full pt-10">
-         <div className="bg-[#1a1d24]/50 border border-white/5 rounded-[2.5rem] w-full flex flex-col shadow-2xl relative">
+         <div className="bg-white/50 border border-gray-200 rounded-[2.5rem] w-full flex flex-col shadow-2xl relative">
             <div className={cn("p-6 border-b-2 flex items-center justify-between shrink-0", FINISHED_COLUMN.color)}>
                <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                   <h3 className={cn("text-[12px] font-black uppercase tracking-[0.2em]", FINISHED_COLUMN.textColor)}>{FINISHED_COLUMN.title}</h3>
-                  <span className="bg-[#14161b] px-2 py-0.5 rounded-md text-[10px] font-black text-gray-600 border border-white/5">{getFilteredOrders(FINISHED_COLUMN.id).length}</span>
+                  <span className="bg-gray-50 px-2 py-0.5 rounded-md text-[10px] font-black text-gray-600 border border-gray-200">{getFilteredOrders(FINISHED_COLUMN.id).length}</span>
                </div>
             </div>
 
@@ -463,7 +463,7 @@ export default function ProductionKanbanPage() {
                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-600">Nenhuma peça concluída ainda</p>
                  </div>
                ) : getFilteredOrders(FINISHED_COLUMN.id).map(item => (
-                 <div key={item.id} className="bg-[#14161b] border border-white/5 p-6 rounded-[2rem] shadow-lg opacity-60 hover:opacity-100 transition-all group">
+                 <div key={item.id} className="bg-gray-50 border border-gray-200 p-6 rounded-[2rem] shadow-lg opacity-60 hover:opacity-100 transition-all group">
                     <div className="flex justify-between items-start mb-4">
                        <span className="text-[9px] font-black text-emerald-500 bg-emerald-500/5 px-2 py-1 rounded-lg border border-emerald-500/10 uppercase tracking-widest">#{item.id.substring(0,6)}</span>
                        <button onClick={() => deleteOrder(item.id)} className="p-2 hover:bg-red-500/10 text-slate-700 hover:text-red-500 rounded-xl transition-all">
@@ -473,7 +473,7 @@ export default function ProductionKanbanPage() {
                     <h4 className="text-xs font-black text-white mb-2 leading-tight uppercase truncate">{item.notes?.split('\n').find(l => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || 'Projeto'}</h4>
                     <p className="text-[10px] text-gray-600 uppercase font-black">{item.customerName}</p>
                     {item.printerId && (
-                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[9px] font-black text-blue-600 uppercase tracking-wider">
+                      <div className="mt-3 pt-3 border-t border-gray-200 flex items-center gap-1.5 text-[9px] font-black text-blue-600 uppercase tracking-wider">
                         <Printer className="h-3 w-3" />
                         {printers.find(p => p.id === item.printerId)?.name || 'Impressora'}
                       </div>

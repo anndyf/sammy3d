@@ -69,7 +69,7 @@ export default function LoginPage() {
       </div>
 
       {/* LOGIN CARD */}
-      <div className="w-full max-w-sm bg-[#14161b] border border-white/5 p-8 rounded-[2.5rem] shadow-2xl space-y-8 animate-in slide-in-from-bottom-8 duration-1000 relative z-10">
+      <div className="w-full max-w-sm bg-gray-50 border border-gray-200 p-8 rounded-[2.5rem] shadow-2xl space-y-8 animate-in slide-in-from-bottom-8 duration-1000 relative z-10">
          <div className="space-y-2">
             <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-3">
                Acesso Autenticado <Shield className="h-5 w-5 text-blue-600" />
@@ -86,7 +86,7 @@ export default function LoginPage() {
                     autoFocus
                     required
                     type="text" 
-                    className="w-full h-14 bg-[#0a0b0e] border border-white/5 rounded-2xl pl-12 pr-4 text-sm text-white caret-white font-medium outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-800 force-white-text" 
+                    className="w-full h-14 bg-[#0a0b0e] border border-gray-200 rounded-2xl pl-12 pr-4 text-sm text-gray-900 placeholder-gray-400 caret-white font-medium outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-800 force-white-text" 
                     placeholder="ex: sammy3d"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
@@ -101,7 +101,7 @@ export default function LoginPage() {
                   <input 
                     required
                     type="password" 
-                    className="w-full h-14 bg-[#0a0b0e] border border-white/5 rounded-2xl pl-12 pr-4 text-sm text-white caret-white font-medium outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-800 force-white-text" 
+                    className="w-full h-14 bg-[#0a0b0e] border border-gray-200 rounded-2xl pl-12 pr-4 text-sm text-gray-900 placeholder-gray-400 caret-white font-medium outline-none focus:border-blue-600/50 transition-all placeholder:text-slate-800 force-white-text" 
                     placeholder="••••••••"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
@@ -131,7 +131,7 @@ export default function LoginPage() {
             </button>
          </form>
 
-         <div className="pt-6 border-t border-white/5 flex items-center justify-center gap-4 opacity-10">
+         <div className="pt-6 border-t border-gray-200 flex items-center justify-center gap-4 opacity-10">
             <div className="h-px bg-white/20 flex-1"></div>
             <span className="text-[9px] font-black uppercase tracking-[0.4em] whitespace-nowrap">Sammy 3D Labs</span>
             <div className="h-px bg-white/20 flex-1"></div>

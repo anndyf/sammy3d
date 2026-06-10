@@ -88,14 +88,14 @@ export default function Dashboard() {
             {profitPoints.map((p: any, idx: number) => (
               <g key={idx} className="group/dot cursor-pointer">
                 <circle cx={p.x} cy={p.y} r="4.5" fill="#10b981" stroke="#14161b" strokeWidth="2" className="transition-all group-hover/dot:r-6" vectorEffect="non-scaling-stroke" />
-                <text x={p.x} y={p.y - 10} textAnchor="middle" fill="#10b981" className="text-[9px] font-mono font-black opacity-0 group-hover/dot:opacity-100 transition-opacity bg-[#14161b] px-1.5 py-0.5 rounded border border-[#10b981]/20">
+                <text x={p.x} y={p.y - 10} textAnchor="middle" fill="#10b981" className="text-[9px] font-mono font-black opacity-0 group-hover/dot:opacity-100 transition-opacity bg-gray-50 px-1.5 py-0.5 rounded border border-[#10b981]/20">
                   R${points[idx].profit.toFixed(0)}
                 </text>
               </g>
             ))}
           </svg>
         </div>
-        <div className="flex justify-between mt-3 pt-3 border-t border-white/5 text-[9px] font-bold text-gray-600 uppercase tracking-wider font-mono">
+        <div className="flex justify-between mt-3 pt-3 border-t border-gray-200 text-[9px] font-bold text-gray-600 uppercase tracking-wider font-mono">
           {points.map((p: any, idx: number) => (
             <span key={idx}>{p.month}</span>
           ))}
@@ -125,7 +125,7 @@ export default function Dashboard() {
                 <span className="text-[9px] font-mono font-black text-red-400 mb-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                   R${c.amount.toFixed(0)}
                 </span>
-                <div className="w-full bg-[#14161b] rounded-t-lg overflow-hidden border border-white/5 h-[130px] flex items-end relative">
+                <div className="w-full bg-gray-50 rounded-t-lg overflow-hidden border border-gray-200 h-[130px] flex items-end relative">
                   <div 
                     style={{ height: `${pct}%` }} 
                     className="w-full bg-gradient-to-t from-red-600/80 to-red-400/90 rounded-t-lg transition-all duration-700"
@@ -163,7 +163,7 @@ export default function Dashboard() {
                 <span className="text-white uppercase truncate max-w-[160px]">{p.name}</span>
                 <span className="text-emerald-400 font-mono">R$ {p.value.toFixed(2)}</span>
               </div>
-              <div className="w-full h-2 bg-[#14161b] rounded-full overflow-hidden border border-white/5">
+              <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden border border-gray-200">
                 <div 
                   style={{ width: `${pct}%` }} 
                   className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full transition-all duration-500"
@@ -183,7 +183,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 pb-20">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#1a1d24] p-5 rounded-2xl border border-white/5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-200">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-blue-600/10 rounded-xl">
             <LayoutDashboard className="h-6 w-6 text-blue-600" />
@@ -195,11 +195,11 @@ export default function Dashboard() {
         </div>
         
         <div className="flex flex-row items-center gap-3 mt-2 md:mt-0 w-full md:w-auto">
-          <button onClick={fetchDashboardData} className="p-3 bg-[#1a1d24] border border-white/10 text-gray-500 rounded-xl hover:text-white transition-all shadow-lg shrink-0">
+          <button onClick={fetchDashboardData} className="p-3 bg-white border border-gray-200 text-gray-500 rounded-xl hover:text-white transition-all shadow-lg shrink-0">
              <RotateCcw className="h-4 w-4" />
           </button>
           
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-[#14161b] border border-white/10 rounded-xl md:rounded-lg hover:bg-white/5 transition-all text-sm font-medium text-slate-300">
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-50 border border-gray-200 rounded-xl md:rounded-lg hover:bg-white/5 transition-all text-sm font-medium text-slate-300">
             <Filter className="h-4 w-4 text-blue-600" />
             maio de 2026
             <Calendar className="h-4 w-4 ml-2 text-gray-600" />
@@ -210,10 +210,10 @@ export default function Dashboard() {
       {/* METRICS ROW */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* FATURAMENTO TOTAL */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
             <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">FATURAMENTO TOTAL</h3>
-            <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-emerald-500/30 transition-colors">
+            <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 group-hover:border-emerald-500/30 transition-colors">
               <DollarSign className="h-5 w-5 text-emerald-400" />
             </div>
           </div>
@@ -223,10 +223,10 @@ export default function Dashboard() {
         </div>
 
         {/* LUCRO LÍQUIDO */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
             <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">LUCRO LÍQUIDO</h3>
-            <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-emerald-500/30 transition-colors">
+            <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 group-hover:border-emerald-500/30 transition-colors">
               <TrendingUp className="h-5 w-5 text-emerald-400" />
             </div>
           </div>
@@ -236,10 +236,10 @@ export default function Dashboard() {
         </div>
 
         {/* CUSTO PRODUÇÃO */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
             <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">CUSTO PRODUÇÃO</h3>
-            <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-red-500/30 transition-colors">
+            <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 group-hover:border-red-500/30 transition-colors">
               <Activity className="h-5 w-5 text-red-400" />
             </div>
           </div>
@@ -249,10 +249,10 @@ export default function Dashboard() {
         </div>
 
         {/* LOTES PRODUZIDOS */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group">
           <div className="flex justify-between items-start">
             <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">LOTES CONCLUÍDOS</h3>
-            <div className="p-2 bg-[#14161b] rounded-lg border border-white/5 group-hover:border-purple-500/30 transition-colors">
+            <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 group-hover:border-purple-500/30 transition-colors">
               <Package className="h-5 w-5 text-purple-400" />
             </div>
           </div>
@@ -265,13 +265,13 @@ export default function Dashboard() {
       {/* QUEUES ROW */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* ORÇAMENTOS PENDENTES */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 h-64 flex flex-col">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 h-64 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-amber-400" />
               <h3 className="font-bold text-white leading-tight">Orçamentos<br/>Pendentes</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.orcamentosPendentes?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-gray-50 rounded-md text-[11px] font-bold text-gray-500">{data?.orcamentosPendentes?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.orcamentosPendentes?.length === 0 ? (
@@ -279,7 +279,7 @@ export default function Dashboard() {
             ) : (
               <div className="w-full text-left space-y-2 overflow-y-auto max-h-[160px] pr-1">
                 {data.orcamentosPendentes.map((q: any) => (
-                  <div key={q.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-amber-500/30 transition-all">
+                  <div key={q.id} className="p-2.5 bg-gray-50 border border-gray-200 rounded-xl flex flex-col hover:border-amber-500/30 transition-all">
                     <span className="text-[11px] font-black text-white truncate uppercase">{q.projectName || 'Sem Nome'}</span>
                     <div className="flex justify-between items-center mt-1.5">
                       <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[120px]">{q.clientName}</span>
@@ -293,13 +293,13 @@ export default function Dashboard() {
         </div>
 
         {/* NA FILA PRODUÇÃO */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 h-64 flex flex-col">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 h-64 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-purple-400" />
               <h3 className="font-bold text-white leading-tight">Na Fila<br/>(Produção)</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.naFila?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-gray-50 rounded-md text-[11px] font-bold text-gray-500">{data?.naFila?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.naFila?.length === 0 ? (
@@ -309,7 +309,7 @@ export default function Dashboard() {
                 {data.naFila.map((o: any) => {
                   const name = o.notes?.split('\n').find((l: string) => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || o.customerName;
                   return (
-                    <div key={o.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-purple-500/30 transition-all">
+                    <div key={o.id} className="p-2.5 bg-gray-50 border border-gray-200 rounded-xl flex flex-col hover:border-purple-500/30 transition-all">
                       <span className="text-[11px] font-black text-white truncate uppercase">{name}</span>
                       <div className="flex justify-between items-center mt-1.5">
                         <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[100px]">{o.customerName}</span>
@@ -326,13 +326,13 @@ export default function Dashboard() {
         </div>
 
         {/* A ENVIAR */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 h-64 flex flex-col">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 h-64 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Box className="h-4 w-4 text-orange-400" />
               <h3 className="font-bold text-white leading-tight">Pronto<br/>(A Enviar)</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.aEnviar?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-gray-50 rounded-md text-[11px] font-bold text-gray-500">{data?.aEnviar?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.aEnviar?.length === 0 ? (
@@ -342,7 +342,7 @@ export default function Dashboard() {
                 {data.aEnviar.map((o: any) => {
                   const name = o.notes?.split('\n').find((l: string) => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || o.customerName;
                   return (
-                    <div key={o.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-orange-500/30 transition-all">
+                    <div key={o.id} className="p-2.5 bg-gray-50 border border-gray-200 rounded-xl flex flex-col hover:border-orange-500/30 transition-all">
                       <span className="text-[11px] font-black text-white truncate uppercase">{name}</span>
                       <div className="flex justify-between items-center mt-1.5">
                         <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[120px]">{o.customerName}</span>
@@ -357,13 +357,13 @@ export default function Dashboard() {
         </div>
 
         {/* EM TRÂNSITO */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-5 h-64 flex flex-col">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 h-64 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Truck className="h-4 w-4 text-blue-400" />
               <h3 className="font-bold text-white leading-tight">Em Trânsito<br/>(Rota)</h3>
             </div>
-            <span className="px-2 py-0.5 bg-[#14161b] rounded-md text-[11px] font-bold text-gray-500">{data?.emTransito?.length || 0}</span>
+            <span className="px-2 py-0.5 bg-gray-50 rounded-md text-[11px] font-bold text-gray-500">{data?.emTransito?.length || 0}</span>
           </div>
           <div className="flex-1 flex items-center justify-center text-center w-full">
             {data?.emTransito?.length === 0 ? (
@@ -373,7 +373,7 @@ export default function Dashboard() {
                 {data.emTransito.map((o: any) => {
                   const name = o.notes?.split('\n').find((l: string) => l.startsWith('PROJETO:'))?.replace('PROJETO: ', '') || o.customerName;
                   return (
-                    <div key={o.id} className="p-2.5 bg-[#14161b] border border-white/5 rounded-xl flex flex-col hover:border-blue-500/30 transition-all">
+                    <div key={o.id} className="p-2.5 bg-gray-50 border border-gray-200 rounded-xl flex flex-col hover:border-blue-500/30 transition-all">
                       <span className="text-[11px] font-black text-white truncate uppercase">{name}</span>
                       <div className="flex justify-between items-center mt-1.5">
                         <span className="text-[9px] text-gray-600 uppercase font-bold truncate max-w-[120px]">{o.customerName}</span>
@@ -391,7 +391,7 @@ export default function Dashboard() {
       {/* CHARTS ROW */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* EVOLUÇÃO DO LUCRO */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 h-80 flex flex-col">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 h-80 flex flex-col">
           <h3 className="font-bold text-white mb-2">Evolução do Lucro</h3>
           <div className="flex-1 flex items-center justify-center w-full h-full">
              {renderEvolucaoChart()}
@@ -399,7 +399,7 @@ export default function Dashboard() {
         </div>
 
         {/* CUSTOS DE PRODUÇÃO */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 h-80 flex flex-col">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 h-80 flex flex-col">
           <h3 className="font-bold text-white mb-2">Custos de Produção</h3>
           <div className="flex-1 flex items-center justify-center w-full h-full">
              {renderCustosChart()}
@@ -407,7 +407,7 @@ export default function Dashboard() {
         </div>
 
         {/* TOP PRODUTOS */}
-        <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 h-80 flex flex-col">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 h-80 flex flex-col">
           <h3 className="font-bold text-white mb-2">Top Produtos (R$)</h3>
           <div className="flex-1 flex items-center justify-center w-full h-full">
              {renderTopProducts()}

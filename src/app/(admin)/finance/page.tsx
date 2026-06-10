@@ -311,7 +311,7 @@ export default function FinancePage() {
             </div>
          </div>
          
-         <div className="flex items-center bg-[#1a1d24] border border-white/5 rounded-xl shadow-lg overflow-hidden p-1">
+         <div className="flex items-center bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden p-1">
             <button className="p-2 hover:bg-white/5 text-gray-500 rounded-lg transition-colors"><ChevronLeft className="h-5 w-5" /></button>
             <div className="flex items-center gap-2 px-4 py-1">
                <Calendar className="h-4 w-4 text-blue-600" />
@@ -322,7 +322,7 @@ export default function FinancePage() {
       </div>
 
       {/* TABS DE FLUXO E CANAIS */}
-      <div className="flex flex-wrap items-center gap-2 bg-[#1a1d24]/50 p-2 rounded-2xl w-fit border border-white/5 mb-4">
+      <div className="flex flex-wrap items-center gap-2 bg-white/50 p-2 rounded-2xl w-fit border border-gray-200 mb-4">
          <button 
            onClick={() => setActiveChannelTab('geral')}
            className={cn(
@@ -383,7 +383,7 @@ export default function FinancePage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
          
          {/* CARD 1: SALDO DISPONÍVEL */}
-         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+         <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
             <div>
                <h3 className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">SALDO REALIZADO (CAIXA)</h3>
@@ -398,7 +398,7 @@ export default function FinancePage() {
          </div>
 
          {/* CARD 2: RECEITAS REALIZADAS */}
-         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+         <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute right-8 top-8 p-3 bg-blue-600/10 rounded-xl border border-blue-600/20 text-blue-600 group-hover:rotate-12 transition-all">
                <ArrowUpRight className="h-6 w-6" />
             </div>
@@ -412,7 +412,7 @@ export default function FinancePage() {
          </div>
 
          {/* CARD 3: DESPESAS ACUMULADAS */}
-         <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+         <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute right-8 top-8 p-3 bg-red-500/10 rounded-xl border border-red-500/20 text-red-400 group-hover:rotate-12 transition-all">
                <ArrowDownRight className="h-6 w-6" />
             </div>
@@ -428,7 +428,7 @@ export default function FinancePage() {
          {/* CARD 4: VALORES A LIBERAR (ESTOQUE EM TRÂNSITO) */}
          <div 
            onClick={() => setActiveChannelTab('liberar')}
-           className="bg-[#1a1d24] border border-amber-500/10 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group cursor-pointer hover:border-amber-500/30 transition-all"
+           className="bg-white border border-amber-500/10 rounded-2xl p-8 shadow-lg flex flex-col justify-between relative overflow-hidden group cursor-pointer hover:border-amber-500/30 transition-all"
          >
             <div className="absolute right-8 top-8 p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-500 group-hover:scale-105 transition-all">
                <Lock className="h-6 w-6 text-amber-400 animate-pulse" />
@@ -454,7 +454,7 @@ export default function FinancePage() {
       {activeChannelTab !== 'geral' && activeChannelTab !== 'liberar' && (
          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-in fade-in duration-300">
             
-            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div>
                   <h3 className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-2">RECEITA BRUTA</h3>
                   <p className="text-2xl font-black text-white font-mono tracking-tighter">
@@ -466,7 +466,7 @@ export default function FinancePage() {
                <p className="text-[9px] font-bold text-gray-600 mt-4 uppercase">Faturamento total do canal</p>
             </div>
 
-            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div>
                   <h3 className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-2">TAXAS DO MARKETPLACE</h3>
                   <p className="text-2xl font-black text-red-400 font-mono tracking-tighter">
@@ -478,7 +478,7 @@ export default function FinancePage() {
                <p className="text-[9px] font-bold text-gray-600 mt-4 uppercase">Comissões e taxas fixas retidas</p>
             </div>
 
-            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div>
                   <h3 className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-2">CUSTO DE PRODUÇÃO</h3>
                   <p className="text-2xl font-black text-orange-400/80 font-mono tracking-tighter">
@@ -490,7 +490,7 @@ export default function FinancePage() {
                <p className="text-[9px] font-bold text-gray-600 mt-4 uppercase">Custo de material + adicionais</p>
             </div>
 
-            <div className="bg-[#1a1d24] border border-white/5 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden group">
                <div className={cn(
                  "absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl transition-colors",
                  activeChannelTab === 'shopee' ? "bg-amber-500/10 group-hover:bg-amber-500/20" :
@@ -528,7 +528,7 @@ export default function FinancePage() {
       {activeChannelTab === 'liberar' ? (
         <div className="space-y-6 animate-in fade-in duration-300">
            
-           <div className="bg-[#1a1d24] border border-amber-500/10 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+           <div className="bg-white border border-amber-500/10 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-amber-500/5 blur-[60px] pointer-events-none" />
               <div className="space-y-1 relative z-10">
                  <h2 className="text-xl font-black text-white tracking-tight uppercase flex items-center gap-2">
@@ -545,8 +545,8 @@ export default function FinancePage() {
               </div>
            </div>
 
-           <div className="bg-[#1a1d24] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
-              <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#14161b]/30 text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">
+           <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-gray-200 bg-gray-50/30 text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">
                  <div className="col-span-2">DATA DE IMPORTAÇÃO</div>
                  <div className="col-span-4">COMPRADOR / CANAL / PEDIDO</div>
                  <div className="col-span-2 text-center">STATUS DE PRODUÇÃO</div>
@@ -647,20 +647,20 @@ export default function FinancePage() {
                 <input 
                   type="text" 
                   placeholder="Pesquisar lançamentos..." 
-                  className="w-full bg-[#1a1d24] border border-white/5 rounded-xl pl-12 pr-4 py-4 text-sm text-white outline-none hover:border-white/10 focus:border-blue-600 transition-all shadow-sm" 
+                  className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm text-gray-900 placeholder-gray-400 outline-none hover:border-gray-200 focus:border-blue-600 transition-all shadow-sm" 
                 />
              </div>
              <button 
                onClick={() => setIsModalOpen(true)}
-               className="bg-blue-600 text-black px-8 h-14 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all flex items-center gap-3 shadow-xl shadow-blue-600/10"
+               className="bg-blue-600 text-white px-8 h-14 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all flex items-center gap-3 shadow-xl shadow-blue-600/10"
              >
                <Plus className="h-4 w-4" /> Novo Lançamento
              </button>
           </div>
 
           {/* TABLE */}
-          <div className="bg-[#1a1d24] border border-white/5 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in duration-300">
-             <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#14161b]/30">
+          <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in duration-300">
+             <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-gray-200 bg-gray-50/30">
                 <div className="col-span-2 text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">DATA</div>
                 <div className="col-span-5 text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">DESCRIÇÃO / CATEGORIA</div>
                 <div className="col-span-3 text-[10px] font-black text-gray-600 uppercase tracking-[0.2em] text-center">STATUS</div>
@@ -721,7 +721,7 @@ export default function FinancePage() {
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
-           <div className="relative bg-[#1a1d24] border border-white/10 rounded-[2rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
+           <div className="relative bg-white border border-gray-200 rounded-[2rem] p-10 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-500">
               <div className="flex items-center justify-between mb-8">
                  <h2 className="text-xl font-black text-white uppercase tracking-tight">Novo Lançamento</h2>
                  <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-600 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
@@ -730,17 +730,17 @@ export default function FinancePage() {
               <form onSubmit={handleAddTransaction} className="space-y-6">
                  <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Descrição</label>
-                    <input required type="text" className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-sm font-bold text-white outline-none focus:border-blue-600" value={newTransaction.description} onChange={e=>setNewTransaction({...newTransaction, description: e.target.value})} />
+                    <input required type="text" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600" value={newTransaction.description} onChange={e=>setNewTransaction({...newTransaction, description: e.target.value})} />
                  </div>
 
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Valor (R$)</label>
-                       <input required type="number" step="0.01" className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xl font-black text-white outline-none focus:border-blue-600" value={newTransaction.amount} onChange={e=>setNewTransaction({...newTransaction, amount: e.target.value})} />
+                       <input required type="number" step="0.01" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-xl font-black text-gray-900 placeholder-gray-400 outline-none focus:border-blue-600" value={newTransaction.amount} onChange={e=>setNewTransaction({...newTransaction, amount: e.target.value})} />
                     </div>
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Tipo</label>
-                       <select className="w-full h-[60px] bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-blue-600 appearance-none" value={newTransaction.type} onChange={e=>setNewTransaction({...newTransaction, type: e.target.value as any})}>
+                       <select className="w-full h-[60px] bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-xs font-black text-gray-900 outline-none focus:border-blue-600 appearance-none" value={newTransaction.type} onChange={e=>setNewTransaction({...newTransaction, type: e.target.value as any})}>
                           <option value="EXPENSE">DESPESA (-)</option>
                           <option value="INCOME">RECEITA (+)</option>
                        </select>
@@ -749,7 +749,7 @@ export default function FinancePage() {
 
                  <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-600 uppercase tracking-widest pl-1">Categoria</label>
-                    <select className="w-full bg-[#14161b] border border-white/5 rounded-xl px-5 py-4 text-xs font-black text-white outline-none focus:border-blue-600 appearance-none" value={newTransaction.category} onChange={e=>setNewTransaction({...newTransaction, category: e.target.value})}>
+                    <select className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-xs font-black text-gray-900 outline-none focus:border-blue-600 appearance-none" value={newTransaction.category} onChange={e=>setNewTransaction({...newTransaction, category: e.target.value})}>
                        <option value="Outros">Outros</option>
                        <option value="Material">Material</option>
                        <option value="Venda">Venda</option>
@@ -757,7 +757,7 @@ export default function FinancePage() {
                     </select>
                  </div>
 
-                 <button type="submit" className="w-full bg-blue-600 text-black h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-blue-600/10 mt-4">
+                 <button type="submit" className="w-full bg-blue-600 text-white h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-blue-600/10 mt-4">
                     Confirmar Lançamento
                   </button>
               </form>
