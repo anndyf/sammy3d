@@ -32,25 +32,22 @@
 }
 
 :root {
-  /* SAMMY3D Premium Dark Petrol / Teal Theme */
-  --bg-admin-layout: #06161b;   /* Fundo geral escuro (estilo aba lateral VS Code) */
-  --bg-card: #081d24;           /* Fundo principal dos cartões / painel central */
-  --bg-input: #0c2730;          /* Fundo de inputs, formulários e abas ativas */
-  --bg-active-tab: #11343f;     /* Fundo de destaque para hovers e elementos selecionados */
+  /* SAMMY3D CRM Corporate Theme */
+  --bg-admin-layout: #f3f4f6;   /* Fundo geral gelo (gray-100) */
+  --bg-card: #ffffff;           /* Fundo principal branco puro para painéis */
+  --bg-input: #ffffff;          /* Fundo de inputs */
+  --bg-active-tab: #e5e7eb;     /* Fundo de abas e hovers (gray-200) */
   
-  --text-main: #f1f5f9;         /* Texto principal claro e limpo */
-  --text-muted: #8bb5c4;        /* Texto secundário/descrições em cinza-petróleo */
-  --text-accent: #00f5ff;       /* Texto ativo / acentos em ciano brilhante */
+  --text-main: #111827;         /* Texto principal muito escuro (gray-900) */
+  --text-muted: #6b7280;        /* Texto secundário/cinza (gray-500) */
+  --text-accent: #2563eb;       /* Azul primário estilo Pipedrive (blue-600) */
   
   --vercel-bg: var(--bg-admin-layout);
   --vercel-text-main: var(--text-main);
   --vercel-text-muted: var(--text-muted);
-  --vercel-border: rgba(0, 245, 255, 0.08);
+  --vercel-border: #e5e7eb;     /* Bordas suaves (gray-200) */
   --vercel-accent: var(--text-accent);
-  --vercel-accent-bg: rgba(0, 245, 255, 0.1);
-  
-  --glow-opacity-top: 0.18;
-  --glow-opacity-bottom: 0.08;
+  --vercel-accent-bg: rgba(37, 99, 235, 0.1);
   
   --sammy-cyan: var(--text-accent);
 }
@@ -71,9 +68,7 @@
 
 body {
   background-color: var(--vercel-bg);
-  background-image: 
-    radial-gradient(circle at 50% -20%, rgba(0, 245, 255, var(--glow-opacity-top)) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(0, 245, 255, var(--glow-opacity-bottom)) 0%, transparent 40%);
+
   background-attachment: fixed;
   color: var(--vercel-text-main);
   font-family: 'Inter', sans-serif;
@@ -100,52 +95,43 @@ body {
   background-color: var(--bg-active-tab) !important;
 }
 
-/* Mapeamento de Transparências e Bordas para Ciano Elétrico */
-.border-white\/5 {
-  border-color: rgba(0, 245, 255, 0.08) !important;
+/* Mapeamento de Transparências e Bordas para Fundo CRM */
+.border-white\/5, .border-white\/10 {
+  border-color: var(--vercel-border) !important;
 }
 
-.border-white\/10 {
-  border-color: rgba(0, 245, 255, 0.12) !important;
+.bg-white\/5, .bg-white\/10 {
+  background-color: #f9fafb !important;
 }
 
-.bg-white\/5 {
-  background-color: rgba(0, 245, 255, 0.04) !important;
-}
-
-.bg-white\/10 {
-  background-color: rgba(0, 245, 255, 0.08) !important;
-}
-
-/* PREMIUM DARK CARD (MAGLO CARD) */
+/* PREMIUM CRM CARD (MAGLO CARD) */
 .maglo-card {
-  background: rgba(8, 29, 36, 0.6);
-  backdrop-filter: blur(16px);
+  background: var(--bg-card);
   border-radius: 12px;
-  border: 1px solid rgba(0, 245, 255, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--vercel-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
 }
 
 .maglo-card:hover {
-  border-color: var(--vercel-accent);
-  box-shadow: 0 0 20px rgba(0, 245, 255, 0.12);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border-color: #d1d5db;
 }
 
 .maglo-btn-primary {
-  @apply bg-cyan-400 text-slate-950 px-4 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-2;
+  @apply bg-blue-600 text-white px-4 py-2 rounded-lg text-[13px] font-medium transition-all flex items-center justify-center gap-2;
 }
 
 .maglo-btn-primary:hover {
-  @apply bg-cyan-300 scale-[1.02] shadow-[0_0_15px_rgba(0,245,255,0.4)];
+  @apply bg-blue-700 shadow-md;
 }
 
 .maglo-subtitle {
-  @apply text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1;
+  @apply text-[11px] font-semibold text-gray-500 uppercase tracking-wide block mb-1;
 }
 
 .maglo-title {
-  @apply text-3xl font-bold tracking-tight text-white mb-1;
+  @apply text-2xl font-bold tracking-tight text-gray-900 mb-1;
 }
 
 /* CUSTOM SCROLLBAR (PETROL DARK STYLE) */
@@ -157,9 +143,8 @@ body {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--bg-input);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 10px;
-  border: 1px solid rgba(0, 245, 255, 0.05);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--bg-active-tab);
@@ -197,11 +182,11 @@ label, .text-slate-400 {
 }
 
 .text-slate-500 {
-    color: #628a97 !important;
+    color: #64748b !important;
 }
 
 .text-slate-600 {
-    color: #466774 !important;
+    color: #475569 !important;
 }
 
 .text-white {

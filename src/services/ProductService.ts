@@ -116,6 +116,13 @@ export class ProductService {
         material, 
         Number(data.additionalCost || 0)
       );
+
+      const totalHours = Number(data.productionTime || 0) / 60;
+      const powerCost = (300 / 1000) * totalHours * 1.32; // 300w, R$ 1.32/kWh
+      const depreciationCost = totalHours * 0.50; // R$ 0.50/h de depreciação
+      const packagingCost = 1.50; // R$ 1.50 de embalagem padrão
+
+      calculatedCost += powerCost + depreciationCost + packagingCost;
     }
 
     const sku = this.generateSKU(data.name, data.category, data.sku);
@@ -192,6 +199,13 @@ export class ProductService {
         material, 
         Number(data.additionalCost || 0)
       );
+
+      const totalHours = Number(data.productionTime || 0) / 60;
+      const powerCost = (300 / 1000) * totalHours * 1.32;
+      const depreciationCost = totalHours * 0.50;
+      const packagingCost = 1.50;
+
+      calculatedCost += powerCost + depreciationCost + packagingCost;
     }
 
     const { components: _, ...dbData } = data;

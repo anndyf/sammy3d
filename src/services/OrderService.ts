@@ -78,7 +78,11 @@ export class OrderService {
         }
         if (!allReady) break;
       }
-      finalStatus = allReady ? 'PICKING' : 'PENDING';
+      if (status === 'SHIPPED' || status === 'FINISHED' || status === 'CANCELLED') {
+        finalStatus = status;
+      } else {
+        finalStatus = allReady ? 'PICKING' : 'PENDING';
+      }
     } else if (type === 'CUSTOM') {
       finalStatus = status || 'PENDING';
     }

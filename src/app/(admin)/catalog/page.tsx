@@ -329,8 +329,13 @@ export default function CatalogPage() {
       selectedMaterial.costPerUnit / (selectedMaterial.totalAmount || 1)) 
     : 0;
   
-  const timeCost = ((parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0)) / 60 * 0.40;
-  const estimatedProdCost = ((parseFloat(weightGrams) || 0) * costPerGram) + timeCost;
+  const totalHoursFloat = ((parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0)) / 60;
+  const powerCost = (300 / 1000) * totalHoursFloat * 1.32; // 300W e R$1.32 kWh
+  const depreciationCost = totalHoursFloat * 0.50; // Depreciação R$0.50/h
+  const packagingCost = 1.50; // Embalagem R$1.50
+  
+  const baseMaterialCost = (parseFloat(weightGrams) || 0) * costPerGram;
+  const estimatedProdCost = baseMaterialCost + powerCost + depreciationCost + packagingCost;
   const suggestedPrice = estimatedProdCost * 3.5;
   const grossProfit = parseFloat(sellingPrice || "0") - estimatedProdCost;
   const marginPercentage = parseFloat(sellingPrice) > 0 ? (grossProfit / parseFloat(sellingPrice)) * 100 : 0;
@@ -624,6 +629,24 @@ export default function CatalogPage() {
                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Estoque Inicial (Produzido)</label>
                             <input type="number" className="w-full bg-[#242933] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-cyan-500/50 force-white-text" value={stockQuantity} onChange={e=>setStockQuantity(e.target.value)} />
                          </div>
+                      </div>
+
+                      {/* RESUMO DE CUSTO / PREVISÃO */}
+                      <div className="bg-[#14161b] rounded-xl p-4 border border-white/5 space-y-3">
+                        <div className="flex justify-between items-center text-sm font-bold">
+                           <span className="text-slate-400">Custo Total de Produção Estimado:</span>
+                           <span className="text-emerald-400 font-mono text-lg">R$ {estimatedProdCost.toFixed(2)}</span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-bold uppercase tracking-widest">
+                           <div className="bg-white/5 p-2 rounded-lg text-slate-400" title="Custo do Insumo (g)">Insumo<br/><span className="text-white text-xs">R${baseMaterialCost.toFixed(2)}</span></div>
+                           <div className="bg-white/5 p-2 rounded-lg text-amber-500" title="Custo de Energia (kWh)">Energia<br/><span className="text-white text-xs">R${powerCost.toFixed(2)}</span></div>
+                           <div className="bg-white/5 p-2 rounded-lg text-red-400" title="Depreciação de Máquina">Máquina<br/><span className="text-white text-xs">R${depreciationCost.toFixed(2)}</span></div>
+                           <div className="bg-white/5 p-2 rounded-lg text-cyan-400" title="Custo de Embalagem">Embal.<br/><span className="text-white text-xs">R${packagingCost.toFixed(2)}</span></div>
+                        </div>
+                        <div className="flex justify-between text-xs font-bold pt-2 border-t border-white/5">
+                           <span className="text-slate-500">Sugestão de Venda (Markup 3.5x):</span>
+                           <span className="text-slate-300">R$ {suggestedPrice.toFixed(2)}</span>
+                        </div>
                       </div>
 
                       {/* PRODUÇÃO 3D: FILAMENTO E PESO */}
