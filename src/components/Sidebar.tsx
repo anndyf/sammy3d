@@ -175,7 +175,7 @@ export function Sidebar() {
                    >
                      <div className="flex items-center gap-3">
                        {!item.isSubItem && <item.icon className={cn("h-[18px] w-[18px]", isActive ? "text-blue-400" : "text-blue-200 group-hover:text-white transition-colors")} />}
-                       <span>{item.label}</span>abel}</span>
+                       <span>{item.label}</span>
                      </div>
                      {item.isPro && (
                        <span className="text-[8px] font-black bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded border border-amber-500/20">PRO</span>
