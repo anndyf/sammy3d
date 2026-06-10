@@ -150,7 +150,8 @@ export function Sidebar() {
         {/* DRAWER LINKS NAVIGATION */}
         <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6 custom-scrollbar">
            {sidebarGroups.map((group, groupIndex) => (
-             <div key={groupIndex} className="                {group.title && (
+             <div key={groupIndex} className="space-y-1">
+               {group.title && (
                  <div className="flex items-center gap-3 px-3 mb-2 mt-4">
                    <h3 className="text-[9px] font-black text-blue-300 uppercase tracking-[0.15em]">{group.title}</h3>
                    <div className="h-px bg-white/10 flex-1"></div>
